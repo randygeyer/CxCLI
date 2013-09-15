@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="clean-build" name="Create CxCommons Jar Checkmarx projects">
+	<!--ANT 1.7 is required 	                            -->
+	
+	<property file="build.properties"/>
+	<property name="build.dir" value="bin" />
+	<property name="classes.dir" value="${build.dir}"/>
+	<property name="src.dir"     value="src"/>
+	<property name="jar.class.path"  value=". lib/dom4j-1.6.1.jar lib/jdom.jar lib/log4j-1.2.14.jar lib/commons-codec-1.4.jar"/>
+
+	<target name="clean">
+		<delete dir="${build.dir}" />
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${classes.dir}"/>
+		<javac srcdir="${src.dir}" destdir="${build.dir}" debug="true" target="1.6">
+			<!-- classpath="${class.path}" debuglevel="lines,vars,source-->
+			<classpath>
+				<pathelement path="${classpath}"/>
+				<fileset dir="lib">
+					<include name="**/*.jar"/>
+				</fileset>
+			</classpath>
+
+			<include name="**/*.java" />
+		</javac>
+	</target>
+
+
+
+	<target name="test-jar" depends="compile">
+		<dirname property="module.cx_commons.basedir" file="${ant.file}"/>
+
+		<delete dir="${module.cx_commons.basedir}/build"/>
+		<mkdir dir="${module.cx_commons.basedir}/build"/>
+
+		<jar destfile="${module.cx_commons.basedir}/build/cx_commons_general.jar">
+			<manifest>
+				<attribute name="Main-Class" value="com.checkmarx.cxviewer.test.TestRunner"/>
+				<!--attribute name="Class-Path" value=". lib/dom4j-1.6.1.jar lib/jdom.jar lib/log4j-1.2.14.jar lib/cxcommon_1.2.4.jar"/-->
+				<attribute name="Class-Path" value="${jar.class.path}"/>
+			</manifest>
+			<fileset dir="${module.cx_commons.basedir}/bin">
+				<exclude name="**/*.svn*"/>
+			</fileset>
+		</jar>
+	</target>
+	
+	<target name="jar" depends="compile">
+			<dirname property="module.cx_commons.basedir" file="${ant.file}"/>
+
+			<delete dir="${module.cx_commons.basedir}/build"/>
+			<mkdir dir="${module.cx_commons.basedir}/build"/>
+
+			<jar destfile="${module.cx_commons.basedir}/build/cx_commons_general.jar">
+				<manifest>
+					<!--attribute name="Main-Class" value="com.checkmarx.cxviewer.test.TestRunner"/>
+					<attribute name="Class-Path" value="${jar.class.path}"/-->
+				</manifest>
+				<fileset dir="${module.cx_commons.basedir}/bin">
+					<exclude name="**/*.svn*"/>
+				</fileset>
+			</jar>
+		</target>
+
+	<target name="clean-build" depends="clean,jar"/>
+	<target name="test-clean-build" depends="clean,test-jar"/>
+
+	<property name="gen.src.dir" value="./src"/>	
+	<target name="wsimport">
+		<echo message="Removing old sources" />
+		<delete dir="${src.dir}/com/checkmarx/cxviewer/ws/generated"/>
+		
+		<echo message="Generating Proxy Classes for WSDL ${wsdl.url}" />
+		<echo message="Package is ${gen.pkg} to folder ${gen.src.dir}" />
+		<exec executable="${java.home}\..\bin\wsimport">
+			<arg line="-s ./src -keep -p ${gen.pkg} ${wsdl.url}"/>
+	    </exec>
+	</target> 
+</project>

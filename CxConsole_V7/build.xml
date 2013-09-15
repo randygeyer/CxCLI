@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="clean-build" name="Create Runnable Jar for Project CxConsole with libraries in sub-folder">
+	<!--this file was created by Eclipse Runnable JAR Export Wizard-->
+	<!--ANT 1.7 is required 	                                   -->
+
+	<property name="build.dir" value="bin"/>
+	<property name="classes.dir" value="${build.dir}"/>
+	<property name="src.dir"     value="src"/>
+	<property name="jar.class.path"  value=". lib/jdom.jar lib/log4j-1.2.14.jar lib/cx_commons_general.jar lib/cx_commons.jar config/cx_console.properties"/>
+
+	<target name="clean">
+		<delete dir="${build.dir}" />
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${classes.dir}"/>
+            <javac srcdir="${src.dir}" destdir="${build.dir}" target="1.6" debug="true">
+			<!-- classpath="${class.path}" debuglevel="lines,vars,source-->
+			<classpath>
+				<pathelement path="${classpath}"/>
+				<fileset dir="lib">
+					<include name="**/*.jar"/>
+				</fileset>
+			</classpath>
+
+			<include name="**/*.java" />
+			<exclude name="**/Example.java" />
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<dirname property="module.cx_console.basedir" file="${ant.file}"/>
+
+		<delete dir="${module.cx_console.basedir}/build"/>
+		<mkdir dir="${module.cx_console.basedir}/build"/>
+
+		<jar destfile="${module.cx_console.basedir}/build/cx_console.jar">
+			<manifest>
+				<attribute name="Main-Class" value="com.checkmarx.cxconsole.CxConsoleLauncher"/>
+				<!--attribute name="Class-Path" value=". lib/dom4j-1.6.1.jar lib/jdom.jar lib/log4j-1.2.14.jar lib/cxcommon_1.2.4.jar"/-->
+				<attribute name="Class-Path" value="${jar.class.path}"/>
+			</manifest>
+			<fileset dir="${module.cx_console.basedir}/bin">
+				<exclude name="**/*.svn*"/>
+			</fileset>
+		</jar>
+
+		<mkdir dir="${module.cx_console.basedir}/build/lib"/>
+		<mkdir dir="${module.cx_console.basedir}/build/config"/>
+
+		<copy todir="${module.cx_console.basedir}/build/lib">
+			<fileset dir="${module.cx_console.basedir}/lib"/>
+		</copy>
+		<copy file="${module.cx_console.basedir}/config/cx_console.properties" todir="${module.cx_console.basedir}/build/config"/>
+		<copy file="${module.cx_console.basedir}/config/log4j.properties" todir="${module.cx_console.basedir}/build"/>
+		<copy file="${module.cx_console.basedir}/runCxConsole.cmd" todir="${module.cx_console.basedir}/build"/>
+		<copy file="${module.cx_console.basedir}/runCxConsole.sh" todir="${module.cx_console.basedir}/build"/>
+	</target>
+
+	<target name="clean-build" depends="clean,jar"/>
+</project>
