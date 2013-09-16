@@ -6,7 +6,7 @@
 	<property name="build.dir" value="bin"/>
 	<property name="classes.dir" value="${build.dir}"/>
 	<property name="src.dir"     value="src"/>
-	<property name="jar.class.path"  value=". lib/jdom.jar lib/log4j-1.2.14.jar lib/cx_commons_general.jar lib/cx_commons.jar config/cx_console.properties"/>
+	<property name="jar.class.path"  value=". lib/jdom.jar lib/log4j-1.2.14.jar config/cx_console.properties"/>
 
 	<target name="clean">
 		<delete dir="${build.dir}" />
@@ -14,10 +14,10 @@
 
 	<target name="compile">
 		<mkdir dir="${classes.dir}"/>
-            <javac srcdir="${src.dir}" destdir="${build.dir}" target="1.6" debug="true">
+            <javac srcdir="${src.dir}" destdir="${build.dir}" target="1.6" source="1.6" debug="true">
 			<!-- classpath="${class.path}" debuglevel="lines,vars,source-->
 			<classpath>
-				<pathelement path="${classpath}"/>
+				<pathelement path="${jar.class.path}"/>
 				<fileset dir="lib">
 					<include name="**/*.jar"/>
 				</fileset>

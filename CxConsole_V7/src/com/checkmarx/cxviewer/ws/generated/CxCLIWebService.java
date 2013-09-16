@@ -42,25 +42,25 @@ public class CxCLIWebService
         super(__getWsdlLocation(), CXCLIWEBSERVICE_QNAME);
     }
 
-    public CxCLIWebService(WebServiceFeature... features) {
+ /*   public CxCLIWebService(WebServiceFeature... features) {
         super(__getWsdlLocation(), CXCLIWEBSERVICE_QNAME, features);
-    }
+    }*/
 
     public CxCLIWebService(URL wsdlLocation) {
         super(wsdlLocation, CXCLIWEBSERVICE_QNAME);
     }
 
-    public CxCLIWebService(URL wsdlLocation, WebServiceFeature... features) {
+  /*  public CxCLIWebService(URL wsdlLocation, WebServiceFeature... features) {
         super(wsdlLocation, CXCLIWEBSERVICE_QNAME, features);
-    }
+    }*/
 
     public CxCLIWebService(URL wsdlLocation, QName serviceName) {
         super(wsdlLocation, serviceName);
     }
 
-    public CxCLIWebService(URL wsdlLocation, QName serviceName, WebServiceFeature... features) {
+    /*public CxCLIWebService(URL wsdlLocation, QName serviceName, WebServiceFeature... features) {
         super(wsdlLocation, serviceName, features);
-    }
+    }*/
 
     /**
      * 

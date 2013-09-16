@@ -42,25 +42,25 @@ public class CxWSResolver
         super(__getWsdlLocation(), CXWSRESOLVER_QNAME);
     }
 
-    public CxWSResolver(WebServiceFeature... features) {
+/*    public CxWSResolver(WebServiceFeature... features) {
         super(__getWsdlLocation(), CXWSRESOLVER_QNAME, features);
-    }
+    }*/
 
     public CxWSResolver(URL wsdlLocation) {
         super(wsdlLocation, CXWSRESOLVER_QNAME);
     }
 
-    public CxWSResolver(URL wsdlLocation, WebServiceFeature... features) {
+/*    public CxWSResolver(URL wsdlLocation, WebServiceFeature... features) {
         super(wsdlLocation, CXWSRESOLVER_QNAME, features);
-    }
+    }*/
 
     public CxWSResolver(URL wsdlLocation, QName serviceName) {
         super(wsdlLocation, serviceName);
     }
 
-    public CxWSResolver(URL wsdlLocation, QName serviceName, WebServiceFeature... features) {
+    /*public CxWSResolver(URL wsdlLocation, QName serviceName, WebServiceFeature... features) {
         super(wsdlLocation, serviceName, features);
-    }
+    }*/
 
     /**
      * 
