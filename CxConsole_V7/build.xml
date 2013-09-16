@@ -15,7 +15,6 @@
 	<target name="compile">
 		<mkdir dir="${classes.dir}"/>
             <javac srcdir="${src.dir}" destdir="${build.dir}" target="1.6" source="1.6" debug="true">
-			<!-- classpath="${class.path}" debuglevel="lines,vars,source-->
 			<classpath>
 				<pathelement path="${jar.class.path}"/>
 				<fileset dir="lib">
