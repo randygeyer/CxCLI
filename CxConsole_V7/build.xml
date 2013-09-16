@@ -54,6 +54,7 @@
 		<copy file="${module.cx_console.basedir}/config/log4j.properties" todir="${module.cx_console.basedir}/build"/>
 		<copy file="${module.cx_console.basedir}/runCxConsole.cmd" todir="${module.cx_console.basedir}/build"/>
 		<copy file="${module.cx_console.basedir}/runCxConsole.sh" todir="${module.cx_console.basedir}/build"/>
+        <chmod file="${module.cx_console.basedir}/build/runCxConsole.sh" perm="ugo+rx"/>
 	</target>
 
 	<target name="clean-build" depends="clean,jar"/>
