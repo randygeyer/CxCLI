@@ -1,0 +1,599 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="1722184e-5438-427e-896b-ca95347fcc6f" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Project.iml" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/.classpath" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/.settings/org.eclipse.jdt.core.prefs" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/build.properties" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/build.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/lib/jdom.jar" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/lib/log4j-1.2.14.jar" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/Const.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/CxLogger.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/annotation/PersisentCompoundField.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/annotation/PersistentField.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/data/ScanResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/data/ScanResultPath.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/data/ScanResultPathNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/data/ScanResultPoint.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/data/ScanResultQuery.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/utils/ScanResultParser.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/utils/ScanResultSeverety.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/SSLUtilities.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/WSMgrBase.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/WSResolver.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/data/ConfigurationsChild.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/data/PresetChild.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/data/TeamsChild.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/generated/CompareStatusType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/generated/CxClientType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/generated/CxWSPathNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/generated/CxWSQueryVulnerabilityData.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/generated/CxWSSingleResultCompareData.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/generated/CxWSSingleResultData.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/resolver/CxClientType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/resolver/CxWSBasicRepsonse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/resolver/CxWSResolver.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/resolver/CxWSResolverSoap.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/resolver/CxWSResponseDiscovery.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/resolver/GetWebServiceUrl.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/resolver/GetWebServiceUrlResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/resolver/ObjectFactory.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/resolver/package-info.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommonGeneral/src/com/checkmarx/cxviewer/ws/results/SeverityEnum.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/.classpath" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/.settings/org.eclipse.jdt.core.prefs" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/build.properties" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/build.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/config/cx_console.properties" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/config/log4j.properties" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/lib/cx_commons_general.jar" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/lib/jdom.jar" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/lib/log4j-1.2.14.jar" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/WSMgr.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/ArrayOfConfigurationSet.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/ArrayOfDayOfWeek.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/ArrayOfGroup.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/ArrayOfPreset.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/ArrayOfProjectDisplayData.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/ArrayOfScanAction.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/ArrayOfScanPath.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/ArrayOfString.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CliScanArgs.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/ConfigurationSet.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CreateScanReport.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CreateScanReportResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/Credentials.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CurrentStatusEnum.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CxCLIWebService.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CxCLIWebServiceSoap.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CxDateTime.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CxWSBasicRepsonse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CxWSCreateReportResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CxWSReportRequest.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CxWSReportStatusResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CxWSReportType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CxWSResponseConfigSetList.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CxWSResponseGroupList.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CxWSResponseLoginData.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CxWSResponsePresetList.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CxWSResponseProjectConfig.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CxWSResponseProjectsDisplayData.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CxWSResponseRunID.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CxWSResponseScanResults.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CxWSResponseScanStatus.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/CxWSResponseSessionID.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/DayOfWeek.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/GetAssociatedGroupsList.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/GetAssociatedGroupsListResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/GetConfigurationSetList.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/GetConfigurationSetListResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/GetPresetList.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/GetPresetListResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/GetProjectConfiguration.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/GetProjectConfigurationResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/GetProjectsDisplayData.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/GetProjectsDisplayDataResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/GetScanReport.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/GetScanReportResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/GetScanReportStatus.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/GetScanReportStatusResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/GetStatusOfSingleScan.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/GetStatusOfSingleScanResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/GitLsRemoteViewType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/Group.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/GroupType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/LocalCodeContainer.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/Login.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/LoginResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/ObjectFactory.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/Preset.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/ProjectConfiguration.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/ProjectDisplayData.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/ProjectSettings.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/RepositoryType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/Scan.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/ScanAction.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/ScanActionSettings.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/ScanActionType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/ScanEventType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/ScanPath.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/ScanResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/ScheduleSettings.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/ScheduleType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/SourceCodeSettings.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/SourceControlProtocolType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/SourceControlSettings.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/SourceLocationType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/UpdateProjectIncrementalConfiguration.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/UpdateProjectIncrementalConfigurationResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/UpdateScanComment.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/UpdateScanCommentResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/UserPermission.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/generated/package-info.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/results/CreateReportResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/results/GeneralResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/results/GetConfigurationsListResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/results/GetPresetsListResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/results/GetProjectConfigResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/results/GetProjectDataResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/results/GetScanResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/results/GetScanXMLResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/results/GetStatusOfScanResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/results/GetTeamsListResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/results/IsAllowedToScanResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/results/LoginResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/results/LogoutResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/results/ResultLabelTypeEnum.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/results/RunScanResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/results/ScanPDFReportResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/results/SeverityEnum.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/results/SimpleResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/results/StopScanResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/CxCommon_CLIv7/src/com/checkmarx/cxviewer/ws/results/UpdateScanCommentResult.java" afterPath="" />
+    </list>
+    <ignored path="Project.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <file path="/Dummy.txt" changelist="1722184e-5438-427e-896b-ca95347fcc6f" time="1379313361582" ignored="false" />
+    <file path="/fragment.java" changelist="1722184e-5438-427e-896b-ca95347fcc6f" time="1379315204937" ignored="false" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="DaemonCodeAnalyzer">
+    <disable_hints />
+  </component>
+  <component name="DebuggerManager">
+    <breakpoint_any>
+      <breakpoint>
+        <option name="NOTIFY_CAUGHT" value="true" />
+        <option name="NOTIFY_UNCAUGHT" value="true" />
+        <option name="ENABLED" value="false" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="REMOVE_AFTER_HIT" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="SUSPEND" value="true" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="true" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint>
+        <option name="NOTIFY_CAUGHT" value="true" />
+        <option name="NOTIFY_UNCAUGHT" value="true" />
+        <option name="ENABLED" value="false" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="REMOVE_AFTER_HIT" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="SUSPEND" value="true" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="true" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+    </breakpoint_any>
+    <breakpoint_rules />
+    <ui_properties />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="Project" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file leaf-file-name="CxConsoleLauncher.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/CxConsole_V7/src/com/checkmarx/cxconsole/CxConsoleLauncher.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="11" column="74" selection-start="285" selection-end="285" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="build.xml" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/CxConsole_V7/build.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="24" column="48" selection-start="1015" selection-end="1015" vertical-scroll-proportion="0.6509946">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindManager">
+    <FindUsagesManager>
+      <setting name="OPEN_NEW_TAB" value="false" />
+    </FindUsagesManager>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitLogSettings">
+    <option name="myDateState">
+      <MyDateState />
+    </option>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="y" value="22" />
+    <option name="width" value="1920" />
+    <option name="height" value="987" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="0" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectReloadState">
+    <option name="STATE" value="0" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1" splitterProportion="0.5">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Project" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Project" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Project" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Project" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Project" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CxConsole_V7" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Project" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Project" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CxConsole_V7" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="com" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="checkmarx" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cxconsole" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Project" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Project" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="CxConsole_V7" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="build" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="GenerateAntBuildDialog.generateIdeaHomeProperty" value="false" />
+    <property name="GoToFile.includeJavaFiles" value="false" />
+    <property name="MemberChooser.sorted" value="false" />
+    <property name="recentsLimit" value="5" />
+    <property name="GenerateAntBuildDialog.generateSingleFile" value="false" />
+    <property name="GenerateAntBuildDialog.inclineRuntiemClasspath" value="false" />
+    <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
+    <property name="GenerateAntBuildDialog.outputFileNameProperty" value="project" />
+    <property name="MemberChooser.copyJavadoc" value="false" />
+    <property name="GenerateAntBuildDialog.enableUiFormCompile" value="true" />
+    <property name="GoToClass.toSaveIncludeLibraries" value="false" />
+    <property name="MemberChooser.showClasses" value="true" />
+    <property name="GoToClass.includeLibraries" value="false" />
+    <property name="GenerateAntBuildDialog.backupFiles" value="true" />
+  </component>
+  <component name="RunManager" selected="Application.Main">
+    <configuration default="false" name="Main" type="Application" factoryName="Application" temporary="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="MAIN_CLASS_NAME" value="com.checkmarx.cxconsole.Main" />
+      <option name="VM_PARAMETERS" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" value="" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="Project" />
+      <envs />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="" />
+      <envs />
+      <method />
+    </configuration>
+    <list size="1">
+      <item index="0" class="java.lang.String" itemvalue="Application.Main" />
+    </list>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1722184e-5438-427e-896b-ca95347fcc6f" name="Default" comment="" />
+      <created>1379313359147</created>
+      <updated>1379313359147</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TodoView" selected-index="0">
+    <todo-panel id="selected-file">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="default-changelist">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="false" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="22" width="1920" height="987" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3298731" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="CxGrid" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="CxPath" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3298731" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298731" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298731" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2497332" sideWeight="0.67012686" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+    </layout>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="OFFER_MOVE_TO_ANOTHER_CHANGELIST_ON_PARTIAL_COMMIT" value="true" />
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="true" />
+    <option name="CHECK_NEW_TODO" value="true" />
+    <option name="myTodoPanelSettings">
+      <value>
+        <are-packages-shown value="false" />
+        <are-modules-shown value="false" />
+        <flatten-packages value="false" />
+        <is-autoscroll-to-source value="false" />
+      </value>
+    </option>
+    <option name="PERFORM_UPDATE_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_COMMIT_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_EDIT_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_CHECKOUT_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_ADD_REMOVE_IN_BACKGROUND" value="true" />
+    <option name="PERFORM_ROLLBACK_IN_BACKGROUND" value="false" />
+    <option name="CHECK_LOCALLY_CHANGED_CONFLICTS_IN_BACKGROUND" value="false" />
+    <option name="CHANGED_ON_SERVER_INTERVAL" value="60" />
+    <option name="SHOW_ONLY_CHANGED_IN_SELECTION_DIFF" value="true" />
+    <option name="CHECK_COMMIT_MESSAGE_SPELLING" value="true" />
+    <option name="DEFAULT_PATCH_EXTENSION" value="patch" />
+    <option name="SHORT_DIFF_HORIZONTALLY" value="true" />
+    <option name="SHORT_DIFF_EXTRA_LINES" value="2" />
+    <option name="SOFT_WRAPS_IN_SHORT_DIFF" value="true" />
+    <option name="INCLUDE_TEXT_INTO_PATCH" value="false" />
+    <option name="INCLUDE_TEXT_INTO_SHELF" value="false" />
+    <option name="SHOW_FILE_HISTORY_DETAILS" value="true" />
+    <option name="SHOW_VCS_ERROR_NOTIFICATIONS" value="true" />
+    <option name="SHOW_DIRTY_RECURSIVELY" value="false" />
+    <option name="LIMIT_HISTORY" value="true" />
+    <option name="MAXIMUM_HISTORY_ROWS" value="1000" />
+    <option name="UPDATE_FILTER_SCOPE_NAME" />
+    <option name="USE_COMMIT_MESSAGE_MARGIN" value="false" />
+    <option name="COMMIT_MESSAGE_MARGIN_SIZE" value="72" />
+    <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
+    <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
+    <option name="LAST_COMMIT_MESSAGE" />
+    <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
+    <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
+    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="REFORMAT_BEFORE_FILE_COMMIT" value="false" />
+    <option name="FILE_HISTORY_DIALOG_COMMENTS_SPLITTER_PROPORTION" value="0.8" />
+    <option name="FILE_HISTORY_DIALOG_SPLITTER_PROPORTION" value="0.5" />
+    <option name="ACTIVE_VCS_NAME" />
+    <option name="UPDATE_GROUP_BY_PACKAGES" value="false" />
+    <option name="UPDATE_GROUP_BY_CHANGELIST" value="false" />
+    <option name="UPDATE_FILTER_BY_SCOPE" value="false" />
+    <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
+    <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager />
+  </component>
+  <component name="antWorkspaceConfiguration">
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
+    <option name="FILTER_TARGETS" value="false" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/CxConsole_V7/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CxConsole_V7/.project">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CxConsole_V7/runCxConsole.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CxConsole_V7/runCxConsole.cmd">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CxConsole_V7/build/log4j.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CxConsole_V7/src/com/checkmarx/cxconsole/CxConsoleLauncher.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="11" column="74" selection-start="285" selection-end="285" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CxConsole_V7/build.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="48" selection-start="1015" selection-end="1015" vertical-scroll-proportion="0.6509946">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
+
