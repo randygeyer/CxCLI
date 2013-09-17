@@ -151,7 +151,6 @@ public class WSMgr extends WSMgrBase {
 		LocalCodeContainer localCodeContainer;
 		srcCodeSettings.setSourceOrigin(locationType);
 
-		ArrayOfScanPath paths = new ArrayOfScanPath();
 		ScanPath scanPath = null;
 
 		Credentials creds = new Credentials();
@@ -210,7 +209,9 @@ public class WSMgr extends WSMgrBase {
 		}
 
 		if (scanPath != null) {
-			for (String lpath : locationpath.split(";")) {
+            ArrayOfScanPath paths = new ArrayOfScanPath();
+
+            for (String lpath : locationpath.split(";")) {
 				ScanPath lscanPath = new ScanPath();
 				lscanPath.setPath(lpath);
 				lscanPath.setIncludeSubTree(false);
@@ -218,7 +219,7 @@ public class WSMgr extends WSMgrBase {
 				paths.getScanPath().add(lscanPath);
 
 			}
-			srcCodeSettings.setPathList(paths);
+			srcCodeSettings.setPathList(paths); // TODO: Check when the pathList web service parameter is needed
 		}
 
 		// srcCodeSettings.setPathList(null);
