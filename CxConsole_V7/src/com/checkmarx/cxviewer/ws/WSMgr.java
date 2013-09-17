@@ -151,7 +151,7 @@ public class WSMgr extends WSMgrBase {
 		LocalCodeContainer localCodeContainer;
 		srcCodeSettings.setSourceOrigin(locationType);
 
-		ScanPath scanPath = null;
+		boolean generateScanPaths = false;
 
 		Credentials creds = new Credentials();
 		creds.setUser(user);
@@ -165,11 +165,11 @@ public class WSMgr extends WSMgrBase {
 				srcCodeSettings.setPackagedCode(localCodeContainer);
 				break;
 			case SHARED:
-				localCodeContainer = new LocalCodeContainer();
-				localCodeContainer.setFileName(locationpath);
-				srcCodeSettings.setPackagedCode(localCodeContainer);
+				localCodeContainer = new LocalCodeContainer(); // TODO: Remove, LocalCodeContainer is not used in Shared mode
+				localCodeContainer.setFileName(locationpath);  // TODO: Remove, LocalCodeContainer is not used in Shared mode
+				srcCodeSettings.setPackagedCode(localCodeContainer); // TODO: Remove, LocalCodeContainer is not used in Shared mode
 				srcCodeSettings.setUserCredentials(creds);
-				scanPath = new ScanPath();
+				generateScanPaths = true;
 				break;
 			case SOURCE_CONTROL:
 				SourceControlSettings sourceControlSetting = new SourceControlSettings();
@@ -185,7 +185,7 @@ public class WSMgr extends WSMgrBase {
 				case TFS:
 					// sourceControlSetting.setUseSSL(false);
 					sourceControlSetting.setUserCredentials(creds);
-					scanPath = new ScanPath();
+					generateScanPaths = true;
 					break;
 				case GIT:
 					sourceControlSetting.setGITBranch(locationBrach);
@@ -195,7 +195,7 @@ public class WSMgr extends WSMgrBase {
 						sourceControlSetting.setSSHPrivateKey(privateKeyPath);
 						sourceControlSetting.setSSHPublicKey(publicKeyPath);
 					}
-					scanPath = new ScanPath();
+					//scanPath = new ScanPath();
 					// //sourceControlSetting.setProtocolParameters("");
 					break;
 				default:
@@ -208,7 +208,7 @@ public class WSMgr extends WSMgrBase {
 			}
 		}
 
-		if (scanPath != null) {
+		if (generateScanPaths) {
             ArrayOfScanPath paths = new ArrayOfScanPath();
 
             for (String lpath : locationpath.split(";")) {
