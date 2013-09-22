@@ -37,7 +37,7 @@ public class CxConsoleLauncher {
 				// Console interactive mode
 				Console console = System.console();
 				if (console != null) {
-					console.printf("Welcome to CxConsole. Enter 'quit' to exit console.\n\n");
+					console.printf("Welcome to CxConsole. Enter '" + COMM_QUIT +"' to exit console.\n\n");
 					console.printf("CxConsle>");
 					
 					// start interactive session
