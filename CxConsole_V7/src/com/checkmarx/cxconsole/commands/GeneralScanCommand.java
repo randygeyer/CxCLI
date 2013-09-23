@@ -8,22 +8,19 @@ import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxconsole.utils.ScanParams;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.OptionGroup;
 
 public abstract class GeneralScanCommand extends VerboseCommand {
 
     public static final Option PARAM_HOST = OptionBuilder.isRequired().hasArg().withArgName("server").withDescription("IP address or resolvable name of CxSuite web server").create("CxServer");
     public static final Option PARAM_USER = OptionBuilder.isRequired().hasArg().withArgName("username").withDescription("Login username").create("CxUser");
     public static final Option PARAM_PASSWORD = OptionBuilder.isRequired().hasArg().withArgName("password").withDescription("Login password").create("CxPassword");
-
-	public static String PARAM_LOG_FILE = "-log";
-	public static String PARAM_XML_FILE = "-reportxml";
-	public static String PARAM_PDF_FILE = "-reportpdf";
-	public static String PARAM_CSV_FILE = "-reportcsv";
-	public static String PARAM_RTF_FILE = "-reportrtf";
-	public static String PARAM_EXCLUDE = "-locationpathexclude";
-
-
-
+    public static final Option PARAM_LOG_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Log file").create("log");
+    public static final Option PARAM_XML_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results XML file").create("ReportXML");
+    public static final Option PARAM_PDF_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results PDF file").create("ReportPDF");
+    public static final Option PARAM_CSV_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results CSV file").create("ReportCSV");
+    public static final Option PARAM_RTF_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results RTF file").create("ReportRTF");
+    public static final Option PARAM_EXCLUDE = OptionBuilder.hasArgs().withArgName("file").withDescription("List of ignored folders. Example: -LocationPathExclude test* log_*").create("LocationPathExclude");
 
 	protected Integer timeout;
 	protected ScanParams scParams;
@@ -46,6 +43,17 @@ public abstract class GeneralScanCommand extends VerboseCommand {
     {
         this.commandLineOptions.addOption(PARAM_HOST);
         this.commandLineOptions.addOption(PARAM_USER);
+        this.commandLineOptions.addOption(PARAM_PASSWORD);
+        this.commandLineOptions.addOption(PARAM_LOG_FILE);
+
+        this.commandLineOptions.addOption(PARAM_XML_FILE);
+        OptionGroup reportGroup = new OptionGroup();
+        reportGroup.setRequired(false);
+        reportGroup.addOption(PARAM_PDF_FILE);
+        reportGroup.addOption(PARAM_CSV_FILE);
+        reportGroup.addOption(PARAM_RTF_FILE);
+        this.commandLineOptions.addOptionGroup(reportGroup);
+        this.commandLineOptions.addOption(PARAM_EXCLUDE);
     }
 
 	@Override
@@ -87,8 +95,8 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 		checkHost();
 		
 		if (scParams.hasExcludedParam()) {
-			String excludedFolders = scParams.getExcludedFolders();
-			if (excludedFolders == null || excludedFolders.isEmpty()) {
+			String[] excludedFolders = scParams.getExcludedFolders();
+			if (excludedFolders == null || excludedFolders.length==0) {
 				throw new Exception(MSG_ERR_EXCLUDED_DIR);
 			}
 		}

@@ -271,8 +271,8 @@ public class ScanCommand extends GeneralScanCommand {
 	@Override
 	protected String getLogFileLocation() {
 
-		String logFileLocation = parameters.get(PARAM_LOG_FILE.toUpperCase());
-		String projectName = commandLineArguments.getOptionValue(PARAM_PRJ_NAME.getOpt()).toUpperCase(); //parameters.get(PARAM_PRJ_NAME.toUpperCase());
+		String logFileLocation = commandLineArguments.getOptionValue(PARAM_LOG_FILE.getOpt());
+		String projectName = commandLineArguments.getOptionValue(PARAM_PRJ_NAME.getOpt());
 		if (projectName!=null) {
 			projectName = projectName.replaceAll("/","\\\\");
 		}

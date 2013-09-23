@@ -26,7 +26,6 @@ public class ScanParams {
 	private String folderProjName;
 	private String presetName;
 	private String xmlFile;
-	private boolean isXML = false;
 	private String reportFile;
 	private String reportType;
 	private String logFile = "cx_scan.log";
@@ -48,7 +47,7 @@ public class ScanParams {
 	private String publicKey;
 	private String privateKey;
 	private String configuration;
-	private String excludedFolders;
+	private String[] excludedFolders;
 	private boolean hasExcludedParam;
 	
 	public ScanParams(Map<String, String> params, CommandLine commandLine) {
@@ -60,27 +59,25 @@ public class ScanParams {
 			srcPath = srcPath.substring(0, srcPath.length() - 1);
 		}*/
 		this.presetName =  params.get(ScanCommand.PARAM_PRESET.toUpperCase());
-		if (params.containsKey(ScanCommand.PARAM_XML_FILE.toUpperCase())) {
-			this.isXML = true;
-		} 
-		this.xmlFile =  params.get(ScanCommand.PARAM_XML_FILE.toUpperCase());
-		
-		if (params.containsKey(GeneralScanCommand.PARAM_PDF_FILE.toUpperCase())) {
+
+		this.xmlFile = commandLine.getOptionValue(ScanCommand.PARAM_XML_FILE.getOpt());
+
+		if (commandLine.hasOption(ScanCommand.PARAM_PDF_FILE.getOpt())) {
 			this.reportType="PDF";
-			this.reportFile =  params.get(GeneralScanCommand.PARAM_PDF_FILE.toUpperCase());
+			this.reportFile = commandLine.getOptionValue(ScanCommand.PARAM_PDF_FILE.getOpt());
 		}
 		
-		if (params.containsKey(GeneralScanCommand.PARAM_CSV_FILE.toUpperCase())) {
+		if (commandLine.hasOption(ScanCommand.PARAM_CSV_FILE.getOpt())) {
 			this.reportType = "CSV";
-			this.reportFile =  params.get(GeneralScanCommand.PARAM_CSV_FILE.toUpperCase());
+			this.reportFile =  commandLine.getOptionValue(ScanCommand.PARAM_CSV_FILE.getOpt());
 		}
 		
-		if (params.containsKey(GeneralScanCommand.PARAM_RTF_FILE.toUpperCase())) {
+		if (commandLine.hasOption(ScanCommand.PARAM_RTF_FILE.getOpt())) {
 			this.reportType = "RTF";
-			this.reportFile =  params.get(GeneralScanCommand.PARAM_RTF_FILE.toUpperCase());
+			this.reportFile = commandLine.getOptionValue(ScanCommand.PARAM_RTF_FILE.getOpt());
 		}
 		
-		this.logFile =  params.get(ScanCommand.PARAM_LOG_FILE.toUpperCase());
+		this.logFile = commandLine.getOptionValue(ScanCommand.PARAM_LOG_FILE.getOpt());
         isVerbose = commandLine.hasOption(ScanCommand.PARAM_VERBOSE.getOpt());
 
 		/*this.folderProjName = params.get(ScanCommand.PARAM_FOLDER_PRJ_NAME.toUpperCase());
@@ -165,9 +162,9 @@ public class ScanParams {
 			isVisibleOthers = false;
 		}
 		
-		if (params.containsKey(GeneralScanCommand.PARAM_EXCLUDE.toUpperCase())){
+		if (commandLine.hasOption(ScanCommand.PARAM_EXCLUDE.getOpt())){
 			hasExcludedParam = true;
-			excludedFolders = params.get(GeneralScanCommand.PARAM_EXCLUDE.toUpperCase()).trim().replace("\"", "");
+			excludedFolders = commandLine.getOptionValues(ScanCommand.PARAM_EXCLUDE.getOpt());//  params.get(GeneralScanCommand.PARAM_EXCLUDE.toUpperCase()).trim().replace("\"", "");
 		}
 	}
 
@@ -185,10 +182,6 @@ public class ScanParams {
 
 	public void setUser(String user) {
 		this.user = user;
-	}
-
-	public boolean isXML() {
-		return isXML;
 	}
 
 	public String getReportType() {
@@ -355,11 +348,11 @@ public class ScanParams {
 		this.privateKey = privateKey;
 	}
 
-	public String getExcludedFolders() {
+	public String[] getExcludedFolders() {
 		return excludedFolders;
 	}
 
-	public void setExcludedFolders(String excludedFolders) {
+	public void setExcludedFolders(String[] excludedFolders) {
 		this.excludedFolders = excludedFolders;
 	}
 
