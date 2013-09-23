@@ -97,7 +97,7 @@ public abstract class CxConsoleCommand {
     {
         HelpFormatter helpFormatter = new HelpFormatter();
         PrintWriter printWriter = new PrintWriter(System.out,true);
-        helpFormatter.printUsage(printWriter, 120, "Scan", commandLineOptions);
+        helpFormatter.printUsage(printWriter, 120, getCommandName(), commandLineOptions);
     }
 	
 	public int execute() throws Exception {

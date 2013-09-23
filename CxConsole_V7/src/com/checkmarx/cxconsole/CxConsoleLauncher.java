@@ -75,7 +75,8 @@ public class CxConsoleLauncher {
 				}
 			} else {
 				String commandName = args[0];
-				CxConsoleCommand command = CommandsFactory.getCommand(commandName, args);
+                String[] argumentsLessCommandName = java.util.Arrays.copyOfRange(args,1,args.length);
+				CxConsoleCommand command = CommandsFactory.getCommand(commandName,argumentsLessCommandName);
 				if (command == null) {					
 					log.error("Command \"" + commandName + "\" was not found. Available commands:\n" 
 							+ CommandsFactory.getCommnadNames());
@@ -84,7 +85,7 @@ public class CxConsoleLauncher {
 				}
 
                 try {
-                    command.parseArguments(args);
+                    command.parseArguments(argumentsLessCommandName);
                 } catch (ParseException e)
                 {
                     log.fatal("Command parameters are invalid: " + e.getMessage());

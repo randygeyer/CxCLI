@@ -17,6 +17,8 @@
 
 package org.apache.commons.cli;
 
+import org.apache.commons.collections.map.CaseInsensitiveMap;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,10 +50,10 @@ public class Options implements Serializable
     private static final long serialVersionUID = 1L;
 
     /** a map of the options with the character key */
-    private Map shortOpts = new HashMap();
+    private Map shortOpts = new CaseInsensitiveMap();
 
     /** a map of the options with the long key */
-    private Map longOpts = new HashMap();
+    private Map longOpts = new CaseInsensitiveMap();
 
     /** a map of the required options */
     private List requiredOpts = new ArrayList();
