@@ -58,15 +58,6 @@ public abstract class CxConsoleCommand {
 		commandLineOptions = new Options();
 	}
 
-	
-	/**
-	 * Check whether current command is being fulfilled with all parameters 
-	 * required for execution
-	 * 
-	 * @return <code>true</code> if command can be executed with current 
-	 * parameters set, <code>false</code> otherwise
-	 */
-	public abstract boolean commandAbleToRun();  //TODO: Remove
 
     public void parseArguments(String[] args) throws ParseException
     {

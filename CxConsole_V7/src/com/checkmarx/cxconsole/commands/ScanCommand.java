@@ -255,12 +255,72 @@ public class ScanCommand extends GeneralScanCommand {
 						+ scParams.getSpFolderName() + "]");
 			}
 		}
-		if (scParams.getLocationType() != null
-				&& scParams.getLocationType() == LocationType.folder
-				&& scParams.getLocationPath() == null) {
-			throw new Exception(PARAM_LOCATION_PATH + " is missed. Parameter should be specified since " 
-				+ PARAM_LOCATION_TYPE + " is [" + scParams.getLocationType() + "]");
+		if (scParams.getLocationType() == LocationType.folder
+			&& scParams.getLocationPath() == null)
+        {
+			throw new Exception(PARAM_LOCATION_PATH.getOpt() + " is missed. Parameter should be specified since "
+				+ PARAM_LOCATION_TYPE.getOpt() + " is [" + scParams.getLocationType() + "]");
 		}
+
+        if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs) &&
+             scParams.getLocationURL()==null)
+        {
+            throw new Exception(PARAM_LOCATION_URL.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS");
+        }
+
+        if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs) &&
+             scParams.getLocationUser()==null )
+        {
+            throw new Exception(PARAM_LOCATION_USER.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS");
+        }
+        if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs) &&
+             scParams.getLocationPassword() == null )
+        {
+            throw new Exception(PARAM_LOCATION_PWD.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS");
+        }
+
+        if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs) &&
+             scParams.getLocationPath()==null)
+        {
+            throw new Exception(PARAM_LOCATION_PATH.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS");
+        }
+
+        if ((scParams.getLocationType() == LocationType.git) &&
+                scParams.getLocationURL()==null)
+        {
+            throw new Exception(PARAM_LOCATION_URL.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is GIT");
+        }
+
+        if ((scParams.getLocationType() == LocationType.git) &&
+                scParams.getLocationBranch()==null)
+        {
+            throw new Exception(PARAM_LOCATION_BRANCH.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is GIT");
+        }
+
+        if ((scParams.getLocationType() == LocationType.shared) &&
+                scParams.getLocationPath()==null)
+        {
+            throw new Exception(PARAM_LOCATION_PATH.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is shared");
+        }
+
+        if ((scParams.getLocationType() == LocationType.shared) &&
+                scParams.getLocationUser()==null)
+        {
+            throw new Exception(PARAM_LOCATION_USER.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is shared");
+        }
+
+        if ((scParams.getLocationType() == LocationType.shared) &&
+                scParams.getLocationPassword()==null)
+        {
+            throw new Exception(PARAM_LOCATION_PWD.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is shared");
+        }
+
+        if ((scParams.getLocationType() == LocationType.folder) &&
+                scParams.getLocationPath()==null)
+        {
+            throw new Exception(PARAM_LOCATION_PATH.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is folder");
+        }
+
 		if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs)
 				&& scParams.getLocationPort() == null) {
 			throw new Exception("Invalid location port ["
@@ -378,44 +438,6 @@ public class ScanCommand extends GeneralScanCommand {
 		return normalPathName;
 	}
 
-	@Override
-	public boolean commandAbleToRun() {
-
-		boolean locationParamOK = false;
-		if (scParams.getLocationType() != null) {
-			switch (scParams.getLocationType()) {
-			case folder:
-			    locationParamOK = commandLineArguments.hasOption(PARAM_LOCATION_PATH.getOpt());
-				break;
-			case shared:
-
-                locationParamOK = commandLineArguments.hasOption(PARAM_LOCATION_PATH.getOpt()) &&
-                                  commandLineArguments.hasOption(PARAM_LOCATION_USER.getOpt()) &&
-                                  commandLineArguments.hasOption(PARAM_LOCATION_PWD.getOpt());
-
-				break;
-			case tfs:
-			case svn:
-
-                locationParamOK = commandLineArguments.hasOption(PARAM_LOCATION_URL.getOpt()) &&
-                                  commandLineArguments.hasOption(PARAM_LOCATION_USER.getOpt()) &&
-                                  commandLineArguments.hasOption(PARAM_LOCATION_PWD.getOpt()) &&
-                                  commandLineArguments.hasOption(PARAM_LOCATION_PATH.getOpt());
-
-				break;
-			case git:
-
-                locationParamOK = commandLineArguments.hasOption(PARAM_LOCATION_URL.getOpt()) &&
-                                  commandLineArguments.hasOption(PARAM_LOCATION_BRANCH.getOpt());
-
-				break;
-			}
-		} else {
-			locationParamOK = true;
-		}
-
-		return super.commandAbleToRun() && commandLineArguments.hasOption(PARAM_PRJ_NAME.getOpt()) && locationParamOK;
-	}
 
 	@Override
 	public String getMandatoryParams() {

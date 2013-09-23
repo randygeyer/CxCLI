@@ -63,13 +63,7 @@ public abstract class GeneralScanCommand extends VerboseCommand {
         this.commandLineOptions.addOption(PARAM_EXCLUDE);
     }
 
-	@Override
-	public boolean commandAbleToRun()
-    {
-        return  commandLineArguments.hasOption(PARAM_HOST.getOpt()) &&
-                commandLineArguments.hasOption(PARAM_USER.getOpt()) &&
-                commandLineArguments.hasOption(PARAM_PASSWORD.getOpt());
-	}
+
 
 	protected void checkHost() throws Exception {
 		String generatedHost = null;
