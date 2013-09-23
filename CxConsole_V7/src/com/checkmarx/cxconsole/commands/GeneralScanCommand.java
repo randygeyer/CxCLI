@@ -26,7 +26,6 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 
 
 
-	protected Set<String> cliScanKeysSet;
 	protected Integer timeout;
 	protected ScanParams scParams;
 	

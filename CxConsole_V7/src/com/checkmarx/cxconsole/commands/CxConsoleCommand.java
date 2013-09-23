@@ -115,12 +115,7 @@ public abstract class CxConsoleCommand {
 	 */
 	protected abstract boolean isKeyFlag(String key);
 	
-	/**
-	 * Get set of command parameter CLI keys
-	 * 
-	 * @return <code>Set<String></code> which contains all command CLI keys 
-	 */
-	protected abstract Set<String> initCLIKeys();
+
 	
 	/*
 	 * Usage string building methods
@@ -174,100 +169,4 @@ public abstract class CxConsoleCommand {
 	protected abstract void initLogging();
 	protected abstract void releaseLog();
 	
-	private Map<String, String> parseParameters(String[] args) {
-		parameters = new HashMap<String, String>();
-		
-		if (args != null) {
-			for (int i = 0; i < args.length; i++) {
-				String key = args[i].trim().toUpperCase();
-				String value = null;
-				if ((i + 1) < args.length) {
-					value = args[i + 1].trim();
-				}
-				if (isKeyFlag(key)) {
-					parameters.put(key, "true");
-				} else if (initCLIKeys().contains(key)) {
-					// Check whether followed argument is not a key
-					if (value != null && !initCLIKeys().contains(value.toUpperCase())) {
-						parameters.put(key, value);
-					} else /*if (value == null)*/ {
-						parameters.put(key, null);
-					}
-				}
-			}
-		}
-		
-		return parameters;
-	}
-	
-	public String[] parseLine(String args) {
-		
-		Set<String> cliKeys = initCLIKeys();
-		String[] parsedArgs = null;
-		List<String> parsedArgsTemp = new ArrayList<String>();
-		
-		args = args.trim();
-		// Look for first space that should separate command name from arguments 
-		int cmdNameIdx = args.indexOf(" ");
-		if (cmdNameIdx == -1) {
-			return null;
-		}
-		String commandName = args.substring(0, cmdNameIdx);
-		if (!getCommandName().equals(commandName)) {
-			return null;
-		}
-		
-		String cmdParameters = args.substring(cmdNameIdx, args.length());
-		Map<Integer, String> keysToIdMapping = new Hashtable<Integer, String>();
-		int index = 0;
-		for(String comandKey : cliKeys) {
-			if (cmdParameters.contains(comandKey)) {
-				cmdParameters = cmdParameters.replace(comandKey, "<" + index + ">");
-				keysToIdMapping.put(index, comandKey);
-				index++;
-			}
-		}
-		
-		cmdParameters = cmdParameters.trim();
-		int placeHolerIdx = cmdParameters.indexOf('<');
-		List<Integer> idsOrder = new ArrayList<Integer>();
-		do {
-			int nextPlaceholderIdx = cmdParameters.indexOf('>', placeHolerIdx + 1);
-			if (nextPlaceholderIdx != -1) {
-				String keyIdStr = cmdParameters.substring(placeHolerIdx + 1, nextPlaceholderIdx);
-				try {
-					idsOrder.add(Integer.parseInt(keyIdStr));
-				} catch (NumberFormatException e) {
-					// ignore
-				}
-			}
-			placeHolerIdx = cmdParameters.indexOf('<', nextPlaceholderIdx + 1);
-		} while (placeHolerIdx != -1);
-		
-		String[] parts = cmdParameters.split("<\\d>");
-		if (parts != null) {
-			// Ignore first part since it'll be empty string - splitting artefact
-			for (int i = 1; i < parts.length; i++) {
-				Integer keyId = idsOrder.get(i - 1);
-				String cliKey = keysToIdMapping.get(keyId);
-				// put cli key
-				parsedArgsTemp.add(cliKey);
-				// put corresponding to key value
-				parsedArgsTemp.add(parts[i]);
-			}
-		}
-
-		if (parsedArgsTemp.size() > 0) {
-			parsedArgs = new String[parsedArgsTemp.size()];
-			parsedArgs = parsedArgsTemp.toArray(parsedArgs);
-		}
-
-		return parsedArgs;
-	}
-	
-	public static String[] parseCommandLine(String cl) {
-		String[] commands = null;
-		
-		return commands;
-	}
 }

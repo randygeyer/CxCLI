@@ -2,6 +2,7 @@ package com.checkmarx.cxconsole;
 
 import java.io.Console;
 
+import com.checkmarx.cxconsole.commands.ScanCommand;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.ParseException;
 import org.apache.log4j.Logger;
@@ -37,14 +38,14 @@ public class CxConsoleLauncher {
 			log.info("CxConsole scan session started");
 			if (args == null || args.length == 0) {
                 log.fatal("No command line arguments were specified");
-                command.printHelp();
+                new ScanCommand().printHelp();
                 errorCode = CxConsoleCommand.CODE_ERRROR;
                 return;
 
 			}
             String commandName = args[0];
             String[] argumentsLessCommandName = java.util.Arrays.copyOfRange(args,1,args.length);
-            CxConsoleCommand command = CommandsFactory.getCommand(commandName,argumentsLessCommandName);
+            CxConsoleCommand command = CommandsFactory.getCommand(commandName);
             if (command == null) {
                 log.error("Command \"" + commandName + "\" was not found. Available commands:\n"
                         + CommandsFactory.getCommnadNames());

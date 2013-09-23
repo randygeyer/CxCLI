@@ -7,7 +7,6 @@ import com.checkmarx.cxconsole.commands.GeneralScanCommand;
 import com.checkmarx.cxconsole.commands.ScanCommand;
 //import com.checkmarx.cxconsole.commands.ScanFolderCommand;
 //import com.checkmarx.cxconsole.commands.ScanProjectCommand;
-import com.checkmarx.cxconsole.commands.ScanFolderCommand;
 import org.apache.commons.cli.CommandLine;
 
 /**
@@ -101,7 +100,7 @@ public class ScanParams {
 		this.spFolderName = params.get(ScanCommand.PARAM_FOLDER_NAME.toUpperCase());
 		
 		//Scan command
-		fullProjName =  commandLine.getOptionValue(ScanCommand.PARAM_PRJ_NAME_2.getOpt()); //params.get(ScanCommand.PARAM_PRJ_NAME.toUpperCase());
+		fullProjName =  commandLine.getOptionValue(ScanCommand.PARAM_PRJ_NAME.getOpt()); //params.get(ScanCommand.PARAM_PRJ_NAME.toUpperCase());
 		if (fullProjName != null) {
 			fullProjName = fullProjName.replaceAll("/","\\\\");
 			String parts[] = fullProjName.split("\\\\");

@@ -1,7 +1,6 @@
 package com.checkmarx.cxconsole.commands;
 
 import java.io.*;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,8 +18,12 @@ public class ScanCommand extends GeneralScanCommand {
 
 	public static String COMMAND_SCAN = "Scan";
 
-	public static String PARAM_PRJ_NAME = "-ProjectName";
-	public static String PARAM_LOCATION_TYPE = "-Locationtype";
+    public static final Option PARAM_PRJ_NAME = OptionBuilder.withArgName("project name").hasArg().isRequired().withDescription("An existing or new full project name." +
+            "The full Project name is conducted with the whole path to the project including Server, service provider, company and team. " +
+            "Example:  -ProjectName \"CxServer\\SP\\Company\\Users\\bs java\"" +
+            "If project with such a name doesn't exist in the system, new project will be created.").create("ProjectName");
+
+    public static String PARAM_LOCATION_TYPE = "-Locationtype";
 	public static String PARAM_LOCATION_PATH = "-locationpath";
 	public static String PARAM_LOCATION_USER = "-locationuser";
 	public static String PARAM_LOCATION_PWD = "-locationpassword";
@@ -41,7 +44,6 @@ public class ScanCommand extends GeneralScanCommand {
 
 	public static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
 
-    public static final Option PARAM_PRJ_NAME_2 = OptionBuilder.withArgName("project name").hasArg().isRequired().withDescription("Full Project name").create("ProjectName");
     public static final Option PARAM_LOCATION_TYPE_2 = OptionBuilder.withArgName("type").hasArgs().withDescription("Source location type [folder/shared/TFS/SVN/GIT]").create("Locationtype");
 
 
@@ -52,7 +54,7 @@ public class ScanCommand extends GeneralScanCommand {
 
     private void initCommandLineOptions()
     {
-        this.commandLineOptions.addOption(PARAM_PRJ_NAME_2);
+        this.commandLineOptions.addOption(PARAM_PRJ_NAME);
         this.commandLineOptions.addOption(PARAM_LOCATION_TYPE_2);
     }
 
@@ -197,28 +199,7 @@ public class ScanCommand extends GeneralScanCommand {
 				+ "CxConsole Scan -projectname SP\\Cx\\Engine\\AST -cxserver http://localhost -cxuser admin@cx -cxpassword admin -locationtype share -locationpath '\\\\storage\\path1;\\\\storage\\path2' -locationuser dm\\matys -locationpassword XYZ -preset \"Sans 25\" -reportxls a.xls -reportpdf b.pdf -private -verbose -log a.log\n";
 	}
 
-	@Override
-	public Set<String> initCLIKeys() {
-		//super.initCLIKeys();
-		cliScanKeysSet.add(PARAM_PRJ_NAME.toUpperCase());
-		cliScanKeysSet.add(PARAM_LOCATION_TYPE.toUpperCase());
 
-		cliScanKeysSet.add(PARAM_LOCATION_PATH.toUpperCase());
-		cliScanKeysSet.add(PARAM_LOCATION_USER.toUpperCase());
-		cliScanKeysSet.add(PARAM_LOCATION_PWD.toUpperCase());
-		cliScanKeysSet.add(PARAM_LOCATION_URL.toUpperCase());
-		cliScanKeysSet.add(PARAM_LOCATION_PORT.toUpperCase());
-		cliScanKeysSet.add(PARAM_LOCATION_BRANCH.toUpperCase());
-		cliScanKeysSet.add(PARAM_LOCATION_PRIVATE_KEY.toUpperCase());
-		cliScanKeysSet.add(PARAM_LOCATION_PUBLIC_KEY.toUpperCase());
-		cliScanKeysSet.add(PARAM_PRESET.toUpperCase());
-		cliScanKeysSet.add(PARAM_CONFIGURATION.toUpperCase());
-		cliScanKeysSet.add(PARAM_INCREMENTAL.toUpperCase());
-		cliScanKeysSet.add(PARAM_PRIVATE.toUpperCase());
-		cliScanKeysSet.add(PARAM_SCAN_COMMENT.toUpperCase());
-
-		return cliScanKeysSet;
-	}
 
 	@Override
 	protected boolean isKeyFlag(String key) {
@@ -291,7 +272,7 @@ public class ScanCommand extends GeneralScanCommand {
 	protected String getLogFileLocation() {
 
 		String logFileLocation = parameters.get(PARAM_LOG_FILE.toUpperCase());
-		String projectName = commandLineArguments.getOptionValue(PARAM_PRJ_NAME_2.getOpt()).toUpperCase(); //parameters.get(PARAM_PRJ_NAME.toUpperCase());
+		String projectName = commandLineArguments.getOptionValue(PARAM_PRJ_NAME.getOpt()).toUpperCase(); //parameters.get(PARAM_PRJ_NAME.toUpperCase());
 		if (projectName!=null) {
 			projectName = projectName.replaceAll("/","\\\\");
 		}
@@ -418,7 +399,7 @@ public class ScanCommand extends GeneralScanCommand {
 		}
 
 		return super.commandAbleToRun()
-				&& parameters.containsKey(PARAM_PRJ_NAME.toUpperCase())
+				&& parameters.containsKey(PARAM_PRJ_NAME.getOpt().toUpperCase())
 				/* && parameters.containsKey(PARAM_LOCATION_TYPE.toUpperCase()) */
 				&& locationParamOK;
 	}
