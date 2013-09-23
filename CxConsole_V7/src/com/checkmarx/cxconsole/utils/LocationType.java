@@ -1,6 +1,7 @@
 package com.checkmarx.cxconsole.utils;
 
 import com.checkmarx.cxviewer.ws.generated.SourceLocationType;
+import org.apache.commons.lang3.StringUtils;
 
 public enum LocationType {
 
@@ -47,12 +48,8 @@ public enum LocationType {
 		return null;
 	}
 
-    public String stringOfValues()
+    public static String stringOfValues()
     {
-        StringBuffer sb = new StringBuffer();
-        for (LocationType t : values())
-        {
-            sb.append(t.toString());
-        }
+        return StringUtils.join(values()," | ");
     }
 }

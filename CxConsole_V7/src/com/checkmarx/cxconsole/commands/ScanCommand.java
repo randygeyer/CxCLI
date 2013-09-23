@@ -23,40 +23,69 @@ public class ScanCommand extends GeneralScanCommand {
             "Example:  -ProjectName \"CxServer\\SP\\Company\\Users\\bs java\"" +
             "If project with such a name doesn't exist in the system, new project will be created.").create("ProjectName");
 
-    public static final Option PARAM_LOCATION_TYPE = OptionBuilder.withArgName("type").hasArg().isRequired().withDescription("Source location type: folder, shared folder, source repository: SVN, TFS, GIT").create("LocationType");
+    public static final Option PARAM_LOCATION_TYPE = OptionBuilder.withArgName("< " + LocationType.stringOfValues() + ">").hasArg().isRequired()
+            .withDescription("Source location type: folder, shared folder, source repository: SVN, TFS, GIT").create("LocationType");    // TODO: Check if CLI lib can check for correct param value
 
-	public static String PARAM_LOCATION_PATH = "-locationpath";
-	public static String PARAM_LOCATION_USER = "-locationuser";
-	public static String PARAM_LOCATION_PWD = "-locationpassword";
-	public static String PARAM_LOCATION_URL = "-locationURL";
-	public static String PARAM_LOCATION_PORT = "-locationPort";
-	// public static String PARAM_LOCATION_REPOSITORY = "-locationRepository";
-	public static String PARAM_LOCATION_BRANCH = "-locationBranch";
-	public static String PARAM_LOCATION_PRIVATE_KEY = "-locationprivatekey";
-	public static String PARAM_LOCATION_PUBLIC_KEY = "-locationpublickey";
-	public static String PARAM_PRESET = "-Preset";
-	public static String PARAM_CONFIGURATION = "-Configuration";
-	public static String PARAM_INCREMENTAL = "-incremental";
-	public static String PARAM_PRIVATE = "-private";
-	public static String PARAM_SCAN_COMMENT = "-Comment";
-	
-	public static String PARAM_PRJ = "-project";
-	public static String PARAM_FOLDER_NAME = "-folderName";
+    public static final Option PARAM_LOCATION_PATH = OptionBuilder.withArgName("path").hasArg()
+            .withDescription("Local or shared path to sources or source repository branch. Use semicolon \";\" to separate values. Required if -LocationType is folder/shared").create("LocationPath");  //TODO: Check if ; separator is appropriate
 
-	public static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
+    public static final Option PARAM_LOCATION_USER = OptionBuilder.withArgName("username").hasArg()
+            .withDescription("Source control or network username. Required if -LocationType is TFS/SVN/shared").create("LocationUser");
 
-    public static final Option PARAM_LOCATION_TYPE_2 = OptionBuilder.withArgName("type").hasArgs().withDescription("Source location type [folder/shared/TFS/SVN/GIT]").create("Locationtype");
+    public static final Option PARAM_LOCATION_PWD = OptionBuilder.withArgName("password").hasArg()
+            .withDescription("Source control or network password. Required if -LocationType is TFS/SVN/shared").create("LocationPassword");
 
+    public static final Option PARAM_LOCATION_URL = OptionBuilder.withArgName("url").hasArg()
+            .withDescription("Source control URL. Required if -LocationType is TFS/SVN/GIT").create("LocationURL");
+
+    public static final Option PARAM_LOCATION_PORT = OptionBuilder.withArgName("url").hasArg()
+            .withDescription("Source control system port. Default 8080/80 (TFS/SVN).").create("LocationPort");
+
+    public static final Option PARAM_LOCATION_BRANCH = OptionBuilder.withArgName("branch").hasArg()
+            .withDescription("Sources GIT branch. Required if -LocationType is GIT.").create("LocationBranch");
+
+    public static final Option PARAM_LOCATION_PRIVATE_KEY = OptionBuilder.withArgName("file").hasArg()
+            .withDescription("GIT private key location. Required  if -LocationType is GIT in SSH mode.").create("LocationPrivateKey");
+
+    public static final Option PARAM_LOCATION_PUBLIC_KEY = OptionBuilder.withArgName("file").hasArg()
+            .withDescription("GIT public key location. Required  if -LocationType is GIT in SSH mode.").create("LocationPublicKey");
+
+    public static final Option PARAM_PRESET = OptionBuilder.withArgName("preset").hasArg()
+            .withDescription("If preset is not specified, will use the predefined preset for an existing project, and Default preset for a new project.").create("Preset");
+
+    public static final Option PARAM_CONFIGURATION = OptionBuilder.withArgName("configuration").hasArg()
+            .withDescription("If configuration is not set \"Default Configuration\" will be used for a new project.").create("Configuration");
+
+    public static final Option PARAM_INCREMENTAL = OptionBuilder.withDescription("Will run an incremental scan instead of full scan").create("incremental");
+
+    public static final Option PARAM_PRIVATE = OptionBuilder.withDescription("Scan will not be visible to other users").create("private");
+
+    public static final Option PARAM_SCAN_COMMENT = OptionBuilder.withArgName("text").withDescription("Scan comment. Example: -comment 'important scan1'").hasArg().create("comment");
+
+    public static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
 
     public ScanCommand() {
-		super(); // cli mode
+		super();
         initCommandLineOptions();
 	}
 
     private void initCommandLineOptions()
     {
         this.commandLineOptions.addOption(PARAM_PRJ_NAME);
-        this.commandLineOptions.addOption(PARAM_LOCATION_TYPE_2);
+        this.commandLineOptions.addOption(PARAM_LOCATION_TYPE);
+        this.commandLineOptions.addOption(PARAM_LOCATION_PATH);
+        this.commandLineOptions.addOption(PARAM_LOCATION_USER);
+        this.commandLineOptions.addOption(PARAM_LOCATION_PWD);
+        this.commandLineOptions.addOption(PARAM_LOCATION_URL);
+        this.commandLineOptions.addOption(PARAM_LOCATION_PORT);
+        this.commandLineOptions.addOption(PARAM_LOCATION_BRANCH);
+        this.commandLineOptions.addOption(PARAM_LOCATION_PRIVATE_KEY);
+        this.commandLineOptions.addOption(PARAM_LOCATION_PUBLIC_KEY);
+        this.commandLineOptions.addOption(PARAM_PRESET);
+        this.commandLineOptions.addOption(PARAM_CONFIGURATION);
+        this.commandLineOptions.addOption(PARAM_INCREMENTAL);
+        this.commandLineOptions.addOption(PARAM_PRIVATE);
+        this.commandLineOptions.addOption(PARAM_SCAN_COMMENT);
     }
 
 	@Override
@@ -204,8 +233,8 @@ public class ScanCommand extends GeneralScanCommand {
 
 	@Override
 	protected boolean isKeyFlag(String key) {
-		return /*super.isKeyFlag(key) || */PARAM_INCREMENTAL.equalsIgnoreCase(key)
-				|| PARAM_PRIVATE.equalsIgnoreCase(key);
+		return /*super.isKeyFlag(key) || */PARAM_INCREMENTAL.getOpt().equalsIgnoreCase(key)
+				|| PARAM_PRIVATE.getOpt().equalsIgnoreCase(key);
 	}
 
 	/*
@@ -235,7 +264,7 @@ public class ScanCommand extends GeneralScanCommand {
 		if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs)
 				&& scParams.getLocationPort() == null) {
 			throw new Exception("Invalid location port ["
-					+ parameters.get(PARAM_LOCATION_PORT.toUpperCase()) + "]");
+					+ commandLineArguments.getOptionValue(PARAM_LOCATION_PORT.getOpt()) + "]");
 		}
 		if ((scParams.getLocationPrivateKey() != null && scParams
 				.getLocationPublicKey() == null)
@@ -356,33 +385,32 @@ public class ScanCommand extends GeneralScanCommand {
 		if (scParams.getLocationType() != null) {
 			switch (scParams.getLocationType()) {
 			case folder:
-				if (parameters.containsKey(PARAM_LOCATION_PATH.toUpperCase())) {
+				if (parameters.containsKey(PARAM_LOCATION_PATH.getOpt().toUpperCase())) {
 					locationParamOK = true;
 				}
 				break;
 			case shared:
-				if (parameters.containsKey(PARAM_LOCATION_PATH.toUpperCase())
-						&& parameters.containsKey(PARAM_LOCATION_USER
+				if (parameters.containsKey(PARAM_LOCATION_PATH.getOpt().toUpperCase())
+						&& parameters.containsKey(PARAM_LOCATION_USER.getOpt()
 								.toUpperCase())
-						&& parameters.containsKey(PARAM_LOCATION_PWD
+						&& parameters.containsKey(PARAM_LOCATION_PWD.getOpt()
 								.toUpperCase())) {
 					locationParamOK = true;
 				}
 				break;
 			case tfs:
 			case svn:
-				if (parameters.containsKey(PARAM_LOCATION_URL.toUpperCase())
-						&& parameters.containsKey(PARAM_LOCATION_USER
+				if (parameters.containsKey(PARAM_LOCATION_URL.getOpt().toUpperCase())
+						&& parameters.containsKey(PARAM_LOCATION_USER.getOpt()
 								.toUpperCase())
-						&& parameters.containsKey(PARAM_LOCATION_PWD
-								.toUpperCase())
-						&& parameters.containsKey(PARAM_LOCATION_PATH
+						&& parameters.containsKey(PARAM_LOCATION_PWD.getOpt())
+						&& parameters.containsKey(PARAM_LOCATION_PATH.getOpt()
 								.toUpperCase())) {
 					locationParamOK = true;
 				}
 				break;
 			case git:
-				if (parameters.containsKey(PARAM_LOCATION_URL.toUpperCase())
+				if (parameters.containsKey(PARAM_LOCATION_URL.getOpt().toUpperCase())
 				/*
 				 * &&
 				 * parameters.containsKey(PARAM_LOCATION_PRIVATE_KEY.toUpperCase
@@ -390,7 +418,7 @@ public class ScanCommand extends GeneralScanCommand {
 				 * parameters.containsKey(PARAM_LOCATION_PUBLIC_KEY.toUpperCase
 				 * ())
 				 */
-				&& parameters.containsKey(PARAM_LOCATION_BRANCH.toUpperCase())) {
+				&& parameters.containsKey(PARAM_LOCATION_BRANCH.getOpt().toUpperCase())) {
 					locationParamOK = true;
 				}
 				break;

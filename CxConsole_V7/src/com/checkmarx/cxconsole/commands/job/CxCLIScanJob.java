@@ -553,12 +553,12 @@ public class CxCLIScanJob extends CxScanJob {
 			return false;
 		}
 		
-		String ignoredFolders = null;
+		String[] ignoredFolders = null; // TODO: Make sure  ignoredFolders type conversion to String[] works properly
 		if (params.hasExcludedParam()) {
 			ignoredFolders = params.getExcludedFolders();
 		}
 		else {
-			ignoredFolders = ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_IGNORED_FOLDERS);
+			ignoredFolders = new String[]{ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_IGNORED_FOLDERS)};
 		}
 		String ignoredExtensions = ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_IGNORED_EXTENSIONS);
 		
@@ -577,7 +577,7 @@ public class CxCLIScanJob extends CxScanJob {
 		
 		ZipPacker packer = new ZipPacker(params.getLocationPath(),
 				zipFileLocation, 
-				ignoredFolders, 
+				ignoredFolders[0],  // TODO: Make sure  ignoredFolders type conversion to String[] works properly
 				ignoredExtensions);
 		return packer.zipFolder();
 	}

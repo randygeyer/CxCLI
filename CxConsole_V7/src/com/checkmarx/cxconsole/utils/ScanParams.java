@@ -58,7 +58,7 @@ public class ScanParams {
 		if (srcPath != null && srcPath.endsWith(File.separator)) {
 			srcPath = srcPath.substring(0, srcPath.length() - 1);
 		}*/
-		this.presetName =  params.get(ScanCommand.PARAM_PRESET.toUpperCase());
+		this.presetName =  commandLine.getOptionValue(ScanCommand.PARAM_PRESET.getOpt());
 
 		this.xmlFile = commandLine.getOptionValue(ScanCommand.PARAM_XML_FILE.getOpt());
 
@@ -90,11 +90,11 @@ public class ScanParams {
 		}*/
 		
 		//Scan Project params
-		this.projName = params.get(ScanCommand.PARAM_PRJ.toUpperCase());
+		//this.projName = params.get(ScanCommand.PARAM_PRJ.toUpperCase());
 		/*if (params.containsKey(ScanProjectCommand.PARAM_VALIDATE.toUpperCase())) {
 			isValidateFix = true;
 		}*/
-		this.spFolderName = params.get(ScanCommand.PARAM_FOLDER_NAME.toUpperCase());
+		//this.spFolderName = params.get(ScanCommand.PARAM_FOLDER_NAME.toUpperCase());
 		
 		//Scan command
 		fullProjName =  commandLine.getOptionValue(ScanCommand.PARAM_PRJ_NAME.getOpt()); //params.get(ScanCommand.PARAM_PRJ_NAME.toUpperCase());
@@ -107,11 +107,11 @@ public class ScanParams {
 				projName = parts[parts.length - 1];
 			} 
 		}
-		locationType = LocationType.byName(params.get(ScanCommand.PARAM_LOCATION_TYPE.toUpperCase()));
+		locationType = LocationType.byName(commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_TYPE.getOpt()));
 		
-		scanComment=params.get(ScanCommand.PARAM_SCAN_COMMENT.toUpperCase());
+		scanComment=commandLine.getOptionValue(ScanCommand.PARAM_SCAN_COMMENT.getOpt());
 		
-		locationPath = params.get(ScanCommand.PARAM_LOCATION_PATH.toUpperCase());
+		locationPath = commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_PATH.getOpt());
 		if (locationType == LocationType.folder && locationPath != null) {
 			File resultFile = new File(locationPath);
 			if (!resultFile.isAbsolute()) {
@@ -119,12 +119,12 @@ public class ScanParams {
 				locationPath = path + File.separator + locationPath;
 			}
 		}
-		locationUser = params.get(ScanCommand.PARAM_LOCATION_USER.toUpperCase());
-		locationPassword = params.get(ScanCommand.PARAM_LOCATION_PWD.toUpperCase());
-		locationURL = params.get(ScanCommand.PARAM_LOCATION_URL.toUpperCase());
-		locationBranch = params.get(ScanCommand.PARAM_LOCATION_BRANCH.toUpperCase());
-		locationPublicKey = params.get(ScanCommand.PARAM_LOCATION_PUBLIC_KEY.toUpperCase());
-		locationPrivateKey = params.get(ScanCommand.PARAM_LOCATION_PRIVATE_KEY.toUpperCase());
+		locationUser = commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_USER.getOpt());
+		locationPassword = commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_PWD.getOpt());
+		locationURL = commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_URL.getOpt());
+		locationBranch = commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_BRANCH.getOpt());
+		locationPublicKey = commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_PUBLIC_KEY.getOpt());
+		locationPrivateKey = commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_PRIVATE_KEY.getOpt());
 		if (locationPrivateKey != null) {
 			File resultFile = new File(locationPrivateKey);
 			if (!resultFile.isAbsolute()) {
@@ -139,8 +139,8 @@ public class ScanParams {
 				locationPublicKey = path + File.separator + locationPublicKey;
 			}
 		}
-		if (params.containsKey(ScanCommand.PARAM_LOCATION_PORT.toUpperCase())) {
-			String portStr = params.get(ScanCommand.PARAM_LOCATION_PORT.toUpperCase());
+		if (commandLine.hasOption(ScanCommand.PARAM_LOCATION_PORT.getOpt())) {
+			String portStr = commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_PORT.getOpt());
 			try {
 				locationPort = Integer.parseInt(portStr);
 			} catch (Exception e) {
@@ -153,14 +153,12 @@ public class ScanParams {
 				locationPort = 8080;
 			}
 		}
-		presetName =  params.get(ScanCommand.PARAM_PRESET.toUpperCase());
-		configuration =  params.get(ScanCommand.PARAM_CONFIGURATION.toUpperCase());
-		if (params.containsKey(ScanCommand.PARAM_INCREMENTAL.toUpperCase())) {
-			isValidateFix = true;
-		}
-		if (params.containsKey(ScanCommand.PARAM_PRIVATE.toUpperCase())){
-			isVisibleOthers = false;
-		}
+		presetName =  commandLine.getOptionValue(ScanCommand.PARAM_PRESET.getOpt());
+		configuration =  commandLine.getOptionValue(ScanCommand.PARAM_CONFIGURATION.getOpt());
+	    isValidateFix = commandLine.hasOption(ScanCommand.PARAM_INCREMENTAL.getOpt());
+		isVisibleOthers = !commandLine.hasOption(ScanCommand.PARAM_PRIVATE.getOpt());
+
+
 		
 		if (commandLine.hasOption(ScanCommand.PARAM_EXCLUDE.getOpt())){
 			hasExcludedParam = true;
