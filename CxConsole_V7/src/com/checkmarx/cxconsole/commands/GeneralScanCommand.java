@@ -6,6 +6,8 @@ import java.util.Set;
 
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxconsole.utils.ScanParams;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
 
 public abstract class GeneralScanCommand extends VerboseCommand {
 
@@ -18,7 +20,12 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 	public static String PARAM_CSV_FILE = "-reportcsv";
 	public static String PARAM_RTF_FILE = "-reportrtf";
 	public static String PARAM_EXCLUDE = "-locationpathexclude";
-	
+
+    public static final Option PARAM_HOST_2 = OptionBuilder.isRequired().hasArg().withArgName("server").withDescription("Host name of web-service").create("CxServer");
+    public static final Option PARAM_USER_2 = OptionBuilder.isRequired().hasArg().withArgName("username").withDescription("User login name").create("CxUser");
+
+
+
 	protected Set<String> cliScanKeysSet;
 	protected Integer timeout;
 	protected ScanParams scParams;
@@ -33,17 +40,24 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 	public static String MSG_ERR_EXCLUDED_DIR = "Ignored folders list is invalid.";
 	
 	public GeneralScanCommand(String[] cliArgs) {
-		super(cliArgs);
-		
-		initCLIKeys();
-		scParams = new ScanParams(parameters);
+		super(cliArgs);  // cli mode
+		initCommandLineOptions();
+
+        //initCLIKeys();
+		//scParams = new ScanParams(parameters);
 	}
 	
 	
 	public GeneralScanCommand(String cliArgs) {
-		super(cliArgs);
+		super(cliArgs);  // interactive console mode
 		scParams = new ScanParams(parameters);
 	}
+
+    private void initCommandLineOptions()
+    {
+        this.commandLineOptions.addOption(PARAM_HOST_2);
+        this.commandLineOptions.addOption(PARAM_USER_2);
+    }
 
 	@Override
 	public boolean commandAbleToRun() {

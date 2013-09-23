@@ -1,5 +1,6 @@
 package com.checkmarx.cxconsole.commands;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -7,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 
 /**
@@ -39,8 +41,18 @@ public abstract class CxConsoleCommand {
 	 * Command parameters stored in map by keys corresponding to CLI parameters 
 	 * keys/flags
 	 */
-	protected Map<String, String> parameters;
-	
+	protected Map<String, String> parameters;    //TODO: Remove
+
+    /**
+     * Definition of command line parameters to be used by Apache CLI parser
+     */
+    protected Options commandLineOptions;
+
+    /**
+     * Actual command line option values after parsing the arguments
+     */
+    protected CommandLine commandLineArguments;
+
 	protected Logger log;
 	
 	
@@ -51,7 +63,9 @@ public abstract class CxConsoleCommand {
 	 * @param cliArgs - parameters of application read from CLI
 	 */
 	public CxConsoleCommand(String[] cliArgs) {
-		parseParameters(cliArgs);
+		commandLineOptions = new Options();
+        //parseParameters(cliArgs);    // cli mode
+
 	}
 	
 	/**
@@ -61,7 +75,7 @@ public abstract class CxConsoleCommand {
 	 * @param lineArgs - parameters of application read from CLI, single line
 	 */
 	public CxConsoleCommand(String lineArgs) {
-		parseParameters(parseLine(lineArgs));
+		parseParameters(parseLine(lineArgs)); // interactive console mode
 	}
 	
 	/**
@@ -71,7 +85,20 @@ public abstract class CxConsoleCommand {
 	 * @return <code>true</code> if command can be executed with current 
 	 * parameters set, <code>false</code> otherwise
 	 */
-	public abstract boolean commandAbleToRun();
+	public abstract boolean commandAbleToRun();  //TODO: Remove
+
+    public void parseArguments(String[] args) throws ParseException
+    {
+        CommandLineParser parser = new BasicParser();
+        commandLineArguments = parser.parse(commandLineOptions, args,true);
+    }
+
+    public void printHelp()
+    {
+        HelpFormatter helpFormatter = new HelpFormatter();
+        PrintWriter printWriter = new PrintWriter(System.out,true);
+        helpFormatter.printUsage(printWriter, 120, "Scan", commandLineOptions);
+    }
 	
 	public int execute() throws Exception {
 		initLogging();

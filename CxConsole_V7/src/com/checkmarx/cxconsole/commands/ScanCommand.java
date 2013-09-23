@@ -1,10 +1,6 @@
 package com.checkmarx.cxconsole.commands;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -12,6 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import org.apache.commons.cli.*;
 
 import org.apache.log4j.Level;
 
@@ -44,13 +41,24 @@ public class ScanCommand extends GeneralScanCommand {
 
 	public static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
 
-	public ScanCommand(String[] cliArgs) {
-		super(cliArgs);
+    private static Option PARAM_PRJ_NAME_2 = OptionBuilder.withArgName("project name").hasArg().isRequired().withDescription("Full Project name").create("ProjectName");
+    private static Option PARAM_LOCATION_TYPE_2 = OptionBuilder.withArgName("type").hasArgs().withDescription("Source location type [folder/shared/TFS/SVN/GIT]").create("Locationtype");
+
+
+    public ScanCommand(String[] cliArgs) {
+		super(cliArgs); // cli mode
+        initCommandLineOptions();
 	}
 
 	public ScanCommand(String cliArgs) {
-		super(cliArgs);
+		super(cliArgs); // interactive console mode
 	}
+
+    private void initCommandLineOptions()
+    {
+        this.commandLineOptions.addOption(PARAM_PRJ_NAME_2);
+        this.commandLineOptions.addOption(PARAM_LOCATION_TYPE_2);
+    }
 
 	@Override
 	protected void executeCommand() {

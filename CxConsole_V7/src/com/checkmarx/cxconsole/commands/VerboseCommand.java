@@ -3,6 +3,8 @@ package com.checkmarx.cxconsole.commands;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -24,17 +26,21 @@ public abstract class VerboseCommand extends CxConsoleCommand {
 	 * CLI flag which switch verbose mode. Short form
 	 */
 	public static final String PARAM_VERBOSE_SHORT = "-v";
-	
+
+    public static final Option PARAM_VERBOSE = OptionBuilder.withDescription("Turn on verbose mode. All messages and events will be logged to console/log file. Optional.").withLongOpt("verbose").create("v");
+
+
 	/**
 	 * @param cliArgs
 	 */
 	public VerboseCommand(String[] cliArgs) {
-		super(cliArgs);
+		super(cliArgs);   // cli mode
+        this.commandLineOptions.addOption(PARAM_VERBOSE);
 	}
 	
 	
 	public VerboseCommand(String cliArgs) {
-		super(cliArgs);
+		super(cliArgs); // interactive console mode
 	}
 
 	/* (non-Javadoc)

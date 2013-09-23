@@ -2,6 +2,8 @@ package com.checkmarx.cxconsole;
 
 import java.io.Console;
 
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.ParseException;
 import org.apache.log4j.Logger;
 
 import com.checkmarx.cxconsole.commands.CommandsFactory;
@@ -80,6 +82,18 @@ public class CxConsoleLauncher {
 					errorCode = CxConsoleCommand.CODE_ERRROR;
 					return;
 				}
+
+                try {
+                    command.parseArguments(args);
+                } catch (ParseException e)
+                {
+                    log.fatal("Command parameters are invalid: " + e.getMessage());
+                    command.printHelp();
+                    errorCode = CxConsoleCommand.CODE_ERRROR;
+                    return;
+                }
+
+                // TODO: concider removing this check
 				if (!command.commandAbleToRun()) {
 					log.error(command.getCommandName()
 							+ " command parameters are insufficient. See command usage:\n" 
@@ -87,15 +101,14 @@ public class CxConsoleLauncher {
 					errorCode = CxConsoleCommand.CODE_ERRROR;
 					return;
 				}
-				try {
-					command.checkParameters();
-				} catch (Exception e) {
-					log.error("Command parameters are invalid: " + e.getMessage());
-					return;
-				}
+
 				errorCode = command.execute();
 			}
-		} catch (Throwable e) {
+		}
+        catch (org.apache.commons.cli.ParseException e)
+        {
+
+        } catch (Throwable e) {
 			log.fatal("Unexpected error occurred during console session.Error message:\n" + e.getMessage());
 			log.info("", e);
 			errorCode = CxConsoleCommand.CODE_ERRROR;
