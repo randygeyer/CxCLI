@@ -50,7 +50,7 @@ public class ScanParams {
 	private String[] excludedFolders;
 	private boolean hasExcludedParam;
 	
-	public ScanParams(Map<String, String> params, CommandLine commandLine) {
+	public ScanParams(CommandLine commandLine) {
 		this.host = commandLine.getOptionValue(ScanCommand.PARAM_HOST.getOpt());
 		this.user = commandLine.getOptionValue(ScanCommand.PARAM_USER.getOpt());;
 		this.password = commandLine.getOptionValue(ScanCommand.PARAM_PASSWORD.getOpt());;

@@ -385,52 +385,36 @@ public class ScanCommand extends GeneralScanCommand {
 		if (scParams.getLocationType() != null) {
 			switch (scParams.getLocationType()) {
 			case folder:
-				if (parameters.containsKey(PARAM_LOCATION_PATH.getOpt().toUpperCase())) {
-					locationParamOK = true;
-				}
+			    locationParamOK = commandLineArguments.hasOption(PARAM_LOCATION_PATH.getOpt());
 				break;
 			case shared:
-				if (parameters.containsKey(PARAM_LOCATION_PATH.getOpt().toUpperCase())
-						&& parameters.containsKey(PARAM_LOCATION_USER.getOpt()
-								.toUpperCase())
-						&& parameters.containsKey(PARAM_LOCATION_PWD.getOpt()
-								.toUpperCase())) {
-					locationParamOK = true;
-				}
+
+                locationParamOK = commandLineArguments.hasOption(PARAM_LOCATION_PATH.getOpt()) &&
+                                  commandLineArguments.hasOption(PARAM_LOCATION_USER.getOpt()) &&
+                                  commandLineArguments.hasOption(PARAM_LOCATION_PWD.getOpt());
+
 				break;
 			case tfs:
 			case svn:
-				if (parameters.containsKey(PARAM_LOCATION_URL.getOpt().toUpperCase())
-						&& parameters.containsKey(PARAM_LOCATION_USER.getOpt()
-								.toUpperCase())
-						&& parameters.containsKey(PARAM_LOCATION_PWD.getOpt())
-						&& parameters.containsKey(PARAM_LOCATION_PATH.getOpt()
-								.toUpperCase())) {
-					locationParamOK = true;
-				}
+
+                locationParamOK = commandLineArguments.hasOption(PARAM_LOCATION_URL.getOpt()) &&
+                                  commandLineArguments.hasOption(PARAM_LOCATION_USER.getOpt()) &&
+                                  commandLineArguments.hasOption(PARAM_LOCATION_PWD.getOpt()) &&
+                                  commandLineArguments.hasOption(PARAM_LOCATION_PATH.getOpt());
+
 				break;
 			case git:
-				if (parameters.containsKey(PARAM_LOCATION_URL.getOpt().toUpperCase())
-				/*
-				 * &&
-				 * parameters.containsKey(PARAM_LOCATION_PRIVATE_KEY.toUpperCase
-				 * ()) &&
-				 * parameters.containsKey(PARAM_LOCATION_PUBLIC_KEY.toUpperCase
-				 * ())
-				 */
-				&& parameters.containsKey(PARAM_LOCATION_BRANCH.getOpt().toUpperCase())) {
-					locationParamOK = true;
-				}
+
+                locationParamOK = commandLineArguments.hasOption(PARAM_LOCATION_URL.getOpt()) &&
+                                  commandLineArguments.hasOption(PARAM_LOCATION_BRANCH.getOpt());
+
 				break;
 			}
 		} else {
 			locationParamOK = true;
 		}
 
-		return super.commandAbleToRun()
-				&& parameters.containsKey(PARAM_PRJ_NAME.getOpt().toUpperCase())
-				/* && parameters.containsKey(PARAM_LOCATION_TYPE.toUpperCase()) */
-				&& locationParamOK;
+		return super.commandAbleToRun() && commandLineArguments.hasOption(PARAM_PRJ_NAME.getOpt()) && locationParamOK;
 	}
 
 	@Override

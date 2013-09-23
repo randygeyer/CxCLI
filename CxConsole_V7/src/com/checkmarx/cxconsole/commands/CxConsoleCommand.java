@@ -36,12 +36,6 @@ public abstract class CxConsoleCommand {
 	 * Error code indicating whether command execution was successful
 	 */
 	protected int errorCode = CODE_OK;	
-	
-	/**
-	 * Command parameters stored in map by keys corresponding to CLI parameters 
-	 * keys/flags
-	 */
-	protected Map<String, String> parameters;    //TODO: Remove
 
     /**
      * Definition of command line parameters to be used by Apache CLI parser

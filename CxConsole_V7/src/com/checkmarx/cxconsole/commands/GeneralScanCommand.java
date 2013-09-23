@@ -2,7 +2,6 @@ package com.checkmarx.cxconsole.commands;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.Set;
 
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxconsole.utils.ScanParams;
@@ -44,7 +43,7 @@ public abstract class GeneralScanCommand extends VerboseCommand {
     public void parseArguments(String[] args) throws ParseException
     {
         super.parseArguments(args);  //  parseArguments initializes commandLineArguments
-        scParams = new ScanParams(null,commandLineArguments);
+        scParams = new ScanParams(commandLineArguments);
     }
 
     private void initCommandLineOptions()
@@ -65,10 +64,11 @@ public abstract class GeneralScanCommand extends VerboseCommand {
     }
 
 	@Override
-	public boolean commandAbleToRun() {
-		return parameters.containsKey(PARAM_HOST.getOpt().toUpperCase())
-				&& parameters.containsKey(PARAM_USER.getOpt().toUpperCase())
-				&& parameters.containsKey(PARAM_PASSWORD.getOpt().toUpperCase());
+	public boolean commandAbleToRun()
+    {
+        return  commandLineArguments.hasOption(PARAM_HOST.getOpt()) &&
+                commandLineArguments.hasOption(PARAM_USER.getOpt()) &&
+                commandLineArguments.hasOption(PARAM_PASSWORD.getOpt());
 	}
 
 	protected void checkHost() throws Exception {
@@ -100,8 +100,6 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 	
 	@Override
 	public void checkParameters() throws Exception {
-		checkHost();
-		
 		if (scParams.hasExcludedParam()) {
 			String[] excludedFolders = scParams.getExcludedFolders();
 			if (excludedFolders == null || excludedFolders.length==0) {
