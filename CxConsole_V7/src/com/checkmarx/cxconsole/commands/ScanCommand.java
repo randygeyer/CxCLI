@@ -41,8 +41,8 @@ public class ScanCommand extends GeneralScanCommand {
 
 	public static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
 
-    private static Option PARAM_PRJ_NAME_2 = OptionBuilder.withArgName("project name").hasArg().isRequired().withDescription("Full Project name").create("ProjectName");
-    private static Option PARAM_LOCATION_TYPE_2 = OptionBuilder.withArgName("type").hasArgs().withDescription("Source location type [folder/shared/TFS/SVN/GIT]").create("Locationtype");
+    public static final Option PARAM_PRJ_NAME_2 = OptionBuilder.withArgName("project name").hasArg().isRequired().withDescription("Full Project name").create("ProjectName");
+    public static final Option PARAM_LOCATION_TYPE_2 = OptionBuilder.withArgName("type").hasArgs().withDescription("Source location type [folder/shared/TFS/SVN/GIT]").create("Locationtype");
 
 
     public ScanCommand(String[] cliArgs) {
@@ -295,7 +295,7 @@ public class ScanCommand extends GeneralScanCommand {
 	protected String getLogFileLocation() {
 
 		String logFileLocation = parameters.get(PARAM_LOG_FILE.toUpperCase());
-		String projectName = parameters.get(PARAM_PRJ_NAME.toUpperCase());
+		String projectName = commandLineArguments.getOptionValue(PARAM_PRJ_NAME_2.getOpt()).toUpperCase(); //parameters.get(PARAM_PRJ_NAME.toUpperCase());
 		if (projectName!=null) {
 			projectName = projectName.replaceAll("/","\\\\");
 		}

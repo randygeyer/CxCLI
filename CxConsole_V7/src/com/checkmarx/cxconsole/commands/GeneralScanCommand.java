@@ -50,7 +50,7 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 	
 	public GeneralScanCommand(String cliArgs) {
 		super(cliArgs);  // interactive console mode
-		scParams = new ScanParams(parameters);
+		scParams = new ScanParams(parameters,commandLineArguments);
 	}
 
     private void initCommandLineOptions()

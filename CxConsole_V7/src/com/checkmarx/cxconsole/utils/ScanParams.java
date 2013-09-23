@@ -8,6 +8,7 @@ import com.checkmarx.cxconsole.commands.ScanCommand;
 //import com.checkmarx.cxconsole.commands.ScanFolderCommand;
 //import com.checkmarx.cxconsole.commands.ScanProjectCommand;
 import com.checkmarx.cxconsole.commands.ScanFolderCommand;
+import org.apache.commons.cli.CommandLine;
 
 /**
  * Parameter container for 
@@ -51,7 +52,7 @@ public class ScanParams {
 	private String excludedFolders;
 	private boolean hasExcludedParam;
 	
-	public ScanParams(Map<String, String> params) {
+	public ScanParams(Map<String, String> params, CommandLine commandLine) {
 		this.host = params.get(ScanFolderCommand.PARAM_HOST.toUpperCase());
 		this.user = params.get(ScanFolderCommand.PARAM_USER.toUpperCase());
 		this.password = params.get(ScanFolderCommand.PARAM_PASSWORD.toUpperCase());
@@ -102,7 +103,7 @@ public class ScanParams {
 		this.spFolderName = params.get(ScanCommand.PARAM_FOLDER_NAME.toUpperCase());
 		
 		//Scan command
-		fullProjName = params.get(ScanCommand.PARAM_PRJ_NAME.toUpperCase());
+		fullProjName =  commandLine.getOptionValue(ScanCommand.PARAM_PRJ_NAME_2.getOpt()); //params.get(ScanCommand.PARAM_PRJ_NAME.toUpperCase());
 		if (fullProjName != null) {
 			fullProjName = fullProjName.replaceAll("/","\\\\");
 			String parts[] = fullProjName.split("\\\\");
