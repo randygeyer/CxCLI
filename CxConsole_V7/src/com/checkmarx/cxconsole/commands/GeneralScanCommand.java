@@ -105,22 +105,7 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 		}
 	}
 	
-	@Override
-	public Set<String> initCLIKeys() {
-		
-		cliScanKeysSet = super.initCLIKeys();
-		cliScanKeysSet.add(PARAM_HOST.toUpperCase());
-		cliScanKeysSet.add(PARAM_USER.toUpperCase());
-		cliScanKeysSet.add(PARAM_PASSWORD.toUpperCase());
-		cliScanKeysSet.add(PARAM_LOG_FILE.toUpperCase());
-		cliScanKeysSet.add(PARAM_XML_FILE.toUpperCase());
-		cliScanKeysSet.add(PARAM_PDF_FILE.toUpperCase());
-		cliScanKeysSet.add(PARAM_CSV_FILE.toUpperCase());
-		cliScanKeysSet.add(PARAM_RTF_FILE.toUpperCase());
-		cliScanKeysSet.add(PARAM_EXCLUDE.toUpperCase());
-		
-		return cliScanKeysSet;
-	}
+
 	
 	@Override
 	public String getDescriptionString() {
@@ -201,7 +186,7 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 		keys.append(KEY_DESCR_INTEND_SINGLE);
 		keys.append("- Semicolon separated list of ignored folders. Optional. Example: "+PARAM_EXCLUDE+" 'test*;log_*'\n");
 		
-		keys.append(super.getOptionalKeyDescriptions());
+		//keys.append(super.getOptionalKeyDescriptions());
 		
 		return keys.toString();
 	}
@@ -219,7 +204,7 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 			+ "[ " + PARAM_CSV_FILE + " results.csv ] "
 			+ "[ " + PARAM_LOG_FILE + " logFile.log ] "
 			+ "[ " + PARAM_EXCLUDE + " \"DirName1;DirName2;DirName3\" ] "
-			+ super.getOptionalParams();
+			 /*+ super.getOptionalParams()*/;
 	}
 	
 	public void setTimeout(int timeout) {

@@ -82,10 +82,8 @@ public class ScanParams {
 		}
 		
 		this.logFile =  params.get(ScanFolderCommand.PARAM_LOG_FILE.toUpperCase());
-		if (params.containsKey(ScanFolderCommand.PARAM_VERBOSE_FULL.toUpperCase()) 
-				|| params.containsKey(ScanFolderCommand.PARAM_VERBOSE_SHORT.toUpperCase())) {
-			isVerbose = true;
-		}
+        isVerbose = commandLine.hasOption(ScanCommand.PARAM_VERBOSE.getOpt());
+
 		this.folderProjName = params.get(ScanFolderCommand.PARAM_FOLDER_PRJ_NAME.toUpperCase());
 		if (this.folderProjName!=null) {
 			this.folderProjName = this.folderProjName.replaceAll("/","\\\\");

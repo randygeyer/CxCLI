@@ -203,7 +203,7 @@ public class ScanCommand extends GeneralScanCommand {
 
 	@Override
 	public Set<String> initCLIKeys() {
-		super.initCLIKeys();
+		//super.initCLIKeys();
 		cliScanKeysSet.add(PARAM_PRJ_NAME.toUpperCase());
 		cliScanKeysSet.add(PARAM_LOCATION_TYPE.toUpperCase());
 
@@ -226,7 +226,7 @@ public class ScanCommand extends GeneralScanCommand {
 
 	@Override
 	protected boolean isKeyFlag(String key) {
-		return super.isKeyFlag(key) || PARAM_INCREMENTAL.equalsIgnoreCase(key)
+		return /*super.isKeyFlag(key) || */PARAM_INCREMENTAL.equalsIgnoreCase(key)
 				|| PARAM_PRIVATE.equalsIgnoreCase(key);
 	}
 

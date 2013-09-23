@@ -17,17 +17,7 @@ import com.checkmarx.cxconsole.logging.CxConsoleLoggerFactory;
 public abstract class VerboseCommand extends CxConsoleCommand {
 
 
-	/**
-	 * CLI flag which switch verbose mode
-	 */
-	public static final String PARAM_VERBOSE_FULL = "-verbose";
-	
-	/**
-	 * CLI flag which switch verbose mode. Short form
-	 */
-	public static final String PARAM_VERBOSE_SHORT = "-v";
-
-    public static final Option PARAM_VERBOSE = OptionBuilder.withDescription("Turn on verbose mode. All messages and events will be logged to console/log file. Optional.").withLongOpt("verbose").create("v");
+    public static final Option PARAM_VERBOSE = OptionBuilder.withDescription("Turns on verbose mode. All messages and events will be sent to the console/log file.").withLongOpt("verbose").create("v");
 
 
 	/**
@@ -43,28 +33,7 @@ public abstract class VerboseCommand extends CxConsoleCommand {
 		super(cliArgs); // interactive console mode
 	}
 
-	/* (non-Javadoc)
-	 * @see com.checkmarx.cxconsole.commands.CxConsoleCommand#isKeyFlag(java.lang.String)
-	 */
-	@Override
-	protected boolean isKeyFlag(String key) {
-		return PARAM_VERBOSE_FULL.equals(key) || PARAM_VERBOSE_SHORT.equals(key);
-	}
 
-	/* (non-Javadoc)
-	 * @see com.checkmarx.cxconsole.commands.CxConsoleCommand#getCLIKeys()
-	 */
-	@Override
-	protected Set<String> initCLIKeys() {
-		Set<String> cliKeysSet = new HashSet<String>();
-		cliKeysSet.add(PARAM_VERBOSE_FULL.toUpperCase());
-		cliKeysSet.add(PARAM_VERBOSE_SHORT.toUpperCase());
-		return cliKeysSet;
-	}
-
-	public String getOptionalParams() {
-		return "[ " + PARAM_VERBOSE_FULL + " | " + PARAM_VERBOSE_SHORT + " ]";
-	}
 
 	/* (non-Javadoc)
 	 * @see com.checkmarx.cxconsole.commands.CxConsoleCommand#initLogging()
@@ -85,19 +54,7 @@ public abstract class VerboseCommand extends CxConsoleCommand {
 		//LogManager.shutdown();
 	}
 	
-	@Override
-	public String getOptionalKeyDescriptions() {
-		String leftSpacing = "  ";
-		StringBuilder keys = new StringBuilder(leftSpacing);
-		keys.append(PARAM_VERBOSE_FULL);
-		keys.append(" | ");
-		keys.append(PARAM_VERBOSE_SHORT);
-		keys.append(KEY_DESCR_INTEND_SMALL);
-		keys.append("- Turn on verbose mode. All messages and events will be logged\n" +
-				KEY_DESCR_INTEND + "  to console/log file. Optional.\n");
-		
-		return keys.toString();
-	}
+
 	
 	/**
 	 * Method defining log file location. All ancestors should implement.
