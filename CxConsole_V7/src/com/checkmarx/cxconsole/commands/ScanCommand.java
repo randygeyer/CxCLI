@@ -242,6 +242,7 @@ public class ScanCommand extends GeneralScanCommand {
 	 */
 	@Override
 	public void checkParameters() throws Exception {
+        resolveServerUrl();
 		super.checkParameters();
 		if (scParams.getSpFolderName() != null) {
 			File projectDir = new File(scParams.getSpFolderName().trim());

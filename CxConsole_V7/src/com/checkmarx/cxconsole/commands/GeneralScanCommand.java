@@ -65,7 +65,7 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 
 
 
-	protected void checkHost() throws Exception {
+	public void resolveServerUrl() throws Exception {
 		String generatedHost = null;
 		try {
 			generatedHost = ConfigMgr.getWSMgr().resolveServiceLocation(scParams.getHost());
