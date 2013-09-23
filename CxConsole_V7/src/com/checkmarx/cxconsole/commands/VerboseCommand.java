@@ -71,7 +71,7 @@ public abstract class VerboseCommand extends CxConsoleCommand {
 	 */
 	@Override
 	protected void initLogging() {
-		if (parameters.containsKey(PARAM_VERBOSE_FULL.toUpperCase()) || parameters.containsKey(PARAM_VERBOSE_SHORT.toUpperCase())) {
+		if (commandLineArguments.hasOption(PARAM_VERBOSE.getOpt())) {
 			log = CxConsoleLoggerFactory.getLoggerFactory().getLogger(getLogFileLocation());
 		} else {
 			log = Logger.getLogger("com.checkmarx.cxconsole.commands");

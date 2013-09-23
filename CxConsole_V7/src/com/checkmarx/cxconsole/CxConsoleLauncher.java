@@ -94,14 +94,7 @@ public class CxConsoleLauncher {
                     return;
                 }
 
-                // TODO: concider removing this check
-				if (!command.commandAbleToRun()) {
-					log.error(command.getCommandName()
-							+ " command parameters are insufficient. See command usage:\n" 
-							+ command.getUsageString());
-					errorCode = CxConsoleCommand.CODE_ERRROR;
-					return;
-				}
+
 
 				errorCode = command.execute();
 			}
