@@ -9,6 +9,7 @@ import com.checkmarx.cxconsole.utils.ScanParams;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.OptionGroup;
+import org.apache.commons.cli.ParseException;
 
 public abstract class GeneralScanCommand extends VerboseCommand {
 
@@ -38,6 +39,13 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 		super();  // cli mode
 		initCommandLineOptions();
 	}
+
+    @Override
+    public void parseArguments(String[] args) throws ParseException
+    {
+        super.parseArguments(args);  //  parseArguments initializes commandLineArguments
+        scParams = new ScanParams(null,commandLineArguments);
+    }
 
     private void initCommandLineOptions()
     {

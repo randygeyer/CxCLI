@@ -106,7 +106,7 @@ public class ScanCommand extends GeneralScanCommand {
 				scParams.setPublicKey(keyData.toString());
 			} catch (FileNotFoundException ex) {
 				if (log.isEnabledFor(Level.TRACE)) {
-					log.trace("Error reding public key file.", ex);
+					log.trace("Error reading public key file.", ex);
 				}
 				if (log.isEnabledFor(Level.ERROR)) {
 					log.error("Public key file not found [ "
@@ -116,7 +116,7 @@ public class ScanCommand extends GeneralScanCommand {
 				return;
 			} catch (IOException ex) {
 				if (log.isEnabledFor(Level.TRACE)) {
-					log.trace("Error reding public key file.", ex);
+					log.trace("Error reading public key file.", ex);
 				}
 				if (log.isEnabledFor(Level.ERROR)) {
 					log.error("Error reading public key file. "
@@ -146,7 +146,7 @@ public class ScanCommand extends GeneralScanCommand {
 				scParams.setPrivateKey(keyData.toString());
 			} catch (FileNotFoundException ex) {
 				if (log.isEnabledFor(Level.TRACE)) {
-					log.trace("Error reding private key file.", ex);
+					log.trace("Error reading private key file.", ex);
 				}
 				if (log.isEnabledFor(Level.ERROR)) {
 					log.error("Private key file not found [ " + scParams.getLocationPublicKey() + "]");
@@ -155,7 +155,7 @@ public class ScanCommand extends GeneralScanCommand {
 				return;
 			} catch (IOException ex) {
 				if (log.isEnabledFor(Level.TRACE)) {
-					log.trace("Error reding private key file.", ex);
+					log.trace("Error reading private key file.", ex);
 				}
 				if (log.isEnabledFor(Level.ERROR)) {
 					log.error("Error reading private key file. " + ex.getMessage());
