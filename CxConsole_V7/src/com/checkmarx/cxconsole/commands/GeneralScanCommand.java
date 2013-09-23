@@ -11,9 +11,10 @@ import org.apache.commons.cli.OptionBuilder;
 
 public abstract class GeneralScanCommand extends VerboseCommand {
 
-	public static String PARAM_HOST = "-CxServer";
-	public static String PARAM_USER = "-CxUser";
-	public static String PARAM_PASSWORD = "-CxPassword";	
+    public static final Option PARAM_HOST = OptionBuilder.isRequired().hasArg().withArgName("server").withDescription("IP address or resolvable name of CxSuite web server").create("CxServer");
+    public static final Option PARAM_USER = OptionBuilder.isRequired().hasArg().withArgName("username").withDescription("Login username").create("CxUser");
+    public static final Option PARAM_PASSWORD = OptionBuilder.isRequired().hasArg().withArgName("password").withDescription("Login password").create("CxPassword");
+
 	public static String PARAM_LOG_FILE = "-log";
 	public static String PARAM_XML_FILE = "-reportxml";
 	public static String PARAM_PDF_FILE = "-reportpdf";
@@ -21,8 +22,6 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 	public static String PARAM_RTF_FILE = "-reportrtf";
 	public static String PARAM_EXCLUDE = "-locationpathexclude";
 
-    public static final Option PARAM_HOST_2 = OptionBuilder.isRequired().hasArg().withArgName("server").withDescription("Host name of web-service").create("CxServer");
-    public static final Option PARAM_USER_2 = OptionBuilder.isRequired().hasArg().withArgName("username").withDescription("User login name").create("CxUser");
 
 
 
@@ -45,15 +44,15 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 
     private void initCommandLineOptions()
     {
-        this.commandLineOptions.addOption(PARAM_HOST_2);
-        this.commandLineOptions.addOption(PARAM_USER_2);
+        this.commandLineOptions.addOption(PARAM_HOST);
+        this.commandLineOptions.addOption(PARAM_USER);
     }
 
 	@Override
 	public boolean commandAbleToRun() {
-		return parameters.containsKey(PARAM_HOST.toUpperCase())
-				&& parameters.containsKey(PARAM_USER.toUpperCase())
-				&& parameters.containsKey(PARAM_PASSWORD.toUpperCase());
+		return parameters.containsKey(PARAM_HOST.getOpt().toUpperCase())
+				&& parameters.containsKey(PARAM_USER.getOpt().toUpperCase())
+				&& parameters.containsKey(PARAM_PASSWORD.getOpt().toUpperCase());
 	}
 
 	protected void checkHost() throws Exception {

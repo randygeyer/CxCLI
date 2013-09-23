@@ -19,12 +19,8 @@ public abstract class VerboseCommand extends CxConsoleCommand {
 
     public static final Option PARAM_VERBOSE = OptionBuilder.withDescription("Turns on verbose mode. All messages and events will be sent to the console/log file.").withLongOpt("verbose").create("v");
 
-
-	/**
-	 * @param cliArgs
-	 */
 	public VerboseCommand() {
-		super();   // cli mode
+		super();
         this.commandLineOptions.addOption(PARAM_VERBOSE);
 	}
 

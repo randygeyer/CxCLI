@@ -52,18 +52,18 @@ public class ScanParams {
 	private boolean hasExcludedParam;
 	
 	public ScanParams(Map<String, String> params, CommandLine commandLine) {
-		this.host = params.get(ScanFolderCommand.PARAM_HOST.toUpperCase());
-		this.user = params.get(ScanFolderCommand.PARAM_USER.toUpperCase());
-		this.password = params.get(ScanFolderCommand.PARAM_PASSWORD.toUpperCase());
-		this.srcPath =  params.get(ScanFolderCommand.PARAM_PROJ_DIR.toUpperCase());
+		this.host = commandLine.getOptionValue(ScanCommand.PARAM_HOST.getOpt());
+		this.user = commandLine.getOptionValue(ScanCommand.PARAM_USER.getOpt());;
+		this.password = commandLine.getOptionValue(ScanCommand.PARAM_PASSWORD.getOpt());;
+		this.srcPath =  params.get(ScanCommand.PARAM_PROJ_DIR.toUpperCase());
 		if (srcPath != null && srcPath.endsWith(File.separator)) {
 			srcPath = srcPath.substring(0, srcPath.length() - 1);
 		}
-		this.presetName =  params.get(ScanFolderCommand.PARAM_PRESET.toUpperCase());
-		if (params.containsKey(ScanFolderCommand.PARAM_XML_FILE.toUpperCase())) {
+		this.presetName =  params.get(ScanCommand.PARAM_PRESET.toUpperCase());
+		if (params.containsKey(ScanCommand.PARAM_XML_FILE.toUpperCase())) {
 			this.isXML = true;
 		} 
-		this.xmlFile =  params.get(ScanFolderCommand.PARAM_XML_FILE.toUpperCase());
+		this.xmlFile =  params.get(ScanCommand.PARAM_XML_FILE.toUpperCase());
 		
 		if (params.containsKey(GeneralScanCommand.PARAM_PDF_FILE.toUpperCase())) {
 			this.reportType="PDF";
@@ -80,15 +80,15 @@ public class ScanParams {
 			this.reportFile =  params.get(GeneralScanCommand.PARAM_RTF_FILE.toUpperCase());
 		}
 		
-		this.logFile =  params.get(ScanFolderCommand.PARAM_LOG_FILE.toUpperCase());
+		this.logFile =  params.get(ScanCommand.PARAM_LOG_FILE.toUpperCase());
         isVerbose = commandLine.hasOption(ScanCommand.PARAM_VERBOSE.getOpt());
 
-		this.folderProjName = params.get(ScanFolderCommand.PARAM_FOLDER_PRJ_NAME.toUpperCase());
+		this.folderProjName = params.get(ScanCommand.PARAM_FOLDER_PRJ_NAME.toUpperCase());
 		if (this.folderProjName!=null) {
 			this.folderProjName = this.folderProjName.replaceAll("/","\\\\");
 		}
 		
-		if (params.containsKey(ScanFolderCommand.PARAM_VISIBLE_OTHERS.toUpperCase())){
+		if (params.containsKey(ScanCommand.PARAM_VISIBLE_OTHERS.toUpperCase())){
 			this.isVisibleOthers = true;
 		}
 		

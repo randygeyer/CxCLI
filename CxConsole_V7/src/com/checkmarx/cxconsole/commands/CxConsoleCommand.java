@@ -59,8 +59,6 @@ public abstract class CxConsoleCommand {
 	/**
 	 * Base constructor.<br>
 	 * Constructs object instance. Extract parameters from cliArgs
-	 * 
-	 * @param cliArgs - parameters of application read from CLI
 	 */
 	public CxConsoleCommand() {
 		commandLineOptions = new Options();
