@@ -55,6 +55,7 @@ public class CxConsoleLauncher {
 
             try {
                 command.parseArguments(argumentsLessCommandName);
+                command.checkParameters();
             } catch (ParseException e)
             {
                 log.fatal("Command parameters are invalid: " + e.getMessage());
