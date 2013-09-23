@@ -36,68 +36,36 @@ public class CxConsoleLauncher {
 			log.info("CxConsole version " + ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_VERSION));
 			log.info("CxConsole scan session started");
 			if (args == null || args.length == 0) {
-				// Console interactive mode
-				Console console = System.console();
-				if (console != null) {
-					console.printf("Welcome to CxConsole. Enter '" + COMM_QUIT +"' to exit console.\n\n");
-					console.printf("CxConsle>");
-					
-					// start interactive session
-					String commandLine = "";					
-					while (!(commandLine = console.readLine()).contains(COMM_QUIT)) {
-						CxConsoleCommand command = CommandsFactory.getCommand(commandLine);
-						if (command == null) {
-							log.error("Command \"" + CommandsFactory.extractCommandName(commandLine) + "\" was not found. Available commands:\n" 
-									+ CommandsFactory.getCommnadNames());
-							errorCode = CxConsoleCommand.CODE_ERRROR;
-						} else if (!command.commandAbleToRun()) {
-							log.error(command.getCommandName()
-									+ " command parameters are insufficient.\nSee command usage:\n\n" 
-									+ command.getUsageString());
-						} else {
-							try {
-								command.checkParameters();
-							} catch (Exception e) {
-								log.info("Command parameters are invalid: "
-										+ e.getMessage());
-								console.printf("\nCxConsle>");
-								continue;
-							}
-							errorCode = command.execute();
-						}
-						console.printf("\nCxConsle>");
-					}
-				} else {
-					log.error("Unable to open console: make sure that application " +
-							"is running in console mode.");
-					errorCode = CxConsoleCommand.CODE_ERRROR;
-					return;
-				}
-			} else {
-				String commandName = args[0];
-                String[] argumentsLessCommandName = java.util.Arrays.copyOfRange(args,1,args.length);
-				CxConsoleCommand command = CommandsFactory.getCommand(commandName,argumentsLessCommandName);
-				if (command == null) {					
-					log.error("Command \"" + commandName + "\" was not found. Available commands:\n" 
-							+ CommandsFactory.getCommnadNames());
-					errorCode = CxConsoleCommand.CODE_ERRROR;
-					return;
-				}
+                log.fatal("No command line arguments were specified");
+                command.printHelp();
+                errorCode = CxConsoleCommand.CODE_ERRROR;
+                return;
 
-                try {
-                    command.parseArguments(argumentsLessCommandName);
-                } catch (ParseException e)
-                {
-                    log.fatal("Command parameters are invalid: " + e.getMessage());
-                    command.printHelp();
-                    errorCode = CxConsoleCommand.CODE_ERRROR;
-                    return;
-                }
-
-
-
-				errorCode = command.execute();
 			}
+            String commandName = args[0];
+            String[] argumentsLessCommandName = java.util.Arrays.copyOfRange(args,1,args.length);
+            CxConsoleCommand command = CommandsFactory.getCommand(commandName,argumentsLessCommandName);
+            if (command == null) {
+                log.error("Command \"" + commandName + "\" was not found. Available commands:\n"
+                        + CommandsFactory.getCommnadNames());
+                errorCode = CxConsoleCommand.CODE_ERRROR;
+                return;
+            }
+
+            try {
+                command.parseArguments(argumentsLessCommandName);
+            } catch (ParseException e)
+            {
+                log.fatal("Command parameters are invalid: " + e.getMessage());
+                command.printHelp();
+                errorCode = CxConsoleCommand.CODE_ERRROR;
+                return;
+            }
+
+
+
+            errorCode = command.execute();
+
 		}
         catch (org.apache.commons.cli.ParseException e)
         {

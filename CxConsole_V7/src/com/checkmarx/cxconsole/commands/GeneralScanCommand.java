@@ -39,18 +39,9 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 	public static String MSG_ERR_PRJ_PATH_NOT_DIR = "Project path does not reference a directory.";
 	public static String MSG_ERR_EXCLUDED_DIR = "Ignored folders list is invalid.";
 	
-	public GeneralScanCommand(String[] cliArgs) {
-		super(cliArgs);  // cli mode
+	public GeneralScanCommand() {
+		super();  // cli mode
 		initCommandLineOptions();
-
-        //initCLIKeys();
-		//scParams = new ScanParams(parameters);
-	}
-	
-	
-	public GeneralScanCommand(String cliArgs) {
-		super(cliArgs);  // interactive console mode
-		scParams = new ScanParams(parameters,commandLineArguments);
 	}
 
     private void initCommandLineOptions()

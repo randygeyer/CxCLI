@@ -23,16 +23,10 @@ public abstract class VerboseCommand extends CxConsoleCommand {
 	/**
 	 * @param cliArgs
 	 */
-	public VerboseCommand(String[] cliArgs) {
-		super(cliArgs);   // cli mode
+	public VerboseCommand() {
+		super();   // cli mode
         this.commandLineOptions.addOption(PARAM_VERBOSE);
 	}
-	
-	
-	public VerboseCommand(String cliArgs) {
-		super(cliArgs); // interactive console mode
-	}
-
 
 
 	/* (non-Javadoc)

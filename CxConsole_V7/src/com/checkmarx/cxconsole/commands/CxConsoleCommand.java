@@ -62,21 +62,10 @@ public abstract class CxConsoleCommand {
 	 * 
 	 * @param cliArgs - parameters of application read from CLI
 	 */
-	public CxConsoleCommand(String[] cliArgs) {
+	public CxConsoleCommand() {
 		commandLineOptions = new Options();
-        //parseParameters(cliArgs);    // cli mode
+	}
 
-	}
-	
-	/**
-	 * Base constructor.<br>
-	 * Constructs instance using single-line with arguments
-	 * 
-	 * @param lineArgs - parameters of application read from CLI, single line
-	 */
-	public CxConsoleCommand(String lineArgs) {
-		parseParameters(parseLine(lineArgs)); // interactive console mode
-	}
 	
 	/**
 	 * Check whether current command is being fulfilled with all parameters 

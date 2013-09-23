@@ -45,13 +45,9 @@ public class ScanCommand extends GeneralScanCommand {
     public static final Option PARAM_LOCATION_TYPE_2 = OptionBuilder.withArgName("type").hasArgs().withDescription("Source location type [folder/shared/TFS/SVN/GIT]").create("Locationtype");
 
 
-    public ScanCommand(String[] cliArgs) {
-		super(cliArgs); // cli mode
+    public ScanCommand() {
+		super(); // cli mode
         initCommandLineOptions();
-	}
-
-	public ScanCommand(String cliArgs) {
-		super(cliArgs); // interactive console mode
 	}
 
     private void initCommandLineOptions()
