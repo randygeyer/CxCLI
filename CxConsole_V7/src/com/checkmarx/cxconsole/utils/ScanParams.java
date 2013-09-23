@@ -55,10 +55,10 @@ public class ScanParams {
 		this.host = commandLine.getOptionValue(ScanCommand.PARAM_HOST.getOpt());
 		this.user = commandLine.getOptionValue(ScanCommand.PARAM_USER.getOpt());;
 		this.password = commandLine.getOptionValue(ScanCommand.PARAM_PASSWORD.getOpt());;
-		this.srcPath =  params.get(ScanCommand.PARAM_PROJ_DIR.toUpperCase());
+		/*this.srcPath =  params.get(ScanCommand.PARAM_PROJ_DIR.toUpperCase());
 		if (srcPath != null && srcPath.endsWith(File.separator)) {
 			srcPath = srcPath.substring(0, srcPath.length() - 1);
-		}
+		}*/
 		this.presetName =  params.get(ScanCommand.PARAM_PRESET.toUpperCase());
 		if (params.containsKey(ScanCommand.PARAM_XML_FILE.toUpperCase())) {
 			this.isXML = true;
@@ -83,14 +83,14 @@ public class ScanParams {
 		this.logFile =  params.get(ScanCommand.PARAM_LOG_FILE.toUpperCase());
         isVerbose = commandLine.hasOption(ScanCommand.PARAM_VERBOSE.getOpt());
 
-		this.folderProjName = params.get(ScanCommand.PARAM_FOLDER_PRJ_NAME.toUpperCase());
+		/*this.folderProjName = params.get(ScanCommand.PARAM_FOLDER_PRJ_NAME.toUpperCase());
 		if (this.folderProjName!=null) {
 			this.folderProjName = this.folderProjName.replaceAll("/","\\\\");
-		}
+		}*/
 		
-		if (params.containsKey(ScanCommand.PARAM_VISIBLE_OTHERS.toUpperCase())){
+		/*if (params.containsKey(ScanCommand.PARAM_VISIBLE_OTHERS.toUpperCase())){
 			this.isVisibleOthers = true;
-		}
+		}*/
 		
 		//Scan Project params
 		this.projName = params.get(ScanCommand.PARAM_PRJ.toUpperCase());
