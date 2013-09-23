@@ -23,7 +23,8 @@ public class ScanCommand extends GeneralScanCommand {
             "Example:  -ProjectName \"CxServer\\SP\\Company\\Users\\bs java\"" +
             "If project with such a name doesn't exist in the system, new project will be created.").create("ProjectName");
 
-    public static String PARAM_LOCATION_TYPE = "-Locationtype";
+    public static final Option PARAM_LOCATION_TYPE = OptionBuilder.withArgName("type").hasArg().isRequired().withDescription("Source location type: folder, shared folder, source repository: SVN, TFS, GIT").create("LocationType");
+
 	public static String PARAM_LOCATION_PATH = "-locationpath";
 	public static String PARAM_LOCATION_USER = "-locationuser";
 	public static String PARAM_LOCATION_PWD = "-locationpassword";

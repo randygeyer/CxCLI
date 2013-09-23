@@ -46,4 +46,13 @@ public enum LocationType {
 		
 		return null;
 	}
+
+    public String stringOfValues()
+    {
+        StringBuffer sb = new StringBuffer();
+        for (LocationType t : values())
+        {
+            sb.append(t.toString());
+        }
+    }
 }
