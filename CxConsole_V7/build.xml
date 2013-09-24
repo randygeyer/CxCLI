@@ -6,7 +6,18 @@
 	<property name="build.dir" value="bin"/>
 	<property name="classes.dir" value="${build.dir}"/>
 	<property name="src.dir"     value="src"/>
-	<property name="jar.class.path"  value=". lib/jdom.jar lib/log4j-1.2.14.jar config/cx_console.properties"/>
+	<property name="jar.class.path"  value=". lib/jdom.jar lib/log4j-1.2.14.jar config/cx_console.properties lib/commons-cli-1.2.jar lib/commons-collections-3.2.1.jar lib/commons-lang3-3.1.jar"/>
+
+    <path id="jar.path">
+        <fileset dir="lib">
+            <include name="**/*.jar"/>
+        </fileset>
+        <pathelement location="config/cx_console.properties"/>
+        <pathelement location="3rdParty/commons-cli-1.2/commons-cli-1.2.jar"/>
+        <pathelement location="3rdParty/commons-collections-3.2.1/commons-collections-3.2.1.jar"/>
+        <pathelement location="3rdParty/commons-lang3-3.1/commons-lang3-3.1.jar"/>
+    </path>
+
 
 	<target name="clean">
 		<delete dir="${build.dir}" />
@@ -14,16 +25,11 @@
 
 	<target name="compile">
 		<mkdir dir="${classes.dir}"/>
-            <javac srcdir="${src.dir}" destdir="${build.dir}" target="1.6" source="1.6" debug="true">
+        <javac srcdir="${src.dir}" destdir="${build.dir}" target="1.6" source="1.6" debug="true">
 			<classpath>
-				<pathelement path="${jar.class.path}"/>
-				<fileset dir="lib">
-					<include name="**/*.jar"/>
-				</fileset>
+				<path refid="jar.path"/>
 			</classpath>
-
 			<include name="**/*.java" />
-			<exclude name="**/Example.java" />
 		</javac>
 	</target>
 
@@ -33,6 +39,8 @@
 		<delete dir="${module.cx_console.basedir}/build"/>
 		<mkdir dir="${module.cx_console.basedir}/build"/>
 
+
+
 		<jar destfile="${module.cx_console.basedir}/build/cx_console.jar">
 			<manifest>
 				<attribute name="Main-Class" value="com.checkmarx.cxconsole.CxConsoleLauncher"/>
@@ -41,6 +49,7 @@
 			</manifest>
 			<fileset dir="${module.cx_console.basedir}/bin">
 				<exclude name="**/*.svn*"/>
+                <exclude name="**/.DS_Store"/>
 			</fileset>
 		</jar>
 
@@ -49,6 +58,9 @@
 
 		<copy todir="${module.cx_console.basedir}/build/lib">
 			<fileset dir="${module.cx_console.basedir}/lib"/>
+            <fileset file="${module.cx_console.basedir}/3rdParty/commons-cli-1.2/commons-cli-1.2.jar"/>
+            <fileset file="${module.cx_console.basedir}/3rdParty/commons-collections-3.2.1/commons-collections-3.2.1.jar"/>
+            <fileset file="${module.cx_console.basedir}/3rdParty/commons-lang3-3.1/commons-lang3-3.1.jar"/>
 		</copy>
 		<copy file="${module.cx_console.basedir}/config/cx_console.properties" todir="${module.cx_console.basedir}/build/config"/>
 		<copy file="${module.cx_console.basedir}/config/log4j.properties" todir="${module.cx_console.basedir}/build"/>
