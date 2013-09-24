@@ -3,6 +3,7 @@ package com.checkmarx.cxconsole.commands;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
+import com.checkmarx.cxconsole.utils.CommandLineArgumentException;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxconsole.utils.ScanParams;
 import org.apache.commons.cli.Option;
@@ -93,11 +94,11 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 	}
 	
 	@Override
-	public void checkParameters() throws Exception {
+	public void checkParameters() throws CommandLineArgumentException {
 		if (scParams.hasExcludedParam()) {
 			String[] excludedFolders = scParams.getExcludedFolders();
 			if (excludedFolders == null || excludedFolders.length==0) {
-				throw new Exception(MSG_ERR_EXCLUDED_DIR);
+				throw new CommandLineArgumentException(MSG_ERR_EXCLUDED_DIR);
 			}
 		}
 	}

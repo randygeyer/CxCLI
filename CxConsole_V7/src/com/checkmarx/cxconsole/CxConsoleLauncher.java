@@ -3,6 +3,7 @@ package com.checkmarx.cxconsole;
 import java.io.Console;
 
 import com.checkmarx.cxconsole.commands.ScanCommand;
+import com.checkmarx.cxconsole.utils.CommandLineArgumentException;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.ParseException;
 import org.apache.log4j.Logger;
@@ -32,13 +33,12 @@ public class CxConsoleLauncher {
 	 */
 	public static void main(String[] args) {
 		int errorCode = CxConsoleCommand.CODE_OK;
-		
+
 		try {
 			log.info("CxConsole version " + ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_VERSION));
 			log.info("CxConsole scan session started");
 			if (args == null || args.length == 0) {
-                log.fatal("No command line arguments were specified");
-                new ScanCommand().printHelp();
+                log.fatal("Missing command name. Available commands: " + CommandsFactory.getCommnadNames());
                 errorCode = CxConsoleCommand.CODE_ERRROR;
                 return;
 
@@ -59,7 +59,13 @@ public class CxConsoleLauncher {
                 command.checkParameters();
             } catch (ParseException e)
             {
-                log.fatal("Command parameters are invalid: " + e.getMessage());
+                log.fatal("Command parameters are invalid(CLI): " + e.getMessage()+"\n");
+                command.printHelp();
+                errorCode = CxConsoleCommand.CODE_ERRROR;
+                return;
+            } catch (CommandLineArgumentException e)
+            {
+                log.fatal("Command parameters are invalid(Manual): " + e.getMessage()+"\n");
                 command.printHelp();
                 errorCode = CxConsoleCommand.CODE_ERRROR;
                 return;

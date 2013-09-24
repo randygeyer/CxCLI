@@ -1,6 +1,7 @@
 package com.checkmarx.cxconsole.commands;
 
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.checkmarx.cxconsole.utils.CommandLineArgumentException;
 import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 
@@ -68,8 +70,11 @@ public abstract class CxConsoleCommand {
     public void printHelp()
     {
         HelpFormatter helpFormatter = new HelpFormatter();
-        PrintWriter printWriter = new PrintWriter(System.out,true);
-        helpFormatter.printUsage(printWriter, 120, getCommandName(), commandLineOptions);
+        String header = "\nThe \"Scan\" command allows to scan new and existing projects. It accepts all project settings as an arguments, similar to Web interface.";
+        String footer = "\n(c) 2013 CheckMarx.com LTD, All Rights Reserved\n";
+        helpFormatter.setLeftPadding(4);
+        helpFormatter.printHelp(120,getCommandName(),header,commandLineOptions,footer,true);
+
     }
 	
 	public int execute() throws Exception {
@@ -88,7 +93,7 @@ public abstract class CxConsoleCommand {
 	 */
 	protected abstract void executeCommand();
 	
-	public abstract void checkParameters() throws Exception;
+	public abstract void checkParameters() throws CommandLineArgumentException;
 
     public abstract void resolveServerUrl() throws Exception;
 	/**

@@ -7,6 +7,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import com.checkmarx.cxconsole.utils.CommandLineArgumentException;
 import org.apache.commons.cli.*;
 
 import org.apache.log4j.Level;
@@ -54,7 +56,7 @@ public class ScanCommand extends GeneralScanCommand {
             .withDescription("If preset is not specified, will use the predefined preset for an existing project, and Default preset for a new project.").create("Preset");
 
     public static final Option PARAM_CONFIGURATION = OptionBuilder.withArgName("configuration").hasArg()
-            .withDescription("If configuration is not set \"Default Configuration\" will be used for a new project.").create("Configuration");
+            .withDescription("If configuration is not set, \"Default Configuration\" will be used for a new project.").create("Configuration");
 
     public static final Option PARAM_INCREMENTAL = OptionBuilder.withDescription("Will run an incremental scan instead of full scan").create("incremental");
 
@@ -241,96 +243,96 @@ public class ScanCommand extends GeneralScanCommand {
 	 * No logging inside: logger for command won't be created at the moment
 	 */
 	@Override
-	public void checkParameters() throws Exception {
+	public void checkParameters() throws CommandLineArgumentException {
 		super.checkParameters();
 		if (scParams.getSpFolderName() != null) {
 			File projectDir = new File(scParams.getSpFolderName().trim());
 			if (!projectDir.exists()) {
-				throw new Exception(MSG_ERR_FOLDER_NOT_EXIST + "["
+				throw new CommandLineArgumentException(MSG_ERR_FOLDER_NOT_EXIST + "["
 						+ scParams.getSpFolderName() + "]");
 			}
 
 			if (!projectDir.isDirectory()) {
-				throw new Exception(MSG_ERR_FOLDER_NOT_EXIST + "["
+				throw new CommandLineArgumentException(MSG_ERR_FOLDER_NOT_EXIST + "["
 						+ scParams.getSpFolderName() + "]");
 			}
 		}
 		if (scParams.getLocationType() == LocationType.folder
 			&& scParams.getLocationPath() == null)
         {
-			throw new Exception(PARAM_LOCATION_PATH.getOpt() + " is missed. Parameter should be specified since "
+			throw new CommandLineArgumentException(PARAM_LOCATION_PATH.getOpt() + " is missed. Parameter should be specified since "
 				+ PARAM_LOCATION_TYPE.getOpt() + " is [" + scParams.getLocationType() + "]");
 		}
 
         if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs) &&
              scParams.getLocationURL()==null)
         {
-            throw new Exception(PARAM_LOCATION_URL.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS");
+            throw new CommandLineArgumentException(PARAM_LOCATION_URL.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS");
         }
 
         if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs) &&
              scParams.getLocationUser()==null )
         {
-            throw new Exception(PARAM_LOCATION_USER.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS");
+            throw new CommandLineArgumentException(PARAM_LOCATION_USER.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS");
         }
         if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs) &&
              scParams.getLocationPassword() == null )
         {
-            throw new Exception(PARAM_LOCATION_PWD.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS");
+            throw new CommandLineArgumentException(PARAM_LOCATION_PWD.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS");
         }
 
         if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs) &&
              scParams.getLocationPath()==null)
         {
-            throw new Exception(PARAM_LOCATION_PATH.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS");
+            throw new CommandLineArgumentException(PARAM_LOCATION_PATH.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS");
         }
 
         if ((scParams.getLocationType() == LocationType.git) &&
                 scParams.getLocationURL()==null)
         {
-            throw new Exception(PARAM_LOCATION_URL.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is GIT");
+            throw new CommandLineArgumentException(PARAM_LOCATION_URL.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is GIT");
         }
 
         if ((scParams.getLocationType() == LocationType.git) &&
                 scParams.getLocationBranch()==null)
         {
-            throw new Exception(PARAM_LOCATION_BRANCH.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is GIT");
+            throw new CommandLineArgumentException(PARAM_LOCATION_BRANCH.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is GIT");
         }
 
         if ((scParams.getLocationType() == LocationType.shared) &&
                 scParams.getLocationPath()==null)
         {
-            throw new Exception(PARAM_LOCATION_PATH.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is shared");
+            throw new CommandLineArgumentException(PARAM_LOCATION_PATH.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is shared");
         }
 
         if ((scParams.getLocationType() == LocationType.shared) &&
                 scParams.getLocationUser()==null)
         {
-            throw new Exception(PARAM_LOCATION_USER.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is shared");
+            throw new CommandLineArgumentException(PARAM_LOCATION_USER.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is shared");
         }
 
         if ((scParams.getLocationType() == LocationType.shared) &&
                 scParams.getLocationPassword()==null)
         {
-            throw new Exception(PARAM_LOCATION_PWD.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is shared");
+            throw new CommandLineArgumentException(PARAM_LOCATION_PWD.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is shared");
         }
 
         if ((scParams.getLocationType() == LocationType.folder) &&
                 scParams.getLocationPath()==null)
         {
-            throw new Exception(PARAM_LOCATION_PATH.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is folder");
+            throw new CommandLineArgumentException(PARAM_LOCATION_PATH.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is folder");
         }
 
 		if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs)
 				&& scParams.getLocationPort() == null) {
-			throw new Exception("Invalid location port ["
+			throw new CommandLineArgumentException("Invalid location port ["
 					+ commandLineArguments.getOptionValue(PARAM_LOCATION_PORT.getOpt()) + "]");
 		}
 		if ((scParams.getLocationPrivateKey() != null && scParams
 				.getLocationPublicKey() == null)
 				|| (scParams.getLocationPrivateKey() == null && scParams
 						.getLocationPublicKey() != null)) {
-			throw new Exception("Both private and public key must be specified");
+			throw new CommandLineArgumentException("Both private and public key must be specified");
 		}
 		if (scParams.getLocationPrivateKey() != null
 				&& scParams.getLocationPublicKey() != null
@@ -338,21 +340,21 @@ public class ScanCommand extends GeneralScanCommand {
 				&& scParams.getLocationType() == LocationType.git) {
 			File keyFile = new File(scParams.getLocationPrivateKey().trim());
 			if (!keyFile.exists()) {
-				throw new Exception("Private key file is not found " + "["
+				throw new CommandLineArgumentException("Private key file is not found " + "["
 						+ scParams.getLocationPrivateKey() + "]");
 			}
 			if (keyFile.isDirectory()) {
-				throw new Exception("Private key file freferences folder "
+				throw new CommandLineArgumentException("Private key file freferences folder "
 						+ "[" + scParams.getLocationPrivateKey() + "]");
 			}
 
 			keyFile = new File(scParams.getLocationPublicKey().trim());
 			if (!keyFile.exists()) {
-				throw new Exception("Public key file is not found " + "["
+				throw new CommandLineArgumentException("Public key file is not found " + "["
 						+ scParams.getLocationPrivateKey() + "]");
 			}
 			if (keyFile.isDirectory()) {
-				throw new Exception("Public key file freferences folder " + "["
+				throw new CommandLineArgumentException("Public key file freferences folder " + "["
 						+ scParams.getLocationPrivateKey() + "]");
 			}
 		}
