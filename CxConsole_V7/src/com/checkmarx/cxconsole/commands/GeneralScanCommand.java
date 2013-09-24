@@ -16,12 +16,12 @@ public abstract class GeneralScanCommand extends VerboseCommand {
     public static final Option PARAM_HOST = OptionBuilder.isRequired().hasArg().withArgName("server").withDescription("IP address or resolvable name of CxSuite web server").create("CxServer");
     public static final Option PARAM_USER = OptionBuilder.isRequired().hasArg().withArgName("username").withDescription("Login username").create("CxUser");
     public static final Option PARAM_PASSWORD = OptionBuilder.isRequired().hasArg().withArgName("password").withDescription("Login password").create("CxPassword");
-    public static final Option PARAM_LOG_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Log file").create("log");
-    public static final Option PARAM_XML_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results XML file").create("ReportXML");
-    public static final Option PARAM_PDF_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results PDF file").create("ReportPDF");
-    public static final Option PARAM_CSV_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results CSV file").create("ReportCSV");
-    public static final Option PARAM_RTF_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results RTF file").create("ReportRTF");
-    public static final Option PARAM_EXCLUDE = OptionBuilder.hasArgs().withArgName("file").withDescription("List of ignored folders. Example: -LocationPathExclude test* log_*").create("LocationPathExclude");
+    public static final Option PARAM_LOG_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Log file. Optional.").create("log");
+    public static final Option PARAM_XML_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results XML file. Optional.").create("ReportXML");
+    public static final Option PARAM_PDF_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results PDF file. Optional.").create("ReportPDF");
+    public static final Option PARAM_CSV_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results CSV file. Optional.").create("ReportCSV");
+    public static final Option PARAM_RTF_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results RTF file. Optional.").create("ReportRTF");
+    public static final Option PARAM_EXCLUDE = OptionBuilder.hasArgs().withArgName("file list").withDescription("List of ignored folders. Relative paths are resolved retalive to -LocationPath. Example: -LocationPathExclude test* log_*. Optional.").create("LocationPathExclude");
 
 	protected Integer timeout;
 	protected ScanParams scParams;

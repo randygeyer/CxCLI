@@ -20,31 +20,31 @@ public class ScanCommand extends GeneralScanCommand {
 
 	public static String COMMAND_SCAN = "Scan";
 
-    public static final Option PARAM_PRJ_NAME = OptionBuilder.withArgName("project name").hasArg().isRequired().withDescription("An existing or new full project name." +
-            "The full Project name is conducted with the whole path to the project including Server, service provider, company and team. " +
-            "Example:  -ProjectName \"CxServer\\SP\\Company\\Users\\bs java\"" +
+    public static final Option PARAM_PRJ_NAME = OptionBuilder.withArgName("project name").hasArg().isRequired().withDescription("A full absolute name of a project. " +
+            "The full Project name includes the whole path to the project, including Server, service provider, company, and team. " +
+            "Example:  -ProjectName \"CxServer\\SP\\Company\\Users\\bs java\" " +
             "If project with such a name doesn't exist in the system, new project will be created.").create("ProjectName");
 
-    public static final Option PARAM_LOCATION_TYPE = OptionBuilder.withArgName("< " + LocationType.stringOfValues() + ">").hasArg().isRequired()
+    public static final Option PARAM_LOCATION_TYPE = OptionBuilder.withArgName(LocationType.stringOfValues()).hasArg().isRequired()
             .withDescription("Source location type: folder, shared folder, source repository: SVN, TFS, GIT").create("LocationType");    // TODO: Check if CLI lib can check for correct param value
 
     public static final Option PARAM_LOCATION_PATH = OptionBuilder.withArgName("path").hasArg()
-            .withDescription("Local or shared path to sources or source repository branch. Use semicolon \";\" to separate values. Required if -LocationType is folder/shared").create("LocationPath");  //TODO: Check if ; separator is appropriate
+            .withDescription("Local or shared path to sources or source repository branch. Required if -LocationType is folder/shared.").create("LocationPath");
 
     public static final Option PARAM_LOCATION_USER = OptionBuilder.withArgName("username").hasArg()
-            .withDescription("Source control or network username. Required if -LocationType is TFS/SVN/shared").create("LocationUser");
+            .withDescription("Source control or network username. Required if -LocationType is TFS/SVN/shared.").create("LocationUser");
 
     public static final Option PARAM_LOCATION_PWD = OptionBuilder.withArgName("password").hasArg()
-            .withDescription("Source control or network password. Required if -LocationType is TFS/SVN/shared").create("LocationPassword");
+            .withDescription("Source control or network password. Required if -LocationType is TFS/SVN/shared.").create("LocationPassword");
 
     public static final Option PARAM_LOCATION_URL = OptionBuilder.withArgName("url").hasArg()
-            .withDescription("Source control URL. Required if -LocationType is TFS/SVN/GIT").create("LocationURL");
+            .withDescription("Source control URL. Required if -LocationType is TFS/SVN/GIT.").create("LocationURL");
 
     public static final Option PARAM_LOCATION_PORT = OptionBuilder.withArgName("url").hasArg()
-            .withDescription("Source control system port. Default 8080/80 (TFS/SVN).").create("LocationPort");
+            .withDescription("Source control system port. Default 8080/80 (TFS/SVN). Optional.").create("LocationPort");
 
     public static final Option PARAM_LOCATION_BRANCH = OptionBuilder.withArgName("branch").hasArg()
-            .withDescription("Sources GIT branch. Required if -LocationType is GIT.").create("LocationBranch");
+            .withDescription("Sources GIT branch. Required if -LocationType is GIT. Optional.").create("LocationBranch");
 
     public static final Option PARAM_LOCATION_PRIVATE_KEY = OptionBuilder.withArgName("file").hasArg()
             .withDescription("GIT private key location. Required  if -LocationType is GIT in SSH mode.").create("LocationPrivateKey");
@@ -53,16 +53,16 @@ public class ScanCommand extends GeneralScanCommand {
             .withDescription("GIT public key location. Required  if -LocationType is GIT in SSH mode.").create("LocationPublicKey");
 
     public static final Option PARAM_PRESET = OptionBuilder.withArgName("preset").hasArg()
-            .withDescription("If preset is not specified, will use the predefined preset for an existing project, and Default preset for a new project.").create("Preset");
+            .withDescription("If preset is not specified, will use the predefined preset for an existing project, and Default preset for a new project. Optional.").create("Preset");
 
     public static final Option PARAM_CONFIGURATION = OptionBuilder.withArgName("configuration").hasArg()
-            .withDescription("If configuration is not set, \"Default Configuration\" will be used for a new project.").create("Configuration");
+            .withDescription("If configuration is not set, \"Default Configuration\" will be used for a new project. Optional.").create("Configuration");
 
-    public static final Option PARAM_INCREMENTAL = OptionBuilder.withDescription("Will run an incremental scan instead of full scan").create("incremental");
+    public static final Option PARAM_INCREMENTAL = OptionBuilder.withDescription("Run incremental scan instead of full scan. Optional.").create("incremental");
 
-    public static final Option PARAM_PRIVATE = OptionBuilder.withDescription("Scan will not be visible to other users").create("private");
+    public static final Option PARAM_PRIVATE = OptionBuilder.withDescription("Scan will not be visible to other users. Optional.").create("private");
 
-    public static final Option PARAM_SCAN_COMMENT = OptionBuilder.withArgName("text").withDescription("Scan comment. Example: -comment 'important scan1'").hasArg().create("comment");
+    public static final Option PARAM_SCAN_COMMENT = OptionBuilder.withArgName("text").withDescription("Scan comment. Example: -comment 'important scan1'. Optional.").hasArg().create("comment");
 
     public static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
 

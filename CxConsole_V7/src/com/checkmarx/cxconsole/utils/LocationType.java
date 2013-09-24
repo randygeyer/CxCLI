@@ -3,6 +3,8 @@ package com.checkmarx.cxconsole.utils;
 import com.checkmarx.cxviewer.ws.generated.SourceLocationType;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+
 public enum LocationType {
 
 	folder("folder"),
@@ -50,6 +52,11 @@ public enum LocationType {
 
     public static String stringOfValues()
     {
-        return StringUtils.join(values()," | ");
+        ArrayList<String> locationTypeNames = new ArrayList<String>(values().length);
+        for (LocationType lt : values())
+        {
+            locationTypeNames.add(lt.getLocationType());
+        }
+        return StringUtils.join(locationTypeNames,"|");
     }
 }
