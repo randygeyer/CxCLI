@@ -89,7 +89,8 @@ public abstract class CxConsoleCommand {
 	protected abstract void executeCommand();
 	
 	public abstract void checkParameters() throws Exception;
-	
+
+    public abstract void resolveServerUrl() throws Exception;
 	/**
 	 * Check whether provided key is flag - i.e. it doesn't have followed 
 	 * value in CLI (like "-verbose" flag)

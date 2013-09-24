@@ -64,7 +64,7 @@ public abstract class GeneralScanCommand extends VerboseCommand {
     }
 
 
-
+    @Override
 	public void resolveServerUrl() throws Exception {
 		String generatedHost = null;
 		try {

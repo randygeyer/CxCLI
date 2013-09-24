@@ -1,5 +1,7 @@
 package com.checkmarx.cxconsole.utils;
 
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,27 +14,20 @@ public class ZipPacker {
 	
 	private String srcFolder;
 	private String destZipFile;
-	private String[] ignoredFolders;
+	private File[] ignoredFolders;
 	private String[] ignoredExtensions;
 
 	
 	public ZipPacker(String srcFolder, String destZipFile,
-			String ignoredFolders, String ignoredExtensions) {
+			File[] ignoredFolders, String ignoredExtensions) {
 		
 		this.srcFolder = srcFolder;
 		this.destZipFile = destZipFile;
-		this.ignoredFolders = splitSemicolonSeparatedString(ignoredFolders);
+		this.ignoredFolders = ignoredFolders;
 		this.ignoredExtensions = splitCommaSeparatedString(ignoredExtensions);
 	}
 
-	/**
-	 * Packs source folder <code>srcFolder</code> into zip archive
-	 * 
-	 * @param srcFolder - path to source folder to be packed
-	 * @param destZipFile - path of destination archive 
-	 * @param ignoredFolders - list of comma-separated folders to excluded from archive
-	 * @param ignoredExtensions - list of comma-separated file extensions to excluded from archive
-	 */
+
 	public boolean zipFolder() {
 		
 		ZipOutputStream zOut = null;
@@ -62,16 +57,14 @@ public class ZipPacker {
 	
 	private void packFolder(ZipOutputStream zOut, File folder, String entryPath) {
 		
-		File file;
-		String entryName;
-		for (String fileName : folder.list()) {
-			file = new File(folder.getPath() + "/" + fileName); //$NON-NLS-1$
-			entryName = entryPath + "/" + fileName; //$NON-NLS-1$
+		for (File file : folder.listFiles()) {
+			//File file = new File(folder.getPath() + "/" + fileName); //$NON-NLS-1$
+            String entryName = entryPath + "/" + file.getName(); //$NON-NLS-1$
 			if (file.isDirectory()) {
-				if (!isIgnoredFolder(fileName)) {
+				if (!isIgnoredFolder(file)) {
 					packFolder(zOut, file, entryName);
 				}
-			} else if (!isIgnoredExtension(fileName)) {
+			} else if (!isIgnoredExtension(file)) {
 				byte[] buf = new byte[1024];
 				int len;
 				FileInputStream in = null;
@@ -96,18 +89,29 @@ public class ZipPacker {
 		}
 	}
 
-	private boolean isIgnoredFolder(String folderName) {
-		String folderNameLowerCase = folderName.toLowerCase();
-		for (String ignoredFolderName : ignoredFolders) {
-			if (folderNameLowerCase.contains(ignoredFolderName.trim().toLowerCase())) {
-				return true;
-			}
+	private boolean isIgnoredFolder(File folder) {
+        for (File ignoredFolder : ignoredFolders) {
+            try {
+                if (folder.getCanonicalFile().equals(ignoredFolder))
+                {
+                    return true;
+                }
+            } catch (IOException e)
+            {
+                // This exception occurs if folder is not accessible in the file system
+                // In this case we can ignore this folder
+                Logger log = Logger.getLogger("com.checkmarx.cxconsole.CxConsoleLauncher");
+                log.warn("Could not read file: " + folder);
+                log.warn(e.getMessage());
+                return false;
+            }
+
 		}
 		return false;
 	}
 
-	private boolean isIgnoredExtension(String fileName) {
-		String fileNameLowerCase = fileName.toLowerCase();
+	private boolean isIgnoredExtension(File file) {
+		String fileNameLowerCase = file.getName().toLowerCase();
 		for (String ignoredExtension : ignoredExtensions) {
 			if (!ignoredExtension.isEmpty() && fileNameLowerCase.endsWith(ignoredExtension.trim())) {
 				return true;

@@ -55,7 +55,7 @@ public class CxConsoleLauncher {
 
             try {
                 command.parseArguments(argumentsLessCommandName);
-
+                command.resolveServerUrl();
                 command.checkParameters();
             } catch (ParseException e)
             {

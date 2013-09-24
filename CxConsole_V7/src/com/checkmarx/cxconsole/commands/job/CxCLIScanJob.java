@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -553,12 +554,13 @@ public class CxCLIScanJob extends CxScanJob {
 			return false;
 		}
 		
-		String[] ignoredFolders = null; // TODO: Make sure  ignoredFolders type conversion to String[] works properly
+		File[] ignoredFolders = null;
 		if (params.hasExcludedParam()) {
-			ignoredFolders = params.getExcludedFolders();
+			ignoredFolders = canonicalIgnoredFolders(params.getExcludedFolders());
 		}
 		else {
-			ignoredFolders = new String[]{ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_IGNORED_FOLDERS)};
+            String defaultExcludedFolders = ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_IGNORED_FOLDERS);
+			ignoredFolders = canonicalIgnoredFolders(StringUtils.split(defaultExcludedFolders," ,"));
 		}
 		String ignoredExtensions = ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_IGNORED_EXTENSIONS);
 		
@@ -577,11 +579,31 @@ public class CxCLIScanJob extends CxScanJob {
 		
 		ZipPacker packer = new ZipPacker(params.getLocationPath(),
 				zipFileLocation, 
-				ignoredFolders[0],  // TODO: Make sure  ignoredFolders type conversion to String[] works properly
+				ignoredFolders,
 				ignoredExtensions);
 		return packer.zipFolder();
 	}
-	
+
+    private File[] canonicalIgnoredFolders(String[] ignoredFolderNames )
+    {
+        File[] ignoredFolders = new File[ignoredFolderNames.length];
+        for (int i = 0; i<ignoredFolderNames.length;i++)
+        {
+            ignoredFolders[i]=new File(ignoredFolderNames[i]);
+            if (!ignoredFolders[i].isAbsolute())
+            {
+                ignoredFolders[i]=new File(params.getLocationPath() + File.separator + ignoredFolderNames[i]);
+            }
+            try {
+                ignoredFolders[i] = ignoredFolders[i].getCanonicalFile();
+            } catch (IOException e)
+            {
+                // ignore - in case of exception, the ignoredFolders[i] value will not be converted to canonical file.
+            }
+        }
+        return ignoredFolders;
+    }
+
 	@Override
 	protected String getProjectName() {		
 		return params.getFullProjName();
