@@ -59,13 +59,13 @@ public class CxConsoleLauncher {
                 command.checkParameters();
             } catch (ParseException e)
             {
-                log.fatal("Command parameters are invalid(CLI): " + e.getMessage()+"\n");
+                log.fatal("Command parameters are invalid: " + e.getMessage()+"\n");
                 command.printHelp();
                 errorCode = CxConsoleCommand.CODE_ERRROR;
                 return;
             } catch (CommandLineArgumentException e)
             {
-                log.fatal("Command parameters are invalid(Manual): " + e.getMessage()+"\n");
+                log.fatal("Command parameters are invalid: " + e.getMessage()+"\n");
                 command.printHelp();
                 errorCode = CxConsoleCommand.CODE_ERRROR;
                 return;
