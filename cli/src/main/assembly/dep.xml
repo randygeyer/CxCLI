@@ -1,0 +1,54 @@
+<assembly>
+    <!-- Documentation: http://maven.apache.org/plugins/maven-assembly-plugin/assembly.html -->
+    <id>bin</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <outputDirectory>lib</outputDirectory>
+            <directory>lib</directory>
+        </fileSet>
+
+    </fileSets>
+
+    <files>
+        <file>
+            <source>src/main/scripts/runCxConsole.cmd</source>
+            <outputDirectory>/</outputDirectory>
+        </file>
+        <file>
+            <source>src/main/scripts/runCxConsole.sh</source>
+            <outputDirectory>/</outputDirectory>
+            <fileMode>0777</fileMode>
+        </file>
+        <file>
+            <source>src/main/config/cx_console.properties</source>
+            <outputDirectory>config</outputDirectory>
+        </file>
+        <file>
+            <source>src/main/config/log4j.properties</source>
+            <outputDirectory>/</outputDirectory>
+        </file>
+    </files>
+
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>*</include>
+            </includes>
+            <useProjectArtifact>false</useProjectArtifact>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>${groupId}:${artifactId}*</include>
+            </includes>
+            <useProjectArtifact>true</useProjectArtifact>
+            <outputFileNameMapping>cx_console.jar</outputFileNameMapping>
+        </dependencySet>
+    </dependencySets>
+
+</assembly>
