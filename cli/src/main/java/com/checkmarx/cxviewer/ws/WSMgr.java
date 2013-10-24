@@ -165,9 +165,6 @@ public class WSMgr extends WSMgrBase {
 				srcCodeSettings.setPackagedCode(localCodeContainer);
 				break;
 			case SHARED:
-				localCodeContainer = new LocalCodeContainer(); // TODO: Remove, LocalCodeContainer is not used in Shared mode
-				localCodeContainer.setFileName(locationpath);  // TODO: Remove, LocalCodeContainer is not used in Shared mode
-				srcCodeSettings.setPackagedCode(localCodeContainer); // TODO: Remove, LocalCodeContainer is not used in Shared mode
 				srcCodeSettings.setUserCredentials(creds);
 				generateScanPaths = true;
 				break;
@@ -185,7 +182,6 @@ public class WSMgr extends WSMgrBase {
 				case TFS:
 					// sourceControlSetting.setUseSSL(false);
 					sourceControlSetting.setUserCredentials(creds);
-					generateScanPaths = true;
 					break;
 				case GIT:
 					sourceControlSetting.setGITBranch(locationBrach);

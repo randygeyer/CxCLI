@@ -25,7 +25,7 @@ public class ScanCommand extends GeneralScanCommand {
             "Example:  -ProjectName \"CxServer\\SP\\Company\\Users\\bs java\" " +
             "If project with such a name doesn't exist in the system, new project will be created.").create("ProjectName");
 
-    public static final Option PARAM_LOCATION_TYPE = OptionBuilder.withArgName(LocationType.stringOfValues()).hasArg().isRequired()
+    public static final Option PARAM_LOCATION_TYPE = OptionBuilder.withArgName(LocationType.stringOfValues()).hasArg()
             .withDescription("Source location type: folder, shared folder, source repository: SVN, TFS, GIT").create("LocationType");    // TODO: Check if CLI lib can check for correct param value
 
     public static final Option PARAM_LOCATION_PATH = OptionBuilder.withArgName("path").hasArg()
@@ -260,7 +260,7 @@ public class ScanCommand extends GeneralScanCommand {
 		if (scParams.getLocationType() == LocationType.folder
 			&& scParams.getLocationPath() == null)
         {
-			throw new CommandLineArgumentException(PARAM_LOCATION_PATH.getOpt() + " is missed. Parameter should be specified since "
+			throw new CommandLineArgumentException(PARAM_LOCATION_PATH.getOpt() + " is missing. Parameter should be specified since "
 				+ PARAM_LOCATION_TYPE.getOpt() + " is [" + scParams.getLocationType() + "]");
 		}
 

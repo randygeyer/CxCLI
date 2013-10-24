@@ -107,7 +107,11 @@ public class ScanParams {
 				projName = parts[parts.length - 1];
 			} 
 		}
-		locationType = LocationType.byName(commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_TYPE.getOpt()));
+
+        if (commandLine.hasOption(ScanCommand.PARAM_LOCATION_TYPE.getOpt()))
+        {
+		    locationType = LocationType.byName(commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_TYPE.getOpt()));
+        }
 		
 		scanComment=commandLine.getOptionValue(ScanCommand.PARAM_SCAN_COMMENT.getOpt());
 		
