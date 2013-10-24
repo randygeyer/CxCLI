@@ -24,11 +24,11 @@
             <fileMode>0777</fileMode>
         </file>
         <file>
-            <source>src/main/config/cx_console.properties</source>
+            <source>target/classes/cx_console.properties</source>
             <outputDirectory>config</outputDirectory>
         </file>
         <file>
-            <source>src/main/config/log4j.properties</source>
+            <source>target/classes/log4j.properties</source>
             <outputDirectory>/</outputDirectory>
         </file>
     </files>

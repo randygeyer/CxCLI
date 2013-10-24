@@ -14,6 +14,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+
+
     <dependencies>
         <dependency>
             <groupId>commons-collections</groupId>
@@ -85,6 +87,13 @@
                 </executions>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/config</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
 
     </build>
 
