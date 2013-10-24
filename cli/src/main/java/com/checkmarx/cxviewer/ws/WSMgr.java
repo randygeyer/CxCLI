@@ -182,6 +182,7 @@ public class WSMgr extends WSMgrBase {
 				case TFS:
 					// sourceControlSetting.setUseSSL(false);
 					sourceControlSetting.setUserCredentials(creds);
+                    generateScanPaths = true;
 					break;
 				case GIT:
 					sourceControlSetting.setGITBranch(locationBrach);
@@ -204,7 +205,7 @@ public class WSMgr extends WSMgrBase {
 			}
 		}
 
-		if (generateScanPaths) {
+		if (generateScanPaths && locationpath!=null) {
             ArrayOfScanPath paths = new ArrayOfScanPath();
 
             for (String lpath : locationpath.split(";")) {
