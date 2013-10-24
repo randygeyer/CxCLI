@@ -2,6 +2,179 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f22e9183-cca4-4d29-a193-2c413f6cabeb" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxconsole/CxConsoleLauncher.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxconsole/authentication/CxNTLMAuthetication.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxconsole/commands/CommandsFactory.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxconsole/commands/CxConsoleCommand.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxconsole/commands/GeneralScanCommand.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxconsole/commands/ScanCommand.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxconsole/commands/VerboseCommand.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxconsole/commands/job/CxCLIScanJob.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxconsole/commands/job/CxScanJob.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxconsole/commands/job/WaitScanCompletionJob.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxconsole/logging/CxConsoleLoggerFactory.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxconsole/utils/CommandLineArgumentException.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxconsole/utils/ConfigMgr.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxconsole/utils/CxResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxconsole/utils/IResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxconsole/utils/LocationType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxconsole/utils/ScanParams.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxconsole/utils/ZipPacker.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/Const.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/CxLogger.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/annotation/PersisentCompoundField.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/annotation/PersistentField.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/data/ScanResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/data/ScanResultPath.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/data/ScanResultPathNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/data/ScanResultPoint.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/data/ScanResultQuery.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/utils/ScanResultParser.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/utils/ScanResultSeverety.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/SSLUtilities.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/WSMgr.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/WSMgrBase.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/WSResolver.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/data/ConfigurationsChild.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/data/PresetChild.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/data/TeamsChild.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/ArrayOfConfigurationSet.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/ArrayOfDayOfWeek.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/ArrayOfGroup.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/ArrayOfPreset.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/ArrayOfProjectDisplayData.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/ArrayOfScanAction.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/ArrayOfScanPath.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/ArrayOfString.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CliScanArgs.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CompareStatusType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/ConfigurationSet.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CreateScanReport.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CreateScanReportResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/Credentials.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CurrentStatusEnum.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxCLIWebService.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxCLIWebServiceSoap.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxClientType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxDateTime.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxWSBasicRepsonse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxWSCreateReportResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxWSPathNode.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxWSQueryVulnerabilityData.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxWSReportRequest.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxWSReportStatusResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxWSReportType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxWSResponseConfigSetList.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxWSResponseGroupList.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxWSResponseLoginData.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxWSResponsePresetList.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxWSResponseProjectConfig.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxWSResponseProjectsDisplayData.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxWSResponseRunID.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxWSResponseScanResults.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxWSResponseScanStatus.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxWSResponseSessionID.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxWSSingleResultCompareData.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/CxWSSingleResultData.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/DayOfWeek.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/GetAssociatedGroupsList.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/GetAssociatedGroupsListResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/GetConfigurationSetList.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/GetConfigurationSetListResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/GetPresetList.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/GetPresetListResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/GetProjectConfiguration.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/GetProjectConfigurationResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/GetProjectsDisplayData.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/GetProjectsDisplayDataResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/GetScanReport.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/GetScanReportResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/GetScanReportStatus.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/GetScanReportStatusResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/GetStatusOfSingleScan.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/GetStatusOfSingleScanResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/GitLsRemoteViewType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/Group.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/GroupType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/LocalCodeContainer.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/Login.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/LoginResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/ObjectFactory.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/Preset.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/ProjectConfiguration.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/ProjectDisplayData.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/ProjectSettings.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/RepositoryType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/Scan.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/ScanAction.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/ScanActionSettings.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/ScanActionType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/ScanEventType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/ScanPath.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/ScanResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/ScheduleSettings.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/ScheduleType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/SourceCodeSettings.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/SourceControlProtocolType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/SourceControlSettings.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/SourceLocationType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/UpdateProjectIncrementalConfiguration.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/UpdateProjectIncrementalConfigurationResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/UpdateScanComment.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/UpdateScanCommentResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/UserPermission.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/generated/package-info.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/resolver/CxClientType.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/resolver/CxWSBasicRepsonse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/resolver/CxWSResolver.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/resolver/CxWSResolverSoap.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/resolver/CxWSResponseDiscovery.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/resolver/GetWebServiceUrl.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/resolver/GetWebServiceUrlResponse.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/resolver/ObjectFactory.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/resolver/package-info.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/results/CreateReportResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/results/GeneralResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/results/GetConfigurationsListResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/results/GetPresetsListResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/results/GetProjectConfigResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/results/GetProjectDataResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/results/GetScanResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/results/GetScanXMLResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/results/GetStatusOfScanResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/results/GetTeamsListResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/results/IsAllowedToScanResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/results/LoginResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/results/LogoutResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/results/ResultLabelTypeEnum.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/results/RunScanResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/results/ScanPDFReportResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/results/SeverityEnum.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/results/SimpleResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/results/StopScanResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/com/checkmarx/cxviewer/ws/results/UpdateScanCommentResult.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/AlreadySelectedException.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/BasicParser.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/CommandLine.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/CommandLineParser.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/GnuParser.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/HelpFormatter.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/MissingArgumentException.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/MissingOptionException.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/Option.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/OptionBuilder.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/OptionGroup.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/OptionValidator.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/Options.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/ParseException.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/Parser.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/PatternOptionBuilder.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/PosixParser.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/TypeHandler.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/UnrecognizedOptionException.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/Util.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/overview.html" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/com/checkmarx/org/apache/commons/cli/package.html" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cli.ipr" afterPath="$PROJECT_DIR$/cli.ipr" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cli.iws" afterPath="$PROJECT_DIR$/cli.iws" />
     </list>
@@ -10,7 +183,7 @@
     <file path="/pom.xml" changelist="f22e9183-cca4-4d29-a193-2c413f6cabeb" time="1381071615423" ignored="false" />
     <file path="$USER_HOME$/.m2/settings.xml" changelist="f22e9183-cca4-4d29-a193-2c413f6cabeb" time="1381062661568" ignored="false" />
     <file path="/dep.xml" changelist="f22e9183-cca4-4d29-a193-2c413f6cabeb" time="1381069485304" ignored="false" />
-    <file path="/Dummy.txt" changelist="f22e9183-cca4-4d29-a193-2c413f6cabeb" time="1381072334766" ignored="false" />
+    <file path="/Dummy.txt" changelist="f22e9183-cca4-4d29-a193-2c413f6cabeb" time="1382610130472" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,9 +271,6 @@
     <disable_hints />
   </component>
   <component name="DebuggerManager">
-    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
-    <method_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true" />
-    <field_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_any default_suspend_policy="SuspendAll" default_condition_enabled="true">
       <breakpoint>
         <option name="NOTIFY_CAUGHT" value="true" />
@@ -139,6 +309,9 @@
     </breakpoint_any>
     <line_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <exception_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true" />
+    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
+    <field_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true" />
+    <method_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_rules />
     <ui_properties />
   </component>
@@ -210,11 +383,22 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="pom.xml" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="66" column="42" selection-start="2479" selection-end="2479" vertical-scroll-proportion="0.73888886">
+            <state line="66" column="42" selection-start="2479" selection-end="2479" vertical-scroll-proportion="0.0">
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CxConsoleLauncher.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/checkmarx/cxconsole/CxConsoleLauncher.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="18" column="13" selection-start="517" selection-end="517" vertical-scroll-proportion="-0.17753623">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -366,7 +550,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
@@ -433,10 +616,6 @@
               <option name="myItemId" value="java" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="checkmarx" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -464,7 +643,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="checkmarx" />
+              <option name="myItemId" value="cxviewer" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -487,10 +666,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="checkmarx" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -548,6 +723,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="ProjectViewSettings">
@@ -714,8 +890,8 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="1920" height="987" extended-state="6" />
-    <editor active="false" />
+    <frame x="0" y="22" width="1920" height="987" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -729,10 +905,10 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.33724654" sideWeight="0.67012686" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.34471717" sideWeight="0.6708861" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2497332" sideWeight="0.67012686" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3298731" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2497332" sideWeight="0.6708861" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32911393" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Aspects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -864,6 +1040,43 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
+        <state line="66" column="42" selection-start="2479" selection-end="2479" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/checkmarx/cxconsole/CxConsoleLauncher.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="13" selection-start="517" selection-end="517" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/assembly/dep.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="12" column="8" selection-start="378" selection-end="378" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/assembly/dep.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="12" column="8" selection-start="378" selection-end="378" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
@@ -897,8 +1110,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="66" column="42" selection-start="2479" selection-end="2479" vertical-scroll-proportion="0.73888886">
+        <state line="66" column="42" selection-start="2479" selection-end="2479" vertical-scroll-proportion="0.0">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/checkmarx/cxconsole/CxConsoleLauncher.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="13" selection-start="517" selection-end="517" vertical-scroll-proportion="-0.17753623">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
