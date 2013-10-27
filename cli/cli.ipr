@@ -231,6 +231,17 @@
         <root url="jar://$MAVEN_REPOSITORY$/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1-sources.jar!/" />
       </SOURCES>
     </library>
+    <library name="Maven: jdom:jdom:1.1.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/jdom/jdom/1.1.1/jdom-1.1.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/jdom/jdom/1.1.1/jdom-1.1.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/jdom/jdom/1.1.1/jdom-1.1.1-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Maven: log4j:log4j:1.2.14">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/log4j/log4j/1.2.14/log4j-1.2.14.jar!/" />
@@ -252,13 +263,6 @@
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/org/apache/commons/commons-lang3/3.1/commons-lang3-3.1-sources.jar!/" />
       </SOURCES>
-    </library>
-    <library name="Maven: org.jdom:jdom:1.1.1">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/lib/jdom.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES />
     </library>
   </component>
 </project>

@@ -5,13 +5,7 @@
         <format>zip</format>
     </formats>
     <includeBaseDirectory>true</includeBaseDirectory>
-    <fileSets>
-        <fileSet>
-            <outputDirectory>lib</outputDirectory>
-            <directory>lib</directory>
-        </fileSet>
 
-    </fileSets>
 
     <files>
         <file>

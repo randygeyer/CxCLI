@@ -28,19 +28,32 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.1</version>
         </dependency>
-        <dependency>
-            <groupId>org.jdom</groupId>
-            <artifactId>jdom</artifactId>
-            <version>1.1.1</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/jdom.jar</systemPath>
-        </dependency>
+
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.14</version>
         </dependency>
+        <dependency>
+            <groupId>jdom</groupId>
+            <artifactId>jdom</artifactId>
+            <version>1.1.1</version>
+        </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>repo</id>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <url>file://${project.basedir}/repo</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
@@ -65,7 +78,7 @@
 
                         </manifest>
                         <manifestEntries>
-                            <Class-Path>. lib/jdom.jar</Class-Path>
+                            <Class-Path>.</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -96,5 +109,11 @@
 
 
     </build>
-
+    <distributionManagement>
+        <repository>
+            <id>internal.repo</id>
+            <name>Checkmarx Internal Repository</name>
+            <url>file:///Users/denis/Documents/iOSDevMac/Checkmarx/InternalMavenRepository</url>
+        </repository>
+    </distributionManagement>
 </project>

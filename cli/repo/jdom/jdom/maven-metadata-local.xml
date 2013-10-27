@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>jdom</groupId>
+  <artifactId>jdom</artifactId>
+  <versioning>
+    <release>1.1.1</release>
+    <versions>
+      <version>private</version>
+      <version>1.1.1</version>
+    </versions>
+    <lastUpdated>20131027101406</lastUpdated>
+  </versioning>
+</metadata>
