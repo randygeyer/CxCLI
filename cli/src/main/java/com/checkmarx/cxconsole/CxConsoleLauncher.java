@@ -86,7 +86,7 @@ public class CxConsoleLauncher {
 		} finally {			
 			log.info("CxConsole scan session finished");
 			log.info("");
-			System.exit(errorCode);
-		}
+            return;
+        }
 	}
 }
