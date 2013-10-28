@@ -56,7 +56,7 @@ public class ScanCommand extends GeneralScanCommand {
             .withDescription("If preset is not specified, will use the predefined preset for an existing project, and Default preset for a new project. Optional.").create("Preset");
 
     public static final Option PARAM_CONFIGURATION = OptionBuilder.withArgName("configuration").hasArg()
-            .withDescription("If configuration is not set, \"Default Configuration\" will be used for a new project. Optional.").create("Configuration");
+            .withDescription("If configuration is not set, \"Default Configuration\" will be used for a new project. Possible values: [ \"Default Configuration\" | \"Japanese (Shift-JIS)\" ] Optional.").create("Configuration");
 
     public static final Option PARAM_INCREMENTAL = OptionBuilder.withDescription("Run incremental scan instead of full scan. Optional.").create("incremental");
 
