@@ -31,26 +31,28 @@ public class CxConsoleLauncher {
 	 * Entry point to CxScan Console
 	 * @param args
 	 */
-	public static void main(String[] args) {
-		int errorCode = CxConsoleCommand.CODE_OK;
 
+    public static void main(String[] args) {
+        runCli(args);
+    }
+
+    public static int runCli(String[] args) {
 		try {
 			log.info("CxConsole version " + ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_VERSION));
 			log.info("CxConsole scan session started");
 			if (args == null || args.length == 0) {
                 log.fatal("Missing command name. Available commands: " + CommandsFactory.getCommnadNames());
-                errorCode = CxConsoleCommand.CODE_ERRROR;
-                return;
+                return CxConsoleCommand.CODE_ERRROR;
 
-			}
+
+            }
             String commandName = args[0];
             String[] argumentsLessCommandName = java.util.Arrays.copyOfRange(args,1,args.length);
             CxConsoleCommand command = CommandsFactory.getCommand(commandName);
             if (command == null) {
                 log.error("Command \"" + commandName + "\" was not found. Available commands:\n"
                         + CommandsFactory.getCommnadNames());
-                errorCode = CxConsoleCommand.CODE_ERRROR;
-                return;
+                return CxConsoleCommand.CODE_ERRROR;
             }
 
             try {
@@ -61,32 +63,28 @@ public class CxConsoleLauncher {
             {
                 log.fatal("Command parameters are invalid: " + e.getMessage()+"\n");
                 command.printHelp();
-                errorCode = CxConsoleCommand.CODE_ERRROR;
-                return;
+                return CxConsoleCommand.CODE_ERRROR;
             } catch (CommandLineArgumentException e)
             {
                 log.fatal("Command parameters are invalid: " + e.getMessage()+"\n");
                 command.printHelp();
-                errorCode = CxConsoleCommand.CODE_ERRROR;
-                return;
+                return CxConsoleCommand.CODE_ERRROR;
             }
 
 
 
-            errorCode = command.execute();
+            return command.execute();
 
-		}
-        catch (org.apache.commons.cli.ParseException e)
-        {
-
+		} catch (org.apache.commons.cli.ParseException e) {
+           // Ignore, the exception is handled in above catch statement
         } catch (Throwable e) {
-			log.fatal("Unexpected error occurred during console session.Error message:\n" + e.getMessage());
+			log.error("Unexpected error occurred during console session.Error message:\n" + e.getMessage());
 			log.info("", e);
-			errorCode = CxConsoleCommand.CODE_ERRROR;
-		} finally {			
+            return CxConsoleCommand.CODE_ERRROR;
+		} finally {
 			log.info("CxConsole scan session finished");
 			log.info("");
-            return;
+            return CxConsoleCommand.CODE_ERRROR;
         }
 	}
 }
