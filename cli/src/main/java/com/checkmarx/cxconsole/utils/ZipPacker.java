@@ -1,5 +1,6 @@
 package com.checkmarx.cxconsole.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -7,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -27,6 +29,18 @@ public class ZipPacker {
 		this.destZipFile = destZipFile;
 		this.ignoredFolders = ignoredFolders;
 		this.ignoredExtensions = splitCommaSeparatedString(ignoredExtensions);
+
+        //Debug output
+        if (logger.isDebugEnabled())
+        {
+            LinkedList<String> ignoredFoldersList = new LinkedList<String>();
+            for (File f : this.ignoredFolders)
+            {
+                ignoredFoldersList.add(f.toString());
+            }
+            logger.debug("List of folders to ignore: " + StringUtils.join(ignoredFoldersList,", "));
+            logger.debug("List of extensions to ignore: " + StringUtils.join(this.ignoredExtensions,", "));
+        }
 	}
 
 
@@ -97,6 +111,7 @@ public class ZipPacker {
             try {
                 if (folder.getCanonicalFile().equals(ignoredFolder))
                 {
+                    logger.debug("Folder ignored: " + folder);
                     return true;
                 }
             } catch (IOException e)
@@ -117,7 +132,8 @@ public class ZipPacker {
 		String fileNameLowerCase = file.getName().toLowerCase();
 		for (String ignoredExtension : ignoredExtensions) {
 			if (!ignoredExtension.isEmpty() && fileNameLowerCase.endsWith(ignoredExtension.trim())) {
-				return true;
+                logger.debug("File ignored by extension: " + file);
+                return true;
 			}
 		}
 		return false;
