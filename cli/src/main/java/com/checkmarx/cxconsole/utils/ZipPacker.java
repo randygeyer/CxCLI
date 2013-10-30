@@ -11,7 +11,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class ZipPacker {
-	
+
+    private static Logger logger = Logger.getLogger(ZipPacker.class);
+
 	private String srcFolder;
 	private String destZipFile;
 	private File[] ignoredFolders;
@@ -74,6 +76,7 @@ public class ZipPacker {
 					while ((len = in.read(buf)) > 0) {
 						zOut.write(buf, 0, len);
 					}
+                    logger.debug("Packed source file: " + entryName);
 				} catch (IOException e) {
 					// TODO: handle exception
 				} finally {
