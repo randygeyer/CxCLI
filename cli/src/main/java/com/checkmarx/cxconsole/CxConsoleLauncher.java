@@ -36,9 +36,15 @@ public class CxConsoleLauncher {
         runCli(args);
     }
 
+    /**
+     * Entry point to CxScan Console that returns exitCode
+     * This entry point is used by Jenkins plugin
+     * @param args
+     */
+
     public static int runCli(String[] args) {
 		try {
-			log.info("CxConsole version " + ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_VERSION));
+            log.info("CxConsole version " + ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_VERSION));
 			log.info("CxConsole scan session started");
 			if (args == null || args.length == 0) {
                 log.fatal("Missing command name. Available commands: " + CommandsFactory.getCommnadNames());
@@ -73,18 +79,17 @@ public class CxConsoleLauncher {
 
 
 
-            return command.execute();
+            int exitCode =  command.execute();
+            log.info("CxConsole scan session finished");
+            return exitCode;
 
 		} catch (org.apache.commons.cli.ParseException e) {
            // Ignore, the exception is handled in above catch statement
+            return CxConsoleCommand.CODE_ERRROR;
         } catch (Throwable e) {
 			log.error("Unexpected error occurred during console session.Error message:\n" + e.getMessage());
 			log.info("", e);
             return CxConsoleCommand.CODE_ERRROR;
-		} finally {
-			log.info("CxConsole scan session finished");
-			log.info("");
-            return CxConsoleCommand.CODE_ERRROR;
-        }
+		}
 	}
 }
