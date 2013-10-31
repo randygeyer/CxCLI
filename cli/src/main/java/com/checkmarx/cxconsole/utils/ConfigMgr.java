@@ -34,7 +34,6 @@ public class ConfigMgr {
 	public static String KEY_FILE_APP_MAX_SIZE 		=	"scan.log.appender.file.max_size";
 	public static String KEY_FILE_APP_MAX_ROLLS 	=	"scan.log.appender.file.max_rolls";
 	public static String KEY_CLI_APP_PATTERN 		=	"scan.log.appender.console.pattern";
-	public static String KEY_PDF_GEN_TIMEOUT 		=	"scan.job.pdf.generate.timeout";
 	public static String KEY_VERSION 				=	"cxconsole.version";
 	
 	private String CONFIG_DIR_RELATIVE_PATH = "/config";
@@ -69,16 +68,16 @@ public class ConfigMgr {
 	}
 	
 	protected void loadDefaults() {
-		applicationProperties.put(KEY_PROGRESS_INTERVAL, "5");
+		applicationProperties.put(KEY_PROGRESS_INTERVAL, "15");
 		applicationProperties.put(KEY_RETIRES, "3");
-		applicationProperties.put(KEY_IGNORED_FOLDERS, "_cvs, .svn, .hg, .git, .bzr, bin");
-		applicationProperties.put(KEY_IGNORED_EXTENSIONS, "bak, tmp");
-		applicationProperties.put(KEY_MAX_ZIP_SIZE, "15728640");
+		applicationProperties.put(KEY_IGNORED_FOLDERS, "_cvs, .svn, .hg, .git, .bzr, bin, obj, backup");
+		applicationProperties.put(KEY_IGNORED_EXTENSIONS, "DS_Store, ipr, iws, bak, tmp, aac, aif, iff, m3u, mid, mp3, mpa, ra, wav, wma, 3g2, 3gp, asf, asx, avi, flv, mov, mp4, mpg, rm, swf, vob, wmv, bmp, gif, jpg, png, psd, tif, jar, zip, rar, exe, dll, pdb, 7z, gz, tar.gz, tar, ahtm, ahtml, fhtml, hdm, hdml, hsql, ht, hta, htc, htd, htmls, ihtml, mht, mhtm, mhtml, ssi, stm, stml, ttml, txn, xhtm, xhtml, class, iml");
+		applicationProperties.put(KEY_MAX_ZIP_SIZE, "200");
 		applicationProperties.put(KEY_DEF_LOG_NAME, "cx_scan.log");
 		applicationProperties.put(KEY_DEF_PROJECT_NAME, "console.project");
-		applicationProperties.put(KEY_FILE_APP_PATTERN, "%d{ISO8601} [%t] (%F:%L) %-5p - %m%n");
+		applicationProperties.put(KEY_FILE_APP_PATTERN, "%d{ISO8601} [%t] (%F\\:%L) %-5p - %m%n");
 		applicationProperties.put(KEY_CLI_APP_PATTERN, "[%d{ISO8601} %-5p] %m%n");
-		applicationProperties.put(KEY_FILE_APP_MAX_SIZE, "5000KB");
+		applicationProperties.put(KEY_FILE_APP_MAX_SIZE, "10MB");
 		applicationProperties.put(KEY_FILE_APP_MAX_ROLLS, "10");
 		applicationProperties.put(KEY_VERSION, "7.1");
 		
