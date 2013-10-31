@@ -48,7 +48,9 @@ public class ScanParams {
 	private String privateKey;
 	private String configuration;
 	private String[] excludedFolders;
-	private boolean hasExcludedParam;
+	private boolean hasExcludedParam = false;
+    private String[] excludedExtensions;
+    private boolean hasExcludedExtensionsParam = false;
 	
 	public ScanParams(CommandLine commandLine) {
 		this.host = commandLine.getOptionValue(ScanCommand.PARAM_HOST.getOpt());
@@ -166,8 +168,14 @@ public class ScanParams {
 		
 		if (commandLine.hasOption(ScanCommand.PARAM_EXCLUDE.getOpt())){
 			hasExcludedParam = true;
-			excludedFolders = commandLine.getOptionValues(ScanCommand.PARAM_EXCLUDE.getOpt());//  params.get(GeneralScanCommand.PARAM_EXCLUDE.toUpperCase()).trim().replace("\"", "");
+			excludedFolders = commandLine.getOptionValues(ScanCommand.PARAM_EXCLUDE.getOpt());
 		}
+
+        if (commandLine.hasOption(ScanCommand.PARAM_EXCLUDED_EXTENSIONS.getOpt()))
+        {
+            hasExcludedExtensionsParam = true;
+            excludedExtensions = commandLine.getOptionValues(ScanCommand.PARAM_EXCLUDED_EXTENSIONS.getOpt());
+        }
 	}
 
 	public String getHost() {
@@ -365,4 +373,14 @@ public class ScanParams {
 	public void setHasExcludedParam(boolean hasExcludedParam) {
 		this.hasExcludedParam = hasExcludedParam;
 	}
+
+    public String[] getExcludedExtensions() {
+        return excludedExtensions;
+    }
+
+    public boolean hasExcludedExtensionsParam() {
+        return hasExcludedExtensionsParam;
+    }
+
+
 }

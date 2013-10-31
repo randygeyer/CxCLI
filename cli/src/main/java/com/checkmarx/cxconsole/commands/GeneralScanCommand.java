@@ -22,6 +22,9 @@ public abstract class GeneralScanCommand extends VerboseCommand {
     public static final Option PARAM_CSV_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results CSV file. Optional.").create("ReportCSV");
     public static final Option PARAM_RTF_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results RTF file. Optional.").create("ReportRTF");
     public static final Option PARAM_EXCLUDE = OptionBuilder.hasArgs().withArgName("file list").withDescription("List of ignored folders. Relative paths are resolved retalive to -LocationPath. Example: -LocationPathExclude test* log_*. Optional.").create("LocationPathExclude");
+    public static final Option PARAM_EXCLUDED_EXTENSIONS = OptionBuilder.hasArgs().withArgName("extensions list").withDescription("List of ignored extensions. Example: tmp bak gif log. Optional.").create("ExtensionsExclude");
+
+
 
 	protected Integer timeout;
 	protected ScanParams scParams;
@@ -62,6 +65,7 @@ public abstract class GeneralScanCommand extends VerboseCommand {
         reportGroup.addOption(PARAM_RTF_FILE);
         this.commandLineOptions.addOptionGroup(reportGroup);
         this.commandLineOptions.addOption(PARAM_EXCLUDE);
+        this.commandLineOptions.addOption(PARAM_EXCLUDED_EXTENSIONS);
     }
 
 

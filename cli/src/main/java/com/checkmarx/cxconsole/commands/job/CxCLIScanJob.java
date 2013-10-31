@@ -562,7 +562,15 @@ public class CxCLIScanJob extends CxScanJob {
             String defaultExcludedFolders = ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_IGNORED_FOLDERS);
 			ignoredFolders = canonicalIgnoredFolders(StringUtils.split(defaultExcludedFolders," ,"));
 		}
-		String ignoredExtensions = ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_IGNORED_EXTENSIONS);
+
+        String[] ignoredExtensions = null;
+        if (params.hasExcludedExtensionsParam())
+        {
+            ignoredExtensions = params.getExcludedExtensions();
+        } else {
+		    String defaultExcludedExtensions = ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_IGNORED_EXTENSIONS);
+            ignoredExtensions = StringUtils.split(defaultExcludedExtensions," ,");
+        }
 		
 		try {
 			File temp = File.createTempFile("prj", ".zip");

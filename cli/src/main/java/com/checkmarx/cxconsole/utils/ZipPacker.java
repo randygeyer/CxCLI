@@ -23,12 +23,12 @@ public class ZipPacker {
 
 	
 	public ZipPacker(String srcFolder, String destZipFile,
-			File[] ignoredFolders, String ignoredExtensions) {
+			File[] ignoredFolders, String[] ignoredExtensions) {
 		
 		this.srcFolder = srcFolder;
 		this.destZipFile = destZipFile;
 		this.ignoredFolders = ignoredFolders;
-		this.ignoredExtensions = splitCommaSeparatedString(ignoredExtensions);
+		this.ignoredExtensions = ignoredExtensions;
 
         //Debug output
         if (logger.isDebugEnabled())
@@ -138,22 +138,5 @@ public class ZipPacker {
 		}
 		return false;
 	}
-	
-	private String[] splitCommaSeparatedString(String commaSeparatedStrng) {
-		String[] array;
-		array = commaSeparatedStrng.split(",");
-		if (array == null) {
-			array = new String[0];
-		}		
-		return array;
-	}
-	
-	private String[] splitSemicolonSeparatedString(String semicolonSeparatedStrng) {
-		String[] array;
-		array = semicolonSeparatedStrng.split(";");
-		if (array == null) {
-			array = new String[0];
-		}		
-		return array;
-	}
+
 }
