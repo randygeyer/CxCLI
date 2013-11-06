@@ -58,7 +58,7 @@ public class LocalCodeContainer {
      *     byte[]
      */
     public void setZippedFile(byte[] value) {
-        this.zippedFile = value;
+        this.zippedFile = ((byte[]) value);
     }
 
     /**

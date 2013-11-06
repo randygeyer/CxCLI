@@ -51,6 +51,10 @@ public class ScanParams {
 	private boolean hasExcludedParam = false;
     private String[] excludedExtensions;
     private boolean hasExcludedExtensionsParam = false;
+    private boolean isSsoLoginUsed = false;
+    private boolean hasPasswordParam = false;
+    private boolean hasUserParam = false;
+
 	
 	public ScanParams(CommandLine commandLine) {
 		this.host = commandLine.getOptionValue(ScanCommand.PARAM_HOST.getOpt());
@@ -163,9 +167,10 @@ public class ScanParams {
 		configuration =  commandLine.getOptionValue(ScanCommand.PARAM_CONFIGURATION.getOpt());
 	    isValidateFix = commandLine.hasOption(ScanCommand.PARAM_INCREMENTAL.getOpt());
 		isVisibleOthers = !commandLine.hasOption(ScanCommand.PARAM_PRIVATE.getOpt());
+        isSsoLoginUsed = commandLine.hasOption(ScanCommand.PARAM_USE_SSO.getOpt());
+        hasUserParam = commandLine.hasOption(ScanCommand.PARAM_USER.getOpt());
+        hasPasswordParam = commandLine.hasOption(ScanCommand.PARAM_PASSWORD.getOpt());
 
-
-		
 		if (commandLine.hasOption(ScanCommand.PARAM_EXCLUDE.getOpt())){
 			hasExcludedParam = true;
 			excludedFolders = commandLine.getOptionValues(ScanCommand.PARAM_EXCLUDE.getOpt());
@@ -382,5 +387,15 @@ public class ScanParams {
         return hasExcludedExtensionsParam;
     }
 
+    public boolean isSsoLoginUsed(){
+        return isSsoLoginUsed;
+    }
 
+    public boolean hasUserParam(){
+        return hasUserParam;
+    }
+
+    public boolean isHasPasswordParam(){
+        return hasPasswordParam;
+    }
 }

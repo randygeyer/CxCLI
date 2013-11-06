@@ -8,7 +8,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.Callable;
+import java.net.Authenticator;
 
+import com.checkmarx.cxconsole.authentication.CxNTLMAuthetication;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -96,8 +98,19 @@ public class CxScanJob implements Callable<Integer> {
 				if (log.isEnabledFor(Level.INFO)) {
 					log.info("Log in");
 				}
-				// Login
-				LoginResult r = wsMgr.login(params.getUser(), params.getPassword());		
+
+                // Login
+                LoginResult r;
+                if (isWindows() && params.isSsoLoginUsed())
+                {
+                    //SSO login
+                    r = wsMgr.ssoLogin("","");
+                }
+                else{
+                    //Applicative login
+                    r = wsMgr.login(params.getUser(), params.getPassword());
+                }
+
 				if (r.getSessionId() != null && !r.getSessionId().isEmpty()) {
 					sessionId = r.getSessionId();
 				} else {
@@ -415,4 +428,10 @@ public class CxScanJob implements Callable<Integer> {
 	public Integer call() throws Exception {
 		return null;
 	}
+
+    public static boolean isWindows() {
+        boolean isWindows = (System.getProperty("os.name").indexOf("Windows") >= 0);
+        return isWindows;
+    }
+
 }

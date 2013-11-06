@@ -21,7 +21,8 @@ abstract class WSMgrBase {
 	protected static String WS_NAMESPACE = "http://Checkmarx.com";
 
 	protected CxClientType clientType=CxClientType.NONE;
-	protected int version = 0;	
+	protected int version = 0;
+    protected int cli_webservice_version = 1;
 
 	
 	/**
@@ -53,7 +54,7 @@ abstract class WSMgrBase {
 			return validateAndGetServerName(serverName);
 		}
 		
-		String wsdlLocation=WSResolver.getServiceURL(serverName, clientType.value(), version);
+		String wsdlLocation=WSResolver.getServiceURL(serverName, clientType.value(), cli_webservice_version);
 		if (wsdlLocation==null) {
 			throw new Exception("Cannot resolve WS location");
 		}

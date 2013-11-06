@@ -30,22 +30,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GetWebServiceUrl }
-     * 
-     */
-    public GetWebServiceUrl createGetWebServiceUrl() {
-        return new GetWebServiceUrl();
-    }
-
-    /**
-     * Create an instance of {@link GetWebServiceUrlResponse }
-     * 
-     */
-    public GetWebServiceUrlResponse createGetWebServiceUrlResponse() {
-        return new GetWebServiceUrlResponse();
-    }
-
-    /**
      * Create an instance of {@link CxWSResponseDiscovery }
      * 
      */
@@ -54,11 +38,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GetWebServiceUrl }
+     * 
+     */
+    public GetWebServiceUrl createGetWebServiceUrl() {
+        return new GetWebServiceUrl();
+    }
+
+    /**
      * Create an instance of {@link CxWSBasicRepsonse }
      * 
      */
     public CxWSBasicRepsonse createCxWSBasicRepsonse() {
         return new CxWSBasicRepsonse();
+    }
+
+    /**
+     * Create an instance of {@link GetWebServiceUrlResponse }
+     * 
+     */
+    public GetWebServiceUrlResponse createGetWebServiceUrlResponse() {
+        return new GetWebServiceUrlResponse();
     }
 
 }

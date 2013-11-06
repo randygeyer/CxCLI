@@ -59,7 +59,7 @@ public class CxWSResponseScanResults
      *     byte[]
      */
     public void setScanResults(byte[] value) {
-        this.scanResults = value;
+        this.scanResults = ((byte[]) value);
     }
 
     /**

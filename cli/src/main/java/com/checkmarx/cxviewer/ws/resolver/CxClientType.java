@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="VS"/>
  *     &lt;enumeration value="InteliJ"/>
  *     &lt;enumeration value="Audit"/>
+ *     &lt;enumeration value="SDK"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -41,7 +42,8 @@ public enum CxClientType {
     @XmlEnumValue("InteliJ")
     INTELI_J("InteliJ"),
     @XmlEnumValue("Audit")
-    AUDIT("Audit");
+    AUDIT("Audit"),
+    SDK("SDK");
     private final String value;
 
     CxClientType(String v) {

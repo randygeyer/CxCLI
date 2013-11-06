@@ -12,8 +12,8 @@ import com.checkmarx.cxviewer.CxLogger;
 import com.checkmarx.cxviewer.ws.generated.ArrayOfScanPath;
 import com.checkmarx.cxviewer.ws.generated.CliScanArgs;
 import com.checkmarx.cxviewer.ws.generated.Credentials;
-import com.checkmarx.cxviewer.ws.generated.CxCLIWebService;
-import com.checkmarx.cxviewer.ws.generated.CxCLIWebServiceSoap;
+import com.checkmarx.cxviewer.ws.generated.CxCLIWebServiceV1;
+import com.checkmarx.cxviewer.ws.generated.CxCLIWebServiceV1Soap;
 import com.checkmarx.cxviewer.ws.generated.CxClientType;
 import com.checkmarx.cxviewer.ws.generated.CxWSBasicRepsonse;
 import com.checkmarx.cxviewer.ws.generated.CxWSCreateReportResponse;
@@ -41,8 +41,8 @@ import com.checkmarx.cxviewer.ws.results.UpdateScanCommentResult;
 
 
 public class WSMgr extends WSMgrBase {
-	protected static final String WS_NAME="CxCLIWebService";
-	protected CxCLIWebServiceSoap wService;
+	protected static final String WS_NAME="CxCLIWebServiceV1";
+	protected CxCLIWebServiceV1Soap wService;
 	
 	public WSMgr(CxClientType clientType, String version) {
 		super(clientType, version);
@@ -55,8 +55,8 @@ public class WSMgr extends WSMgrBase {
 	public Object connectWebService(URL wsdlLocation) {
 		QName serviceName = getWebServiceQName(wsdlLocation);
 		
-		CxCLIWebService ws = new CxCLIWebService(wsdlLocation, serviceName);
-		wService = ws.getCxCLIWebServiceSoap();
+		CxCLIWebServiceV1 ws = new CxCLIWebServiceV1(wsdlLocation, serviceName);
+		wService = ws.getCxCLIWebServiceV1Soap();
 		return wService;
 	}
 
@@ -72,7 +72,20 @@ public class WSMgr extends WSMgrBase {
 
 		return responseObj;
 	}
-	
+
+    public LoginResult ssoLogin(String userName, String sid) {
+        LoginResult responseObj = new LoginResult();
+        Credentials encCreds = new Credentials();
+        encCreds.setUser(userName);
+        encCreds.setPass(sid);
+
+        CxWSBasicRepsonse responce = wService.ssoLogin(encCreds, 1033);
+        responseObj.parseResponseObject(responce);
+        CxLogger.getLogger().info("login response :" + responseObj);
+
+        return responseObj;
+    }
+
 	public GetPresetsListResult getPresetsList(String sessionId) {
 		GetPresetsListResult responseObj = new GetPresetsListResult();
 		CxWSBasicRepsonse responce = wService.getPresetList(sessionId);

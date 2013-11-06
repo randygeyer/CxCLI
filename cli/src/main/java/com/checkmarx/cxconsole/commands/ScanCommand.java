@@ -62,9 +62,15 @@ public class ScanCommand extends GeneralScanCommand {
 
     public static final Option PARAM_PRIVATE = OptionBuilder.withDescription("Scan will not be visible to other users. Optional.").create("private");
 
+    public static final Option PARAM_USE_SSO = OptionBuilder.withDescription("SSO login method is used, available only on Windows. Optional.").create("useSSO");
+
     public static final Option PARAM_SCAN_COMMENT = OptionBuilder.withArgName("text").withDescription("Scan comment. Example: -comment 'important scan1'. Optional.").hasArg().create("comment");
 
     public static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
+
+    public static String MSG_ERR_SSO_WINDOWS_SUPPORT = "SSO login method is available only on Windows";
+
+    public static String MSG_ERR_MISSING_USER_PASSWORD = "Missing username/password parameters";
 
     public ScanCommand() {
 		super();
@@ -88,6 +94,7 @@ public class ScanCommand extends GeneralScanCommand {
         this.commandLineOptions.addOption(PARAM_INCREMENTAL);
         this.commandLineOptions.addOption(PARAM_PRIVATE);
         this.commandLineOptions.addOption(PARAM_SCAN_COMMENT);
+        this.commandLineOptions.addOption(PARAM_USE_SSO);
     }
 
 	@Override
@@ -236,7 +243,7 @@ public class ScanCommand extends GeneralScanCommand {
 	@Override
 	protected boolean isKeyFlag(String key) {
 		return /*super.isKeyFlag(key) || */PARAM_INCREMENTAL.getOpt().equalsIgnoreCase(key)
-				|| PARAM_PRIVATE.getOpt().equalsIgnoreCase(key);
+				|| PARAM_PRIVATE.getOpt().equalsIgnoreCase(key) || PARAM_USE_SSO.getOpt().equalsIgnoreCase(key);
 	}
 
 	/*
@@ -344,7 +351,7 @@ public class ScanCommand extends GeneralScanCommand {
 						+ scParams.getLocationPrivateKey() + "]");
 			}
 			if (keyFile.isDirectory()) {
-				throw new CommandLineArgumentException("Private key file freferences folder "
+				throw new CommandLineArgumentException("Private key file preferences folder "
 						+ "[" + scParams.getLocationPrivateKey() + "]");
 			}
 
@@ -354,10 +361,20 @@ public class ScanCommand extends GeneralScanCommand {
 						+ scParams.getLocationPrivateKey() + "]");
 			}
 			if (keyFile.isDirectory()) {
-				throw new CommandLineArgumentException("Public key file freferences folder " + "["
+				throw new CommandLineArgumentException("Public key file preferences folder " + "["
 						+ scParams.getLocationPrivateKey() + "]");
 			}
 		}
+
+        if(scParams.isSsoLoginUsed()){
+            if (!isWindows()){
+                throw new CommandLineArgumentException(MSG_ERR_SSO_WINDOWS_SUPPORT);
+            }
+        }
+        else if (!scParams.hasUserParam() || !scParams.hasUserParam()){
+            throw new CommandLineArgumentException(MSG_ERR_MISSING_USER_PASSWORD);
+        }
+
 	}
 
 	@Override
@@ -440,6 +457,11 @@ public class ScanCommand extends GeneralScanCommand {
 		return normalPathName;
 	}
 
+    public static boolean isWindows() {
+        boolean isWindows = (System.getProperty("os.name").indexOf("Windows") >= 0);
+        return isWindows;
+    }
+
 
 	@Override
 	public String getMandatoryParams() {
@@ -461,7 +483,7 @@ public class ScanCommand extends GeneralScanCommand {
 				+ PARAM_PRESET + " preset ] " + "[ "
 				+ PARAM_SCAN_COMMENT + " text ] [ " 
 				+ PARAM_CONFIGURATION + " configSet ] " + super.getOptionalParams() + " [ "
-				+ PARAM_INCREMENTAL + " ] " + "[ " + PARAM_PRIVATE + " ] ";
+				+ PARAM_INCREMENTAL + " ] " + "[ " + PARAM_PRIVATE + " ] " + "[ " + PARAM_USE_SSO + " ] ";
 	}
 
 	@Override
@@ -562,6 +584,11 @@ public class ScanCommand extends GeneralScanCommand {
 		keys.append(PARAM_PRIVATE);
 		keys.append(KEY_DESCR_INTEND_SMALL);
 		keys.append("- Flag indicating private scan.\n");
+
+        keys.append(leftSpacing);
+        keys.append(PARAM_USE_SSO);
+        keys.append(KEY_DESCR_INTEND_SMALL);
+        keys.append("- Flag indicating SSO login method used, available only on Windows.\n");
 
 		keys.append(super.getOptionalKeyDescriptions());
 
