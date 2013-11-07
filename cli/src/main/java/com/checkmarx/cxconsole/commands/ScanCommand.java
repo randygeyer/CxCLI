@@ -371,7 +371,7 @@ public class ScanCommand extends GeneralScanCommand {
                 throw new CommandLineArgumentException(MSG_ERR_SSO_WINDOWS_SUPPORT);
             }
         }
-        else if (!scParams.hasUserParam() || !scParams.hasUserParam()){
+        else if (!scParams.hasUserParam() || !scParams.hasPasswordParam()){
             throw new CommandLineArgumentException(MSG_ERR_MISSING_USER_PASSWORD);
         }
 

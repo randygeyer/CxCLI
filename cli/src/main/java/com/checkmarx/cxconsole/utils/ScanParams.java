@@ -395,7 +395,7 @@ public class ScanParams {
         return hasUserParam;
     }
 
-    public boolean isHasPasswordParam(){
+    public boolean hasPasswordParam(){
         return hasPasswordParam;
     }
 }

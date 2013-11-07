@@ -14,8 +14,8 @@ import org.apache.commons.cli.ParseException;
 public abstract class GeneralScanCommand extends VerboseCommand {
 
     public static final Option PARAM_HOST = OptionBuilder.isRequired().hasArg().withArgName("server").withDescription("IP address or resolvable name of CxSuite web server").create("CxServer");
-    public static final Option PARAM_USER = OptionBuilder.hasArg().withArgName("username").withDescription("Login username. Mandatory, Unless SSO login is used on Windows ('-useSSO' flag").create("CxUser");
-    public static final Option PARAM_PASSWORD = OptionBuilder.hasArg().withArgName("password").withDescription("Login password").create("CxPassword");
+    public static final Option PARAM_USER = OptionBuilder.hasArg().withArgName("username").withDescription("Login username. Mandatory, Unless SSO login is used on Windows ('-useSSO' flag)").create("CxUser");
+    public static final Option PARAM_PASSWORD = OptionBuilder.hasArg().withArgName("password").withDescription("Login password. Mandatory, Unless SSO login is used on Windows ('-useSSO' flag)").create("CxPassword");
     public static final Option PARAM_LOG_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Log file. Optional.").create("log");
     public static final Option PARAM_XML_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results XML file. Optional.").create("ReportXML");
     public static final Option PARAM_PDF_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results PDF file. Optional.").create("ReportPDF");
