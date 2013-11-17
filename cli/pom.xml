@@ -111,6 +111,42 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.jvnet.jax-ws-commons</groupId>
+                <artifactId>jaxws-maven-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <id>CxCLIWebService</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                        <configuration>
+                            <wsdlUrls>
+                                <wsdlUrl>${basedir}/src/main/resources/com/checkmarx/cxcviewer/ws/CxCLIWebService.wsdl</wsdlUrl>
+                            </wsdlUrls>
+                            <packageName>com.checkmarx.cxviewer.ws.generated</packageName>
+                            <target>2.1</target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>cxwsresolver</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                        <configuration>
+                            <wsdlUrls>
+                                <wsdlUrl>${basedir}/src/main/resources/com/checkmarx/cxcviewer/ws/cxwsresolver.wsdl</wsdlUrl>
+                            </wsdlUrls>
+                            <packageName>com.checkmarx.cxviewer.ws.resolver</packageName>
+                            <target>2.1</target>
+                        </configuration>
+                    </execution>
+                </executions>
+
+            </plugin>
         </plugins>
         <resources>
             <resource>
