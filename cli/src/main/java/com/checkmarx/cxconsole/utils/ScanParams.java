@@ -42,9 +42,7 @@ public class ScanParams {
 	private String locationBranch;
 	private String locationUser;
 	private String locationPassword;
-	private String locationPublicKey;
 	private String locationPrivateKey;
-	private String publicKey;
 	private String privateKey;
 	private String configuration;
 	private String[] excludedFolders;
@@ -133,7 +131,6 @@ public class ScanParams {
 		locationPassword = commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_PWD.getOpt());
 		locationURL = commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_URL.getOpt());
 		locationBranch = commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_BRANCH.getOpt());
-		locationPublicKey = commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_PUBLIC_KEY.getOpt());
 		locationPrivateKey = commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_PRIVATE_KEY.getOpt());
 		if (locationPrivateKey != null) {
 			File resultFile = new File(locationPrivateKey);
@@ -142,13 +139,7 @@ public class ScanParams {
 				locationPrivateKey = path + File.separator + locationPrivateKey;
 			}
 		}
-		if (locationPublicKey != null) {
-			File resultFile = new File(locationPublicKey);
-			if (!resultFile.isAbsolute()) {
-				String path = System.getProperty("user.dir");
-				locationPublicKey = path + File.separator + locationPublicKey;
-			}
-		}
+
 		if (commandLine.hasOption(ScanCommand.PARAM_LOCATION_PORT.getOpt())) {
 			String portStr = commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_PORT.getOpt());
 			try {
@@ -335,10 +326,6 @@ public class ScanParams {
 		return locationPassword;
 	}
 
-	public String getLocationPublicKey() {
-		return locationPublicKey;
-	}
-
 	public String getLocationPrivateKey() {
 		return locationPrivateKey;
 	}
@@ -347,13 +334,8 @@ public class ScanParams {
 		return configuration;
 	}
 
-	public String getPublicKey() {
-		return publicKey;
-	}
 
-	public void setPublicKey(String publicKey) {
-		this.publicKey = publicKey;
-	}
+
 
 	public String getPrivateKey() {
 		return privateKey;

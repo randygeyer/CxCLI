@@ -486,7 +486,7 @@ public class CxCLIScanJob extends CxScanJob {
 							params.getLocationUser(), params.getLocationPassword(),
 							repoType, params.getLocationURL(), 
 							params.getLocationPort(), params.getLocationBranch(),
-							params.getPublicKey(), params.getPrivateKey(),
+							params.getPrivateKey(),
 							params.isValidateFix(), params.isVisibleOthers());
 				}
 			}

@@ -117,40 +117,6 @@ public abstract class CxConsoleCommand {
 	public abstract String getOptionalKeyDescriptions();
 	public abstract String getUsageExamples();
 	
-	/**
-	 * Builds usage string for help tips.
-	 * To build usage string correctly command should implement correctly next methods:
-	 * <ul>
-	 * <li><code>getCommandName()</code></li>
-	 * <li><code>getMandatoryParams()</code></li>
-	 * <li><code>getOptionalParams()</code></li>
-	 * <li><code>getKeyDescriptions()</code></li>
-	 * <li><code>getUsageExamples()</code></li>
-	 * </ul>
-	 * @return command usage string
-	 */
-	public String getUsageString() {
-		StringBuilder usage = new StringBuilder(getCommandName());
-		usage.append("\n");
-		usage.append(getDescriptionString());
-		usage.append("\n\n");
-		usage.append(getCommandName());
-		usage.append(" ");
-		usage.append(getMandatoryParams());
-		usage.append(" ");
-		usage.append(getOptionalParams());
-		usage.append("\n\nKeys:\n");
-		usage.append(getKeyDescriptions());
-		usage.append(getOptionalKeyDescriptions());
-		String examples = getUsageExamples();
-		if (!examples.isEmpty()) {
-			usage.append("\n\nUsage examples:");
-			usage.append(getUsageExamples());
-		}
-		
-		return usage.toString();
-	}
-	
 	public int getErrorCode() {
 		return errorCode;
 	}

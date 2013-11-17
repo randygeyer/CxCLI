@@ -49,8 +49,9 @@ public class ScanCommand extends GeneralScanCommand {
     public static final Option PARAM_LOCATION_PRIVATE_KEY = OptionBuilder.withArgName("file").hasArg()
             .withDescription("GIT private key location. Required  if -LocationType is GIT in SSH mode.").create("LocationPrivateKey");
 
-    public static final Option PARAM_LOCATION_PUBLIC_KEY = OptionBuilder.withArgName("file").hasArg()
-            .withDescription("GIT public key location. Required  if -LocationType is GIT in SSH mode.").create("LocationPublicKey");
+  //  PARAM_LOCATION_PUBLIC_KEY option disabled because the private key parameter contains both the private and the public keys
+  //  public static final Option PARAM_LOCATION_PUBLIC_KEY = OptionBuilder.withArgName("file").hasArg()
+  //          .withDescription("GIT public key location. Required  if -LocationType is GIT in SSH mode.").create("LocationPublicKey");
 
     public static final Option PARAM_PRESET = OptionBuilder.withArgName("preset").hasArg()
             .withDescription("If preset is not specified, will use the predefined preset for an existing project, and Default preset for a new project. Optional.").create("Preset");
@@ -88,7 +89,7 @@ public class ScanCommand extends GeneralScanCommand {
         this.commandLineOptions.addOption(PARAM_LOCATION_PORT);
         this.commandLineOptions.addOption(PARAM_LOCATION_BRANCH);
         this.commandLineOptions.addOption(PARAM_LOCATION_PRIVATE_KEY);
-        this.commandLineOptions.addOption(PARAM_LOCATION_PUBLIC_KEY);
+        //this.commandLineOptions.addOption(PARAM_LOCATION_PUBLIC_KEY);
         this.commandLineOptions.addOption(PARAM_PRESET);
         this.commandLineOptions.addOption(PARAM_CONFIGURATION);
         this.commandLineOptions.addOption(PARAM_INCREMENTAL);
@@ -100,50 +101,10 @@ public class ScanCommand extends GeneralScanCommand {
 	@Override
 	protected void executeCommand() {
 
-		if (scParams.getLocationPrivateKey() != null
-				&& scParams.getLocationPublicKey() != null) {
-			File keyFile = new File(scParams.getLocationPublicKey());
+		if (scParams.getLocationPrivateKey() != null)
+        {
 			BufferedReader in = null;
-			try {
-				in = new BufferedReader(new FileReader(keyFile));
-				String line;
-				StringBuilder keyData = new StringBuilder();
-				while ((line = in.readLine()) != null) {
-					keyData.append(line);
-					keyData.append("\n");
-				}
-				scParams.setPublicKey(keyData.toString());
-			} catch (FileNotFoundException ex) {
-				if (log.isEnabledFor(Level.TRACE)) {
-					log.trace("Error reading public key file.", ex);
-				}
-				if (log.isEnabledFor(Level.ERROR)) {
-					log.error("Public key file not found [ "
-							+ scParams.getLocationPublicKey() + "]");
-				}
-				errorCode = CODE_ERRROR;
-				return;
-			} catch (IOException ex) {
-				if (log.isEnabledFor(Level.TRACE)) {
-					log.trace("Error reading public key file.", ex);
-				}
-				if (log.isEnabledFor(Level.ERROR)) {
-					log.error("Error reading public key file. "
-							+ ex.getMessage());
-				}
-				errorCode = CODE_ERRROR;
-				return;
-			} finally {
-				if (in != null) {
-					try {
-						in.close();
-					} catch (Exception e) {
-						// ignore
-					}
-				}
-			}
-
-			keyFile = new File(scParams.getLocationPrivateKey());
+            File keyFile = new File(scParams.getLocationPrivateKey());
 			try {
 				in = new BufferedReader(new FileReader(keyFile));
 				String line;
@@ -158,7 +119,7 @@ public class ScanCommand extends GeneralScanCommand {
 					log.trace("Error reading private key file.", ex);
 				}
 				if (log.isEnabledFor(Level.ERROR)) {
-					log.error("Private key file not found [ " + scParams.getLocationPublicKey() + "]");
+					log.error("Private key file not found [ " + scParams.getLocationPrivateKey() + "]");
 				}
 				errorCode = CODE_ERRROR;
 				return;
@@ -335,14 +296,8 @@ public class ScanCommand extends GeneralScanCommand {
 			throw new CommandLineArgumentException("Invalid location port ["
 					+ commandLineArguments.getOptionValue(PARAM_LOCATION_PORT.getOpt()) + "]");
 		}
-		if ((scParams.getLocationPrivateKey() != null && scParams
-				.getLocationPublicKey() == null)
-				|| (scParams.getLocationPrivateKey() == null && scParams
-						.getLocationPublicKey() != null)) {
-			throw new CommandLineArgumentException("Both private and public key must be specified");
-		}
+
 		if (scParams.getLocationPrivateKey() != null
-				&& scParams.getLocationPublicKey() != null
 				&& scParams.getLocationType() != null
 				&& scParams.getLocationType() == LocationType.git) {
 			File keyFile = new File(scParams.getLocationPrivateKey().trim());
@@ -355,15 +310,7 @@ public class ScanCommand extends GeneralScanCommand {
 						+ "[" + scParams.getLocationPrivateKey() + "]");
 			}
 
-			keyFile = new File(scParams.getLocationPublicKey().trim());
-			if (!keyFile.exists()) {
-				throw new CommandLineArgumentException("Public key file is not found " + "["
-						+ scParams.getLocationPrivateKey() + "]");
-			}
-			if (keyFile.isDirectory()) {
-				throw new CommandLineArgumentException("Public key file preferences folder " + "["
-						+ scParams.getLocationPrivateKey() + "]");
-			}
+
 		}
 
         if(scParams.isSsoLoginUsed()){
@@ -469,131 +416,9 @@ public class ScanCommand extends GeneralScanCommand {
 				+ " fullProjectName "/* + PARAM_LOCATION_TYPE + " ltype" */;
 	}
 
-	@Override
-	public String getOptionalParams() {
-		return "[ " + PARAM_LOCATION_TYPE + " ltype ] " + "[ "
-				+ PARAM_LOCATION_PATH + " locationPath ] " + "[ "
-				+ PARAM_LOCATION_USER + " locationUser ] " + "[ "
-				+ PARAM_LOCATION_PWD + " locationPassword ] " + "[ "
-				+ PARAM_LOCATION_URL + " locationURL ] " + "[ "
-				+ PARAM_LOCATION_PORT + " locationPort ] " + "[ "
-				+ PARAM_LOCATION_BRANCH + " locationBranch ] " + "[ "
-				+ PARAM_LOCATION_PRIVATE_KEY + " private.key ] " + "[ "
-				+ PARAM_LOCATION_PUBLIC_KEY + " public.key ] " + "[ "
-				+ PARAM_PRESET + " preset ] " + "[ "
-				+ PARAM_SCAN_COMMENT + " text ] [ " 
-				+ PARAM_CONFIGURATION + " configSet ] " + super.getOptionalParams() + " [ "
-				+ PARAM_INCREMENTAL + " ] " + "[ " + PARAM_PRIVATE + " ] " + "[ " + PARAM_USE_SSO + " ] ";
-	}
 
-	@Override
-	public String getOptionalKeyDescriptions() {
-		String leftSpacing = "  ";
-		StringBuilder keys = new StringBuilder(leftSpacing);
 
-		// keys.append(leftSpacing);
-		keys.append(PARAM_LOCATION_TYPE);
-		keys.append(KEY_DESCR_INTEND_SMALL);
-		keys.append("- Source location type ["
-				+ LocationType.folder.getLocationType() + "/"
-				+ LocationType.shared.getLocationType() + "/"
-				+ LocationType.tfs.getLocationType() + "/"
-				+ LocationType.svn.getLocationType() + "/"
-				+ LocationType.git.getLocationType() + "]. Optional\n");
 
-		keys.append(leftSpacing);
-		keys.append(PARAM_LOCATION_PATH);
-		keys.append(KEY_DESCR_INTEND_SMALL);
-		keys.append("- Local or shared path to sources. Optional. Required if "
-				+ PARAM_LOCATION_TYPE + " is "
-				+ LocationType.folder.getLocationType() + "/"
-				+ LocationType.shared.getLocationType() + "\n");
-
-		keys.append(leftSpacing);
-		keys.append(PARAM_LOCATION_USER);
-		keys.append(KEY_DESCR_INTEND_SMALL);
-		keys.append("- Source control system username. Optional. Required if "
-				+ PARAM_LOCATION_TYPE + " is "
-				+ LocationType.tfs.getLocationType() + "/"
-				+ LocationType.svn.getLocationType() + "\n");
-
-		keys.append(leftSpacing);
-		keys.append(PARAM_LOCATION_PWD);
-		keys.append(KEY_DESCR_INTEND_SINGLE);
-		keys.append("- Source control system password. Optional. Required if "
-				+ PARAM_LOCATION_TYPE + " is "
-				+ LocationType.tfs.getLocationType() + "/"
-				+ LocationType.svn.getLocationType() + "\n");
-
-		keys.append(leftSpacing);
-		keys.append(PARAM_LOCATION_URL);
-		keys.append(KEY_DESCR_INTEND_SMALL);
-		keys.append("- Source control system URL. Optional. Required if "
-				+ PARAM_LOCATION_TYPE + " is "
-				+ LocationType.tfs.getLocationType() + "/"
-				+ LocationType.svn.getLocationType() + "/"
-				+ LocationType.git.getLocationType() + "\n");
-
-		keys.append(leftSpacing);
-		keys.append(PARAM_LOCATION_PORT);
-		keys.append(KEY_DESCR_INTEND_SMALL);
-		keys.append("- Source control system port. Default 8080/80 (TFS/SVN). Optional.\n");
-
-		keys.append(leftSpacing);
-		keys.append(PARAM_LOCATION_BRANCH);
-		keys.append(KEY_DESCR_INTEND_SINGLE);
-		keys.append("- Sources GIT branch path. Optional. Required if "
-				+ PARAM_LOCATION_TYPE + " is "
-				+ LocationType.git.getLocationType() + "\n");
-
-		keys.append(leftSpacing);
-		keys.append(PARAM_LOCATION_PRIVATE_KEY);
-		keys.append(KEY_DESCR_INTEND_SINGLE);
-		keys.append("- GIT private key location. Optional. Required if "
-				+ PARAM_LOCATION_TYPE + " is "
-				+ LocationType.git.getLocationType() + "\n");
-
-		keys.append(leftSpacing);
-		keys.append(PARAM_LOCATION_PUBLIC_KEY);
-		keys.append(KEY_DESCR_INTEND_SINGLE);
-		keys.append("- GIT public key location. Optional. Required if "
-				+ PARAM_LOCATION_TYPE + " is "
-				+ LocationType.git.getLocationType() + "\n");
-
-		keys.append(leftSpacing);
-		keys.append(PARAM_PRESET);
-		keys.append(KEY_DESCR_INTEND_SMALL);
-		keys.append("- Preset. Default preset: \"Default\". If project alredy exists and parameter is not specified, project preset will be used. Optional.\n");
-		
-		keys.append(leftSpacing);
-		keys.append(PARAM_SCAN_COMMENT);
-		keys.append(KEY_DESCR_INTEND_SMALL);
-		keys.append("- The comment will be added to scan. Optional. Example: "+PARAM_SCAN_COMMENT+" 'important scan1'\n");
-
-		keys.append(leftSpacing);
-		keys.append(PARAM_CONFIGURATION);
-		keys.append(KEY_DESCR_INTEND_SINGLE);
-		keys.append("- Configuration. Default configuration: \"Default Configuration\". If project alredy exists and parameter is not specified, project confoguration will be used. Optional.\n");
-
-		keys.append(leftSpacing);
-		keys.append(PARAM_INCREMENTAL);
-		keys.append(KEY_DESCR_INTEND_SMALL);
-		keys.append("- Flag indicating incremental scan.\n");
-
-		keys.append(leftSpacing);
-		keys.append(PARAM_PRIVATE);
-		keys.append(KEY_DESCR_INTEND_SMALL);
-		keys.append("- Flag indicating private scan.\n");
-
-        keys.append(leftSpacing);
-        keys.append(PARAM_USE_SSO);
-        keys.append(KEY_DESCR_INTEND_SMALL);
-        keys.append("- Flag indicating SSO login method used, available only on Windows.\n");
-
-		keys.append(super.getOptionalKeyDescriptions());
-
-		return keys.toString();
-	}
 
 	@Override
 	public String getKeyDescriptions() {

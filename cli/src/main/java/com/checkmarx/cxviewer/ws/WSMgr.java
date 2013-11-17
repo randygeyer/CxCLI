@@ -143,7 +143,7 @@ public class WSMgr extends WSMgrBase {
 	public RunScanResult cliScan(String sessionId, String fullProjectName, long presetId, long configId,
 			SourceLocationType locationType, String locationpath, byte[] fileBytes, String user, String password,
 			RepositoryType repositoryType, String locationURL, Integer locationport, String locationBrach,
-			String publicKeyPath, String privateKeyPath, boolean incremental, boolean visibleToOther) {
+			String privateKey, boolean incremental, boolean visibleToOther) {
 
 		RunScanResult responseObj = new RunScanResult();
 
@@ -199,14 +199,12 @@ public class WSMgr extends WSMgrBase {
 					break;
 				case GIT:
 					sourceControlSetting.setGITBranch(locationBrach);
-					if (privateKeyPath != null && publicKeyPath != null) {
+					if (privateKey != null) {
 						sourceControlSetting.setProtocol(SourceControlProtocolType.SSH);
 						sourceControlSetting.setUseSSL(true);
-						sourceControlSetting.setSSHPrivateKey(privateKeyPath);
-						sourceControlSetting.setSSHPublicKey(publicKeyPath);
+						sourceControlSetting.setSSHPrivateKey(privateKey);
+						sourceControlSetting.setSSHPublicKey("EmptyStab");
 					}
-					//scanPath = new ScanPath();
-					// //sourceControlSetting.setProtocolParameters("");
 					break;
 				default:
 					break;
