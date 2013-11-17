@@ -111,7 +111,11 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
+            <!--Web service generation plugin
+                Currently disabled because the old web services directory contains
+                old unused classed whose removal required code cleanup. When the code
+                is clean, automatic generation can be enabled again.
+                plugin>
                 <groupId>org.jvnet.jax-ws-commons</groupId>
                 <artifactId>jaxws-maven-plugin</artifactId>
                 <version>2.3</version>
@@ -146,7 +150,7 @@
                     </execution>
                 </executions>
 
-            </plugin>
+            </plugin-->
         </plugins>
         <resources>
             <resource>
