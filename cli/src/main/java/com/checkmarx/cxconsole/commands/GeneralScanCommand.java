@@ -22,6 +22,7 @@ public abstract class GeneralScanCommand extends VerboseCommand {
     public static final Option PARAM_CSV_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results CSV file. Optional.").create("ReportCSV");
     public static final Option PARAM_RTF_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results RTF file. Optional.").create("ReportRTF");
     public static final Option PARAM_EXCLUDE = OptionBuilder.hasArgs().withArgName("file list").withDescription("List of ignored folders. Relative paths are resolved retalive to -LocationPath. Example: -LocationPathExclude test* log_*. Optional.").create("LocationPathExclude");
+    // Disabled
     public static final Option PARAM_EXCLUDED_EXTENSIONS = OptionBuilder.hasArgs().withArgName("extensions list").withDescription("List of ignored extensions. Example: tmp bak gif log. Optional.").create("ExtensionsExclude");
 
 
@@ -65,7 +66,10 @@ public abstract class GeneralScanCommand extends VerboseCommand {
         reportGroup.addOption(PARAM_RTF_FILE);
         this.commandLineOptions.addOptionGroup(reportGroup);
         this.commandLineOptions.addOption(PARAM_EXCLUDE);
-        this.commandLineOptions.addOption(PARAM_EXCLUDED_EXTENSIONS);
+        // Excluded extension is hidden from the user
+        // It was added to support Jenkins functionality, and since Jenking
+        // do not use CLI any more, this option was disabled.
+        //this.commandLineOptions.addOption(PARAM_EXCLUDED_EXTENSIONS);
     }
 
 
