@@ -58,10 +58,7 @@ public class ScanParams {
 		this.host = commandLine.getOptionValue(ScanCommand.PARAM_HOST.getOpt());
 		this.user = commandLine.getOptionValue(ScanCommand.PARAM_USER.getOpt());;
 		this.password = commandLine.getOptionValue(ScanCommand.PARAM_PASSWORD.getOpt());;
-		/*this.srcPath =  params.get(ScanCommand.PARAM_PROJ_DIR.toUpperCase());
-		if (srcPath != null && srcPath.endsWith(File.separator)) {
-			srcPath = srcPath.substring(0, srcPath.length() - 1);
-		}*/
+
 		this.presetName =  commandLine.getOptionValue(ScanCommand.PARAM_PRESET.getOpt());
 
 		this.xmlFile = commandLine.getOptionValue(ScanCommand.PARAM_XML_FILE.getOpt());
@@ -84,22 +81,7 @@ public class ScanParams {
 		this.logFile = commandLine.getOptionValue(ScanCommand.PARAM_LOG_FILE.getOpt());
         isVerbose = commandLine.hasOption(ScanCommand.PARAM_VERBOSE.getOpt());
 
-		/*this.folderProjName = params.get(ScanCommand.PARAM_FOLDER_PRJ_NAME.toUpperCase());
-		if (this.folderProjName!=null) {
-			this.folderProjName = this.folderProjName.replaceAll("/","\\\\");
-		}*/
-		
-		/*if (params.containsKey(ScanCommand.PARAM_VISIBLE_OTHERS.toUpperCase())){
-			this.isVisibleOthers = true;
-		}*/
-		
-		//Scan Project params
-		//this.projName = params.get(ScanCommand.PARAM_PRJ.toUpperCase());
-		/*if (params.containsKey(ScanProjectCommand.PARAM_VALIDATE.toUpperCase())) {
-			isValidateFix = true;
-		}*/
-		//this.spFolderName = params.get(ScanCommand.PARAM_FOLDER_NAME.toUpperCase());
-		
+
 		//Scan command
 		fullProjName =  commandLine.getOptionValue(ScanCommand.PARAM_PRJ_NAME.getOpt()); //params.get(ScanCommand.PARAM_PRJ_NAME.toUpperCase());
 		if (fullProjName != null) {
@@ -129,6 +111,13 @@ public class ScanParams {
 		}
 		locationUser = commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_USER.getOpt());
 		locationPassword = commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_PWD.getOpt());
+
+        if (locationType == LocationType.perforce && !commandLine.hasOption(ScanCommand.PARAM_LOCATION_PWD.getOpt()))
+        {
+            // In Perforce the password is not mandatory in case of a new user
+            locationPassword = "";
+        }
+
 		locationURL = commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_URL.getOpt());
 		locationBranch = commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_BRANCH.getOpt());
 		locationPrivateKey = commandLine.getOptionValue(ScanCommand.PARAM_LOCATION_PRIVATE_KEY.getOpt());
@@ -153,6 +142,9 @@ public class ScanParams {
 			} else if (locationType == LocationType.tfs) {
 				locationPort = 8080;
 			}
+            else if (locationType == LocationType.perforce) {
+                locationPort = 1666;
+            }
 		}
 		presetName =  commandLine.getOptionValue(ScanCommand.PARAM_PRESET.getOpt());
 		configuration =  commandLine.getOptionValue(ScanCommand.PARAM_CONFIGURATION.getOpt());

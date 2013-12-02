@@ -30,115 +30,35 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ScanResponse }
+     * Create an instance of {@link CxWSResponseSessionID }
      * 
      */
-    public ScanResponse createScanResponse() {
-        return new ScanResponse();
+    public CxWSResponseSessionID createCxWSResponseSessionID() {
+        return new CxWSResponseSessionID();
     }
 
     /**
-     * Create an instance of {@link GetProjectConfigurationResponse }
+     * Create an instance of {@link GetScanReport }
      * 
      */
-    public GetProjectConfigurationResponse createGetProjectConfigurationResponse() {
-        return new GetProjectConfigurationResponse();
+    public GetScanReport createGetScanReport() {
+        return new GetScanReport();
     }
 
     /**
-     * Create an instance of {@link GetStatusOfSingleScan }
+     * Create an instance of {@link ArrayOfConfigurationSet }
      * 
      */
-    public GetStatusOfSingleScan createGetStatusOfSingleScan() {
-        return new GetStatusOfSingleScan();
+    public ArrayOfConfigurationSet createArrayOfConfigurationSet() {
+        return new ArrayOfConfigurationSet();
     }
 
     /**
-     * Create an instance of {@link ArrayOfString }
+     * Create an instance of {@link CxWSCreateReportResponse }
      * 
      */
-    public ArrayOfString createArrayOfString() {
-        return new ArrayOfString();
-    }
-
-    /**
-     * Create an instance of {@link GetProjectConfiguration }
-     * 
-     */
-    public GetProjectConfiguration createGetProjectConfiguration() {
-        return new GetProjectConfiguration();
-    }
-
-    /**
-     * Create an instance of {@link GetProjectsDisplayData }
-     * 
-     */
-    public GetProjectsDisplayData createGetProjectsDisplayData() {
-        return new GetProjectsDisplayData();
-    }
-
-    /**
-     * Create an instance of {@link GetScanReportStatusResponse }
-     * 
-     */
-    public GetScanReportStatusResponse createGetScanReportStatusResponse() {
-        return new GetScanReportStatusResponse();
-    }
-
-    /**
-     * Create an instance of {@link Credentials }
-     * 
-     */
-    public Credentials createCredentials() {
-        return new Credentials();
-    }
-
-    /**
-     * Create an instance of {@link CreateScanReportResponse }
-     * 
-     */
-    public CreateScanReportResponse createCreateScanReportResponse() {
-        return new CreateScanReportResponse();
-    }
-
-    /**
-     * Create an instance of {@link CxWSResponsePresetList }
-     * 
-     */
-    public CxWSResponsePresetList createCxWSResponsePresetList() {
-        return new CxWSResponsePresetList();
-    }
-
-    /**
-     * Create an instance of {@link CxWSBasicRepsonse }
-     * 
-     */
-    public CxWSBasicRepsonse createCxWSBasicRepsonse() {
-        return new CxWSBasicRepsonse();
-    }
-
-    /**
-     * Create an instance of {@link GetStatusOfSingleScanResponse }
-     * 
-     */
-    public GetStatusOfSingleScanResponse createGetStatusOfSingleScanResponse() {
-        return new GetStatusOfSingleScanResponse();
-    }
-
-    /**
-     * Create an instance of {@link ArrayOfDayOfWeek }
-     * 
-     */
-    public ArrayOfDayOfWeek createArrayOfDayOfWeek() {
-        return new ArrayOfDayOfWeek();
-    }
-
-    /**
-     * Create an instance of {@link LoginResponse }
-     * 
-     */
-    public LoginResponse createLoginResponse() {
-        return new LoginResponse();
+    public CxWSCreateReportResponse createCxWSCreateReportResponse() {
+        return new CxWSCreateReportResponse();
     }
 
     /**
@@ -150,11 +70,75 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GetScanReportStatus }
+     * Create an instance of {@link GetConfigurationSetList }
      * 
      */
-    public GetScanReportStatus createGetScanReportStatus() {
-        return new GetScanReportStatus();
+    public GetConfigurationSetList createGetConfigurationSetList() {
+        return new GetConfigurationSetList();
+    }
+
+    /**
+     * Create an instance of {@link CxWSResponseProjectsDisplayData }
+     * 
+     */
+    public CxWSResponseProjectsDisplayData createCxWSResponseProjectsDisplayData() {
+        return new CxWSResponseProjectsDisplayData();
+    }
+
+    /**
+     * Create an instance of {@link ArrayOfScanPath }
+     * 
+     */
+    public ArrayOfScanPath createArrayOfScanPath() {
+        return new ArrayOfScanPath();
+    }
+
+    /**
+     * Create an instance of {@link ArrayOfString }
+     * 
+     */
+    public ArrayOfString createArrayOfString() {
+        return new ArrayOfString();
+    }
+
+    /**
+     * Create an instance of {@link SourceCodeSettings }
+     * 
+     */
+    public SourceCodeSettings createSourceCodeSettings() {
+        return new SourceCodeSettings();
+    }
+
+    /**
+     * Create an instance of {@link CxWSResponseScanResults }
+     * 
+     */
+    public CxWSResponseScanResults createCxWSResponseScanResults() {
+        return new CxWSResponseScanResults();
+    }
+
+    /**
+     * Create an instance of {@link Login }
+     * 
+     */
+    public Login createLogin() {
+        return new Login();
+    }
+
+    /**
+     * Create an instance of {@link Preset }
+     * 
+     */
+    public Preset createPreset() {
+        return new Preset();
+    }
+
+    /**
+     * Create an instance of {@link CliScanArgs }
+     * 
+     */
+    public CliScanArgs createCliScanArgs() {
+        return new CliScanArgs();
     }
 
     /**
@@ -166,11 +150,43 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CreateScanReport }
+     * Create an instance of {@link UserPermission }
      * 
      */
-    public CreateScanReport createCreateScanReport() {
-        return new CreateScanReport();
+    public UserPermission createUserPermission() {
+        return new UserPermission();
+    }
+
+    /**
+     * Create an instance of {@link SourceControlSettings }
+     * 
+     */
+    public SourceControlSettings createSourceControlSettings() {
+        return new SourceControlSettings();
+    }
+
+    /**
+     * Create an instance of {@link CxWSResponseGroupList }
+     * 
+     */
+    public CxWSResponseGroupList createCxWSResponseGroupList() {
+        return new CxWSResponseGroupList();
+    }
+
+    /**
+     * Create an instance of {@link Group }
+     * 
+     */
+    public Group createGroup() {
+        return new Group();
+    }
+
+    /**
+     * Create an instance of {@link ConfigurationSet }
+     * 
+     */
+    public ConfigurationSet createConfigurationSet() {
+        return new ConfigurationSet();
     }
 
     /**
@@ -182,35 +198,115 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ProjectDisplayData }
+     * Create an instance of {@link CreateScanReportResponse }
      * 
      */
-    public ProjectDisplayData createProjectDisplayData() {
-        return new ProjectDisplayData();
+    public CreateScanReportResponse createCreateScanReportResponse() {
+        return new CreateScanReportResponse();
     }
 
     /**
-     * Create an instance of {@link UpdateScanComment }
+     * Create an instance of {@link ScanAction }
      * 
      */
-    public UpdateScanComment createUpdateScanComment() {
-        return new UpdateScanComment();
+    public ScanAction createScanAction() {
+        return new ScanAction();
     }
 
     /**
-     * Create an instance of {@link CxDateTime }
+     * Create an instance of {@link CxWSResponseLoginData }
      * 
      */
-    public CxDateTime createCxDateTime() {
-        return new CxDateTime();
+    public CxWSResponseLoginData createCxWSResponseLoginData() {
+        return new CxWSResponseLoginData();
     }
 
     /**
-     * Create an instance of {@link UpdateScanCommentResponse }
+     * Create an instance of {@link ProjectConfiguration }
      * 
      */
-    public UpdateScanCommentResponse createUpdateScanCommentResponse() {
-        return new UpdateScanCommentResponse();
+    public ProjectConfiguration createProjectConfiguration() {
+        return new ProjectConfiguration();
+    }
+
+    /**
+     * Create an instance of {@link Credentials }
+     * 
+     */
+    public Credentials createCredentials() {
+        return new Credentials();
+    }
+
+    /**
+     * Create an instance of {@link CxWSResponseProjectConfig }
+     * 
+     */
+    public CxWSResponseProjectConfig createCxWSResponseProjectConfig() {
+        return new CxWSResponseProjectConfig();
+    }
+
+    /**
+     * Create an instance of {@link GetProjectConfiguration }
+     * 
+     */
+    public GetProjectConfiguration createGetProjectConfiguration() {
+        return new GetProjectConfiguration();
+    }
+
+    /**
+     * Create an instance of {@link LoginResponse }
+     * 
+     */
+    public LoginResponse createLoginResponse() {
+        return new LoginResponse();
+    }
+
+    /**
+     * Create an instance of {@link CxWSResponseRunID }
+     * 
+     */
+    public CxWSResponseRunID createCxWSResponseRunID() {
+        return new CxWSResponseRunID();
+    }
+
+    /**
+     * Create an instance of {@link ScanPath }
+     * 
+     */
+    public ScanPath createScanPath() {
+        return new ScanPath();
+    }
+
+    /**
+     * Create an instance of {@link ProjectSettings }
+     * 
+     */
+    public ProjectSettings createProjectSettings() {
+        return new ProjectSettings();
+    }
+
+    /**
+     * Create an instance of {@link ScanResponse }
+     * 
+     */
+    public ScanResponse createScanResponse() {
+        return new ScanResponse();
+    }
+
+    /**
+     * Create an instance of {@link GetScanReportStatus }
+     * 
+     */
+    public GetScanReportStatus createGetScanReportStatus() {
+        return new GetScanReportStatus();
+    }
+
+    /**
+     * Create an instance of {@link ScanActionSettings }
+     * 
+     */
+    public ScanActionSettings createScanActionSettings() {
+        return new ScanActionSettings();
     }
 
     /**
@@ -222,6 +318,46 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GetPresetList }
+     * 
+     */
+    public GetPresetList createGetPresetList() {
+        return new GetPresetList();
+    }
+
+    /**
+     * Create an instance of {@link CreateScanReport }
+     * 
+     */
+    public CreateScanReport createCreateScanReport() {
+        return new CreateScanReport();
+    }
+
+    /**
+     * Create an instance of {@link CxWSResponseScanStatus }
+     * 
+     */
+    public CxWSResponseScanStatus createCxWSResponseScanStatus() {
+        return new CxWSResponseScanStatus();
+    }
+
+    /**
+     * Create an instance of {@link GetScanReportResponse }
+     * 
+     */
+    public GetScanReportResponse createGetScanReportResponse() {
+        return new GetScanReportResponse();
+    }
+
+    /**
+     * Create an instance of {@link ArrayOfPreset }
+     * 
+     */
+    public ArrayOfPreset createArrayOfPreset() {
+        return new ArrayOfPreset();
+    }
+
+    /**
      * Create an instance of {@link CxWSReportRequest }
      * 
      */
@@ -230,11 +366,35 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ScanPath }
+     * Create an instance of {@link UpdateProjectIncrementalConfiguration }
      * 
      */
-    public ScanPath createScanPath() {
-        return new ScanPath();
+    public UpdateProjectIncrementalConfiguration createUpdateProjectIncrementalConfiguration() {
+        return new UpdateProjectIncrementalConfiguration();
+    }
+
+    /**
+     * Create an instance of {@link SsoLogin }
+     * 
+     */
+    public SsoLogin createSsoLogin() {
+        return new SsoLogin();
+    }
+
+    /**
+     * Create an instance of {@link CxDateTime }
+     * 
+     */
+    public CxDateTime createCxDateTime() {
+        return new CxDateTime();
+    }
+
+    /**
+     * Create an instance of {@link ArrayOfDayOfWeek }
+     * 
+     */
+    public ArrayOfDayOfWeek createArrayOfDayOfWeek() {
+        return new ArrayOfDayOfWeek();
     }
 
     /**
@@ -254,43 +414,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GetAssociatedGroupsListResponse }
+     * Create an instance of {@link GetStatusOfSingleScan }
      * 
      */
-    public GetAssociatedGroupsListResponse createGetAssociatedGroupsListResponse() {
-        return new GetAssociatedGroupsListResponse();
+    public GetStatusOfSingleScan createGetStatusOfSingleScan() {
+        return new GetStatusOfSingleScan();
     }
 
     /**
-     * Create an instance of {@link ScanActionSettings }
+     * Create an instance of {@link GetProjectConfigurationResponse }
      * 
      */
-    public ScanActionSettings createScanActionSettings() {
-        return new ScanActionSettings();
+    public GetProjectConfigurationResponse createGetProjectConfigurationResponse() {
+        return new GetProjectConfigurationResponse();
     }
 
     /**
-     * Create an instance of {@link GetPresetListResponse }
+     * Create an instance of {@link GetProjectsDisplayData }
      * 
      */
-    public GetPresetListResponse createGetPresetListResponse() {
-        return new GetPresetListResponse();
-    }
-
-    /**
-     * Create an instance of {@link CxWSResponseScanResults }
-     * 
-     */
-    public CxWSResponseScanResults createCxWSResponseScanResults() {
-        return new CxWSResponseScanResults();
-    }
-
-    /**
-     * Create an instance of {@link CxWSResponseProjectConfig }
-     * 
-     */
-    public CxWSResponseProjectConfig createCxWSResponseProjectConfig() {
-        return new CxWSResponseProjectConfig();
+    public GetProjectsDisplayData createGetProjectsDisplayData() {
+        return new GetProjectsDisplayData();
     }
 
     /**
@@ -302,43 +446,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link UserPermission }
+     * Create an instance of {@link SsoLoginResponse }
      * 
      */
-    public UserPermission createUserPermission() {
-        return new UserPermission();
-    }
-
-    /**
-     * Create an instance of {@link GetConfigurationSetListResponse }
-     * 
-     */
-    public GetConfigurationSetListResponse createGetConfigurationSetListResponse() {
-        return new GetConfigurationSetListResponse();
-    }
-
-    /**
-     * Create an instance of {@link GetScanReport }
-     * 
-     */
-    public GetScanReport createGetScanReport() {
-        return new GetScanReport();
-    }
-
-    /**
-     * Create an instance of {@link ArrayOfProjectDisplayData }
-     * 
-     */
-    public ArrayOfProjectDisplayData createArrayOfProjectDisplayData() {
-        return new ArrayOfProjectDisplayData();
-    }
-
-    /**
-     * Create an instance of {@link SourceCodeSettings }
-     * 
-     */
-    public SourceCodeSettings createSourceCodeSettings() {
-        return new SourceCodeSettings();
+    public SsoLoginResponse createSsoLoginResponse() {
+        return new SsoLoginResponse();
     }
 
     /**
@@ -350,67 +462,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ArrayOfScanPath }
+     * Create an instance of {@link GetScanReportStatusResponse }
      * 
      */
-    public ArrayOfScanPath createArrayOfScanPath() {
-        return new ArrayOfScanPath();
+    public GetScanReportStatusResponse createGetScanReportStatusResponse() {
+        return new GetScanReportStatusResponse();
     }
 
     /**
-     * Create an instance of {@link SourceControlSettings }
+     * Create an instance of {@link UpdateScanCommentResponse }
      * 
      */
-    public SourceControlSettings createSourceControlSettings() {
-        return new SourceControlSettings();
+    public UpdateScanCommentResponse createUpdateScanCommentResponse() {
+        return new UpdateScanCommentResponse();
     }
 
     /**
-     * Create an instance of {@link GetConfigurationSetList }
+     * Create an instance of {@link ArrayOfProjectDisplayData }
      * 
      */
-    public GetConfigurationSetList createGetConfigurationSetList() {
-        return new GetConfigurationSetList();
-    }
-
-    /**
-     * Create an instance of {@link CxWSCreateReportResponse }
-     * 
-     */
-    public CxWSCreateReportResponse createCxWSCreateReportResponse() {
-        return new CxWSCreateReportResponse();
-    }
-
-    /**
-     * Create an instance of {@link ProjectSettings }
-     * 
-     */
-    public ProjectSettings createProjectSettings() {
-        return new ProjectSettings();
-    }
-
-    /**
-     * Create an instance of {@link GetScanReportResponse }
-     * 
-     */
-    public GetScanReportResponse createGetScanReportResponse() {
-        return new GetScanReportResponse();
-    }
-
-    /**
-     * Create an instance of {@link Login }
-     * 
-     */
-    public Login createLogin() {
-        return new Login();
-    }
-
-    /**
-     * Create an instance of {@link CxWSResponseScanStatus }
-     * 
-     */
-    public CxWSResponseScanStatus createCxWSResponseScanStatus() {
-        return new CxWSResponseScanStatus();
+    public ArrayOfProjectDisplayData createArrayOfProjectDisplayData() {
+        return new ArrayOfProjectDisplayData();
     }
 
     /**
@@ -422,35 +494,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CxWSResponseSessionID }
+     * Create an instance of {@link ProjectDisplayData }
      * 
      */
-    public CxWSResponseSessionID createCxWSResponseSessionID() {
-        return new CxWSResponseSessionID();
-    }
-
-    /**
-     * Create an instance of {@link CliScanArgs }
-     * 
-     */
-    public CliScanArgs createCliScanArgs() {
-        return new CliScanArgs();
-    }
-
-    /**
-     * Create an instance of {@link CxWSResponseProjectsDisplayData }
-     * 
-     */
-    public CxWSResponseProjectsDisplayData createCxWSResponseProjectsDisplayData() {
-        return new CxWSResponseProjectsDisplayData();
-    }
-
-    /**
-     * Create an instance of {@link Preset }
-     * 
-     */
-    public Preset createPreset() {
-        return new Preset();
+    public ProjectDisplayData createProjectDisplayData() {
+        return new ProjectDisplayData();
     }
 
     /**
@@ -462,107 +510,59 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Group }
+     * Create an instance of {@link GetAssociatedGroupsListResponse }
      * 
      */
-    public Group createGroup() {
-        return new Group();
+    public GetAssociatedGroupsListResponse createGetAssociatedGroupsListResponse() {
+        return new GetAssociatedGroupsListResponse();
     }
 
     /**
-     * Create an instance of {@link ArrayOfConfigurationSet }
+     * Create an instance of {@link UpdateScanComment }
      * 
      */
-    public ArrayOfConfigurationSet createArrayOfConfigurationSet() {
-        return new ArrayOfConfigurationSet();
+    public UpdateScanComment createUpdateScanComment() {
+        return new UpdateScanComment();
     }
 
     /**
-     * Create an instance of {@link CxWSResponseGroupList }
+     * Create an instance of {@link GetStatusOfSingleScanResponse }
      * 
      */
-    public CxWSResponseGroupList createCxWSResponseGroupList() {
-        return new CxWSResponseGroupList();
+    public GetStatusOfSingleScanResponse createGetStatusOfSingleScanResponse() {
+        return new GetStatusOfSingleScanResponse();
     }
 
     /**
-     * Create an instance of {@link ProjectConfiguration }
+     * Create an instance of {@link CxWSResponsePresetList }
      * 
      */
-    public ProjectConfiguration createProjectConfiguration() {
-        return new ProjectConfiguration();
+    public CxWSResponsePresetList createCxWSResponsePresetList() {
+        return new CxWSResponsePresetList();
     }
 
     /**
-     * Create an instance of {@link CxWSResponseRunID }
+     * Create an instance of {@link GetConfigurationSetListResponse }
      * 
      */
-    public CxWSResponseRunID createCxWSResponseRunID() {
-        return new CxWSResponseRunID();
+    public GetConfigurationSetListResponse createGetConfigurationSetListResponse() {
+        return new GetConfigurationSetListResponse();
     }
 
     /**
-     * Create an instance of {@link GetPresetList }
+     * Create an instance of {@link GetPresetListResponse }
      * 
      */
-    public GetPresetList createGetPresetList() {
-        return new GetPresetList();
+    public GetPresetListResponse createGetPresetListResponse() {
+        return new GetPresetListResponse();
     }
 
     /**
-     * Create an instance of {@link UpdateProjectIncrementalConfiguration }
+     * Create an instance of {@link CxWSBasicRepsonse }
      * 
      */
-    public UpdateProjectIncrementalConfiguration createUpdateProjectIncrementalConfiguration() {
-        return new UpdateProjectIncrementalConfiguration();
-    }
-
-    /**
-     * Create an instance of {@link ConfigurationSet }
-     * 
-     */
-    public ConfigurationSet createConfigurationSet() {
-        return new ConfigurationSet();
-    }
-
-    /**
-     * Create an instance of {@link CxWSResponseLoginData }
-     * 
-     */
-    public CxWSResponseLoginData createCxWSResponseLoginData() {
-        return new CxWSResponseLoginData();
-    }
-
-    /**
-     * Create an instance of {@link ArrayOfPreset }
-     * 
-     */
-    public ArrayOfPreset createArrayOfPreset() {
-        return new ArrayOfPreset();
-    }
-
-    /**
-     * Create an instance of {@link SsoLoginResponse }
-     * 
-     */
-    public SsoLoginResponse createSsoLoginResponse() {
-        return new SsoLoginResponse();
-    }
-
-    /**
-     * Create an instance of {@link SsoLogin }
-     * 
-     */
-    public SsoLogin createSsoLogin() {
-        return new SsoLogin();
-    }
-
-    /**
-     * Create an instance of {@link ScanAction }
-     * 
-     */
-    public ScanAction createScanAction() {
-        return new ScanAction();
+    public CxWSBasicRepsonse createCxWSBasicRepsonse() {
+        return new CxWSBasicRepsonse();
     }
 
 }

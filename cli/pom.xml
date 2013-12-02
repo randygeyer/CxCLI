@@ -4,7 +4,7 @@
 
     <groupId>com.checkmarx</groupId>
     <artifactId>CxConsole</artifactId>
-    <version>7.1.2.18</version>
+    <version>7.1.2.19</version>
     <packaging>jar</packaging>
 
     <name>cli</name>
@@ -114,58 +114,58 @@
             <!--Web service generation plugin
                 Currently disabled because the old web services directory contains
                 old unused classed whose removal required code cleanup. When the code
-                is clean, automatic generation can be enabled again.
-                plugin>
-                <groupId>org.jvnet.jax-ws-commons</groupId>
-                <artifactId>jaxws-maven-plugin</artifactId>
-                <version>2.3</version>
-                <executions>
-                    <execution>
-                        <id>CxCLIWebService</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>wsimport</goal>
-                        </goals>
-                        <configuration>
-                            <wsdlUrls>
-                                <wsdlUrl>${basedir}/src/main/resources/com/checkmarx/cxcviewer/ws/CxCLIWebService.wsdl</wsdlUrl>
-                            </wsdlUrls>
-                            <packageName>com.checkmarx.cxviewer.ws.generated</packageName>
-                            <target>2.1</target>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>cxwsresolver</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>wsimport</goal>
-                        </goals>
-                        <configuration>
-                            <wsdlUrls>
-                                <wsdlUrl>${basedir}/src/main/resources/com/checkmarx/cxcviewer/ws/cxwsresolver.wsdl</wsdlUrl>
-                            </wsdlUrls>
-                            <packageName>com.checkmarx.cxviewer.ws.resolver</packageName>
-                            <target>2.1</target>
-                        </configuration>
-                    </execution>
-                </executions>
+                is clean, automatic generation can be enabled again !-->
+            <!--<plugin>
+            <groupId>org.jvnet.jax-ws-commons</groupId>
+            <artifactId>jaxws-maven-plugin</artifactId>
+            <version>2.3</version>
+            <executions>
+                <execution>
+                    <id>CxCLIWebService</id>
+                    <phase>generate-sources</phase>
+                    <goals>
+                        <goal>wsimport</goal>
+                    </goals>
+                    <configuration>
+                        <wsdlUrls>
+                            <wsdlUrl>${basedir}/src/main/resources/com/checkmarx/cxcviewer/ws/CxCLIWebServiceV1.wsdl</wsdlUrl>
+                        </wsdlUrls>
+                        <packageName>com.checkmarx.cxviewer.ws.generated</packageName>
+                        <target>2.1</target>
+                    </configuration>
+                </execution>
+                <execution>
+                    <id>cxwsresolver</id>
+                    <phase>generate-sources</phase>
+                    <goals>
+                        <goal>wsimport</goal>
+                    </goals>
+                    <configuration>
+                        <wsdlUrls>
+                            <wsdlUrl>${basedir}/src/main/resources/com/checkmarx/cxcviewer/ws/cxwsresolver.wsdl</wsdlUrl>
+                        </wsdlUrls>
+                        <packageName>com.checkmarx.cxviewer.ws.resolver</packageName>
+                        <target>2.1</target>
+                    </configuration>
+                </execution>
+            </executions>
 
-            </plugin-->
-        </plugins>
-        <resources>
-            <resource>
-                <directory>src/main/config</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
+        </plugin> -->
+    </plugins>
+    <resources>
+        <resource>
+            <directory>src/main/config</directory>
+            <filtering>true</filtering>
+        </resource>
+    </resources>
 
 
-    </build>
-    <distributionManagement>
-        <repository>
-            <id>internal.repo</id>
-            <name>Checkmarx Internal Repository</name>
-            <url>file:///Users/denis/Documents/iOSDevMac/Checkmarx/InternalMavenRepository</url>
-        </repository>
-    </distributionManagement>
+</build>
+<distributionManagement>
+    <repository>
+        <id>internal.repo</id>
+        <name>Checkmarx Internal Repository</name>
+        <url>file:///Users/denis/Documents/iOSDevMac/Checkmarx/InternalMavenRepository</url>
+    </repository>
+</distributionManagement>
 </project>

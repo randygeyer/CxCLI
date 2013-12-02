@@ -12,6 +12,7 @@ public enum LocationType {
 	//tsf_svn("TFS/SVN"),
 	tfs("TFS"),
 	svn("SVN"),
+    perforce("Perforce"),
 	git("GIT");
 	
 	private String locationType;
@@ -44,6 +45,7 @@ public enum LocationType {
 			case tfs:
 			case svn:
 			case git:
+            case perforce:
 				return SourceLocationType.SOURCE_CONTROL;
 		}
 		

@@ -26,22 +26,22 @@ public class ScanCommand extends GeneralScanCommand {
             "If project with such a name doesn't exist in the system, new project will be created.").create("ProjectName");
 
     public static final Option PARAM_LOCATION_TYPE = OptionBuilder.withArgName(LocationType.stringOfValues()).hasArg()
-            .withDescription("Source location type: folder, shared folder, source repository: SVN, TFS, GIT").create("LocationType");    // TODO: Check if CLI lib can check for correct param value
+            .withDescription("Source location type: folder, shared folder, source repository: SVN, TFS, GIT, Perforce").create("LocationType");    // TODO: Check if CLI lib can check for correct param value
 
     public static final Option PARAM_LOCATION_PATH = OptionBuilder.withArgName("path").hasArg()
             .withDescription("Local or shared path to sources or source repository branch. Required if -LocationType is folder/shared.").create("LocationPath");
 
     public static final Option PARAM_LOCATION_USER = OptionBuilder.withArgName("username").hasArg()
-            .withDescription("Source control or network username. Required if -LocationType is TFS/SVN/shared.").create("LocationUser");
+            .withDescription("Source control or network username. Required if -LocationType is TFS/SVN/Perforce/shared.").create("LocationUser");
 
     public static final Option PARAM_LOCATION_PWD = OptionBuilder.withArgName("password").hasArg()
             .withDescription("Source control or network password. Required if -LocationType is TFS/SVN/shared.").create("LocationPassword");
 
     public static final Option PARAM_LOCATION_URL = OptionBuilder.withArgName("url").hasArg()
-            .withDescription("Source control URL. Required if -LocationType is TFS/SVN/GIT.").create("LocationURL");
+            .withDescription("Source control URL. Required if -LocationType is TFS/SVN/GIT/Perforce. For Perforce SSL, set ssl:<URL> .").create("LocationURL");
 
     public static final Option PARAM_LOCATION_PORT = OptionBuilder.withArgName("url").hasArg()
-            .withDescription("Source control system port. Default 8080/80 (TFS/SVN). Optional.").create("LocationPort");
+            .withDescription("Source control system port. Default 8080/80/1666 (TFS/SVN/Perforce). Optional.").create("LocationPort");
 
     public static final Option PARAM_LOCATION_BRANCH = OptionBuilder.withArgName("branch").hasArg()
             .withDescription("Sources GIT branch. Required if -LocationType is GIT. Optional.").create("LocationBranch");
@@ -232,16 +232,16 @@ public class ScanCommand extends GeneralScanCommand {
 				+ PARAM_LOCATION_TYPE.getOpt() + " is [" + scParams.getLocationType() + "]");
 		}
 
-        if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs) &&
+        if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs || scParams.getLocationType() == LocationType.perforce) &&
              scParams.getLocationURL()==null)
         {
-            throw new CommandLineArgumentException(PARAM_LOCATION_URL.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS");
+            throw new CommandLineArgumentException(PARAM_LOCATION_URL.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS/Perforce");
         }
 
-        if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs) &&
+        if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs || scParams.getLocationType() == LocationType.perforce) &&
              scParams.getLocationUser()==null )
         {
-            throw new CommandLineArgumentException(PARAM_LOCATION_USER.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS");
+            throw new CommandLineArgumentException(PARAM_LOCATION_USER.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS/Perforce");
         }
         if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs) &&
              scParams.getLocationPassword() == null )
@@ -249,10 +249,10 @@ public class ScanCommand extends GeneralScanCommand {
             throw new CommandLineArgumentException(PARAM_LOCATION_PWD.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS");
         }
 
-        if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs) &&
+        if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs || scParams.getLocationType() == LocationType.perforce) &&
              scParams.getLocationPath()==null)
         {
-            throw new CommandLineArgumentException(PARAM_LOCATION_PATH.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS");
+            throw new CommandLineArgumentException(PARAM_LOCATION_PATH.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS/Perforce");
         }
 
         if ((scParams.getLocationType() == LocationType.git) &&
@@ -291,7 +291,7 @@ public class ScanCommand extends GeneralScanCommand {
             throw new CommandLineArgumentException(PARAM_LOCATION_PATH.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is folder");
         }
 
-		if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs)
+		if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs || scParams.getLocationType() == LocationType.perforce)
 				&& scParams.getLocationPort() == null) {
 			throw new CommandLineArgumentException("Invalid location port ["
 					+ commandLineArguments.getOptionValue(PARAM_LOCATION_PORT.getOpt()) + "]");

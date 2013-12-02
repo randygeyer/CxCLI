@@ -193,6 +193,7 @@ public class WSMgr extends WSMgrBase {
 				switch (repositoryType) {
 				case SVN:
 				case TFS:
+                case PERFORCE:
 					// sourceControlSetting.setUseSSL(false);
 					sourceControlSetting.setUserCredentials(creds);
                     generateScanPaths = true;

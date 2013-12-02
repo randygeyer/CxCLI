@@ -201,6 +201,10 @@ public class CxCLIScanJob extends CxScanJob {
 			if (rType.equals(RepositoryType.SVN)) {
 				return LocationType.svn;
 			}
+            else
+            if (rType.equals(RepositoryType.PERFORCE)) {
+                return LocationType.perforce;
+            }
 		}
 
 		return null;
@@ -443,6 +447,10 @@ public class CxCLIScanJob extends CxScanJob {
 					repoType = RepositoryType.SVN;
 					locationType = SourceLocationType.SOURCE_CONTROL;
 					break;
+                case perforce:
+                    repoType = RepositoryType.PERFORCE;
+                    locationType = SourceLocationType.SOURCE_CONTROL;
+                    break;
 				case git:
 					repoType = RepositoryType.GIT;
 					locationType = SourceLocationType.SOURCE_CONTROL;

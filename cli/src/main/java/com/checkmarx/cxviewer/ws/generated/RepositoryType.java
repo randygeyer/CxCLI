@@ -2,6 +2,7 @@
 package com.checkmarx.cxviewer.ws.generated;
 
 import javax.xml.bind.annotation.XmlEnum;
+import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -17,6 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="SVN"/>
  *     &lt;enumeration value="CVS"/>
  *     &lt;enumeration value="GIT"/>
+ *     &lt;enumeration value="Perforce"/>
  *     &lt;enumeration value="NONE"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
@@ -27,18 +29,30 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum RepositoryType {
 
-    TFS,
-    SVN,
-    CVS,
-    GIT,
-    NONE;
+    TFS("TFS"),
+    SVN("SVN"),
+    CVS("CVS"),
+    GIT("GIT"),
+    @XmlEnumValue("Perforce")
+    PERFORCE("Perforce"),
+    NONE("NONE");
+    private final String value;
+
+    RepositoryType(String v) {
+        value = v;
+    }
 
     public String value() {
-        return name();
+        return value;
     }
 
     public static RepositoryType fromValue(String v) {
-        return valueOf(v);
+        for (RepositoryType c: RepositoryType.values()) {
+            if (c.value.equals(v)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(v);
     }
 
 }
