@@ -26,7 +26,7 @@ public class ScanCommand extends GeneralScanCommand {
             "If project with such a name doesn't exist in the system, new project will be created.").create("ProjectName");
 
     public static final Option PARAM_LOCATION_TYPE = OptionBuilder.withArgName(LocationType.stringOfValues()).hasArg()
-            .withDescription("Source location type: folder, shared folder, source repository: SVN, TFS, GIT, Perforce").create("LocationType");    // TODO: Check if CLI lib can check for correct param value
+            .withDescription("Source location type: folder, shared, SVN, TFS, GIT, Perforce").create("LocationType");    // TODO: Check if CLI lib can check for correct param value
 
     public static final Option PARAM_LOCATION_PATH = OptionBuilder.withArgName("path").hasArg()
             .withDescription("Local or shared path to sources or source repository branch. Required if -LocationType is folder/shared.").create("LocationPath");
