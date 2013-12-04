@@ -35,7 +35,7 @@ public class ScanCommand extends GeneralScanCommand {
             .withDescription("Source control or network username. Required if -LocationType is TFS/SVN/Perforce/shared.").create("LocationUser");
 
     public static final Option PARAM_LOCATION_PWD = OptionBuilder.withArgName("password").hasArg()
-            .withDescription("Source control or network password. Required if -LocationType is TFS/SVN/shared.").create("LocationPassword");
+            .withDescription("Source control or network password. Required if -LocationType is TFS/SVN/Perforce/shared.").create("LocationPassword");
 
     public static final Option PARAM_LOCATION_URL = OptionBuilder.withArgName("url").hasArg()
             .withDescription("Source control URL. Required if -LocationType is TFS/SVN/GIT/Perforce. For Perforce SSL, set ssl:<URL> .").create("LocationURL");
