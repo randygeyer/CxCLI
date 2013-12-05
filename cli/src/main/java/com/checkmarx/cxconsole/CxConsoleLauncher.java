@@ -2,6 +2,7 @@ package com.checkmarx.cxconsole;
 
 import java.io.Console;
 
+import com.checkmarx.cxconsole.commands.GeneralScanCommand;
 import com.checkmarx.cxconsole.commands.ScanCommand;
 import com.checkmarx.cxconsole.utils.CommandLineArgumentException;
 import org.apache.commons.cli.HelpFormatter;
@@ -63,7 +64,14 @@ public class CxConsoleLauncher {
 
             try {
                 command.parseArguments(argumentsLessCommandName);
-                command.resolveServerUrl();
+                try{
+                    command.resolveServerUrl();
+                }
+                catch (Exception e){
+                    log.fatal(GeneralScanCommand.MSG_ERR_SRV_NAME_OR_NETWORK+"\n");
+                    command.printHelp();
+                    return CxConsoleCommand.CODE_ERRROR;
+                }
                 command.checkParameters();
             } catch (ParseException e)
             {
@@ -73,6 +81,11 @@ public class CxConsoleLauncher {
             } catch (CommandLineArgumentException e)
             {
                 log.fatal("Command parameters are invalid: " + e.getMessage()+"\n");
+                command.printHelp();
+                return CxConsoleCommand.CODE_ERRROR;
+            }catch (Exception e)
+            {
+                log.fatal("Command parameters are invalid: " + e.getMessage() + "\n");
                 command.printHelp();
                 return CxConsoleCommand.CODE_ERRROR;
             }

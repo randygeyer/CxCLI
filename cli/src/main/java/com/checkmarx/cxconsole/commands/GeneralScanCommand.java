@@ -33,8 +33,7 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 	/*
 	 * Error messages
 	 */
-	public static String MSG_ERR_SRV_NAME_OR_NETWORK = "Server Name is not valid or network unavailable.";
-	public static String MSG_ERR_SRV_NAME_INCORRECT = "Not correct server name.";
+	public static String MSG_ERR_SRV_NAME_OR_NETWORK = "Server Name is invalid or network is unavailable.";
 	public static String MSG_ERR_PRJ_DIR_NOT_EXIST = "Project directory does not exist.";
 	public static String MSG_ERR_PRJ_PATH_NOT_DIR = "Project path does not reference a directory.";
 	public static String MSG_ERR_EXCLUDED_DIR = "Ignored folders list is invalid.";
@@ -89,13 +88,13 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 			throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
 		}
 		catch (MalformedURLException e) {
-			throw new Exception(MSG_ERR_SRV_NAME_INCORRECT, e);
+			throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
 		}
 		catch (IOException e) {
 			throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
 		}
 		catch (Throwable e) {
-			throw new Exception(MSG_ERR_SRV_NAME_INCORRECT, e);
+			throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
 		}
 		
 		scParams.setHost(generatedHost);
