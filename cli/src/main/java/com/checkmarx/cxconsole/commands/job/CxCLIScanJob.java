@@ -349,13 +349,8 @@ public class CxCLIScanJob extends CxScanJob {
 				}
 			}
 		} else {
-			if (presets != null) {
-				for (Preset preset : presets) {
-					if (preset.getPresetName().equalsIgnoreCase("default")) {
-						selectedPreset = preset;
-						break;
-					}
-				}
+			if (presets != null && presets.size() > 0) {
+				selectedPreset = presets.get(0); //the first preset should be the default (order determined by server)
 			}
 		}
 		
