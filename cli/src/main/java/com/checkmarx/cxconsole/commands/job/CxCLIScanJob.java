@@ -542,13 +542,24 @@ public class CxCLIScanJob extends CxScanJob {
 	
 	private boolean packFolder() {
 		File projectDir = new File(params.getLocationPath());
-		if (!projectDir.exists()) {
-			if (log.isEnabledFor(Level.ERROR)) {
-				log.error("Project directory [" + params.getLocationPath()
-						+ "] does not exist.");
-			}
-			return false;
-		}		
+        if (!projectDir.exists()) {
+            //if there is a semicolon separator, take the first path
+            String[] paths = params.getLocationPath().split(";");
+            if (paths != null && paths.length > 0){
+                projectDir = new File(paths[0]);
+            }
+            if (projectDir.exists()) {
+                params.setLocationPath(paths[0]);
+            }
+            else{
+                if (log.isEnabledFor(Level.ERROR)) {
+                    log.error("Project directory [" + params.getLocationPath()
+                            + "] does not exist.");
+                }
+                return false;
+            }
+        }
+
 		if (!projectDir.isDirectory()) {
 			if (log.isEnabledFor(Level.ERROR)) {
 				log.error("Project path [" + params.getLocationPath()
