@@ -1,9 +1,7 @@
 package com.checkmarx.cxconsole.utils;
 
 import java.io.File;
-import java.util.Map;
 
-import com.checkmarx.cxconsole.commands.GeneralScanCommand;
 import com.checkmarx.cxconsole.commands.ScanCommand;
 //import com.checkmarx.cxconsole.commands.ScanFolderCommand;
 //import com.checkmarx.cxconsole.commands.ScanProjectCommand;
@@ -45,10 +43,10 @@ public class ScanParams {
 	private String locationPrivateKey;
 	private String privateKey;
 	private String configuration;
-	private String[] excludedFolders;
-	private boolean hasExcludedParam = false;
-    private String[] excludedExtensions;
-    private boolean hasExcludedExtensionsParam = false;
+	private String[] excludedFolders = new String[]{};
+	private boolean hasExcludedFoldersParam = false;
+    private String[] excludedFiles = new String[]{};
+    private boolean hasExcludedFilesParam = false;
     private boolean isSsoLoginUsed = false;
     private boolean hasPasswordParam = false;
     private boolean hasUserParam = false;
@@ -56,8 +54,8 @@ public class ScanParams {
 	
 	public ScanParams(CommandLine commandLine) {
 		this.host = commandLine.getOptionValue(ScanCommand.PARAM_HOST.getOpt());
-		this.user = commandLine.getOptionValue(ScanCommand.PARAM_USER.getOpt());;
-		this.password = commandLine.getOptionValue(ScanCommand.PARAM_PASSWORD.getOpt());;
+		this.user = commandLine.getOptionValue(ScanCommand.PARAM_USER.getOpt());
+		this.password = commandLine.getOptionValue(ScanCommand.PARAM_PASSWORD.getOpt());
 
 		this.presetName =  commandLine.getOptionValue(ScanCommand.PARAM_PRESET.getOpt());
 
@@ -154,15 +152,15 @@ public class ScanParams {
         hasUserParam = commandLine.hasOption(ScanCommand.PARAM_USER.getOpt());
         hasPasswordParam = commandLine.hasOption(ScanCommand.PARAM_PASSWORD.getOpt());
 
-		if (commandLine.hasOption(ScanCommand.PARAM_EXCLUDE.getOpt())){
-			hasExcludedParam = true;
-			excludedFolders = commandLine.getOptionValues(ScanCommand.PARAM_EXCLUDE.getOpt());
+		if (commandLine.hasOption(ScanCommand.PARAM_EXCLUDE_FOLDERS.getOpt())){
+			hasExcludedFoldersParam = true;
+			excludedFolders = commandLine.getOptionValues(ScanCommand.PARAM_EXCLUDE_FOLDERS.getOpt());
 		}
 
-        if (commandLine.hasOption(ScanCommand.PARAM_EXCLUDED_EXTENSIONS.getOpt()))
+        if (commandLine.hasOption(ScanCommand.PARAM_EXCLUDE_FILES.getOpt()))
         {
-            hasExcludedExtensionsParam = true;
-            excludedExtensions = commandLine.getOptionValues(ScanCommand.PARAM_EXCLUDED_EXTENSIONS.getOpt());
+            hasExcludedFilesParam = true;
+            excludedFiles = commandLine.getOptionValues(ScanCommand.PARAM_EXCLUDE_FILES.getOpt());
         }
 	}
 
@@ -326,9 +324,6 @@ public class ScanParams {
 		return configuration;
 	}
 
-
-
-
 	public String getPrivateKey() {
 		return privateKey;
 	}
@@ -345,20 +340,20 @@ public class ScanParams {
 		this.excludedFolders = excludedFolders;
 	}
 
-	public boolean hasExcludedParam() {
-		return hasExcludedParam;
+	public boolean hasExcludedFoldersParam() {
+		return hasExcludedFoldersParam;
 	}
 
-	public void setHasExcludedParam(boolean hasExcludedParam) {
-		this.hasExcludedParam = hasExcludedParam;
+	public void setHasExcludedFoldersParam(boolean hasExcludedFoldersParam) {
+		this.hasExcludedFoldersParam = hasExcludedFoldersParam;
 	}
 
-    public String[] getExcludedExtensions() {
-        return excludedExtensions;
+    public String[] getExcludedFiles() {
+        return excludedFiles;
     }
 
-    public boolean hasExcludedExtensionsParam() {
-        return hasExcludedExtensionsParam;
+    public boolean hasExcludedFilesParam() {
+        return hasExcludedFilesParam;
     }
 
     public boolean isSsoLoginUsed(){
@@ -372,4 +367,5 @@ public class ScanParams {
     public boolean hasPasswordParam(){
         return hasPasswordParam;
     }
+
 }

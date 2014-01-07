@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="SourceControlSetting" type="{http://Checkmarx.com/v7}SourceControlSettings" minOccurs="0"/>
  *         &lt;element name="PackagedCode" type="{http://Checkmarx.com/v7}LocalCodeContainer" minOccurs="0"/>
  *         &lt;element name="SourcePullingAction" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="SourceFilterLists" type="{http://Checkmarx.com/v7}SourceFilterPatterns" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -38,7 +39,8 @@ import javax.xml.bind.annotation.XmlType;
     "pathList",
     "sourceControlSetting",
     "packagedCode",
-    "sourcePullingAction"
+    "sourcePullingAction",
+    "sourceFilterLists"
 })
 public class SourceCodeSettings {
 
@@ -54,6 +56,8 @@ public class SourceCodeSettings {
     protected LocalCodeContainer packagedCode;
     @XmlElement(name = "SourcePullingAction")
     protected String sourcePullingAction;
+    @XmlElement(name = "SourceFilterLists")
+    protected SourceFilterPatterns sourceFilterLists;
 
     /**
      * Gets the value of the sourceOrigin property.
@@ -197,6 +201,30 @@ public class SourceCodeSettings {
      */
     public void setSourcePullingAction(String value) {
         this.sourcePullingAction = value;
+    }
+
+    /**
+     * Gets the value of the sourceFilterLists property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link SourceFilterPatterns }
+     *     
+     */
+    public SourceFilterPatterns getSourceFilterLists() {
+        return sourceFilterLists;
+    }
+
+    /**
+     * Sets the value of the sourceFilterLists property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link SourceFilterPatterns }
+     *     
+     */
+    public void setSourceFilterLists(SourceFilterPatterns value) {
+        this.sourceFilterLists = value;
     }
 
 }

@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="SourceCodeSettings" type="{http://Checkmarx.com/v7}SourceCodeSettings" minOccurs="0"/>
  *         &lt;element name="ScheduleSettings" type="{http://Checkmarx.com/v7}ScheduleSettings" minOccurs="0"/>
  *         &lt;element name="ScanActionSettings" type="{http://Checkmarx.com/v7}ScanActionSettings" minOccurs="0"/>
+ *         &lt;element name="ProjectIssueTrackingSettings" type="{http://Checkmarx.com/v7}CxWSProjectIssueTrackingSettings" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -34,7 +35,8 @@ import javax.xml.bind.annotation.XmlType;
     "projectSettings",
     "sourceCodeSettings",
     "scheduleSettings",
-    "scanActionSettings"
+    "scanActionSettings",
+    "projectIssueTrackingSettings"
 })
 public class ProjectConfiguration {
 
@@ -46,6 +48,8 @@ public class ProjectConfiguration {
     protected ScheduleSettings scheduleSettings;
     @XmlElement(name = "ScanActionSettings")
     protected ScanActionSettings scanActionSettings;
+    @XmlElement(name = "ProjectIssueTrackingSettings")
+    protected CxWSProjectIssueTrackingSettings projectIssueTrackingSettings;
 
     /**
      * Gets the value of the projectSettings property.
@@ -141,6 +145,30 @@ public class ProjectConfiguration {
      */
     public void setScanActionSettings(ScanActionSettings value) {
         this.scanActionSettings = value;
+    }
+
+    /**
+     * Gets the value of the projectIssueTrackingSettings property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CxWSProjectIssueTrackingSettings }
+     *     
+     */
+    public CxWSProjectIssueTrackingSettings getProjectIssueTrackingSettings() {
+        return projectIssueTrackingSettings;
+    }
+
+    /**
+     * Sets the value of the projectIssueTrackingSettings property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CxWSProjectIssueTrackingSettings }
+     *     
+     */
+    public void setProjectIssueTrackingSettings(CxWSProjectIssueTrackingSettings value) {
+        this.projectIssueTrackingSettings = value;
     }
 
 }

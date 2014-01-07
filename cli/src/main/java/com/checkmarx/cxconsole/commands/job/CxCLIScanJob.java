@@ -5,12 +5,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import com.checkmarx.components.zipper.ZipListener;
+import com.checkmarx.components.zipper.Zipper;
+import com.checkmarx.cxviewer.ws.generated.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -20,14 +24,6 @@ import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxconsole.utils.LocationType;
 import com.checkmarx.cxconsole.utils.ScanParams;
 import com.checkmarx.cxconsole.utils.ZipPacker;
-import com.checkmarx.cxviewer.ws.generated.ConfigurationSet;
-import com.checkmarx.cxviewer.ws.generated.Credentials;
-import com.checkmarx.cxviewer.ws.generated.Preset;
-import com.checkmarx.cxviewer.ws.generated.ProjectDisplayData;
-import com.checkmarx.cxviewer.ws.generated.ProjectSettings;
-import com.checkmarx.cxviewer.ws.generated.RepositoryType;
-import com.checkmarx.cxviewer.ws.generated.SourceCodeSettings;
-import com.checkmarx.cxviewer.ws.generated.SourceLocationType;
 import com.checkmarx.cxviewer.ws.results.GetConfigurationsListResult;
 import com.checkmarx.cxviewer.ws.results.GetPresetsListResult;
 import com.checkmarx.cxviewer.ws.results.GetProjectConfigResult;
@@ -37,9 +33,8 @@ import com.checkmarx.cxviewer.ws.results.UpdateScanCommentResult;
 
 public class CxCLIScanJob extends CxScanJob {
 
-	// Location of temporary file with packed sources to scan
-	private String zipFileLocation;	
-	private long projectId = -1;
+	private byte[] zippedSourcesBytes;
+    private long projectId = -1;
 	
 	private List<Preset> presets;
 	private Preset selectedPreset;
@@ -82,20 +77,26 @@ public class CxCLIScanJob extends CxScanJob {
 			long maxZipSize = ConfigMgr.getCfgMgr().getLongProperty(ConfigMgr.KEY_MAX_ZIP_SIZE);
 			maxZipSize *= (1024*1024);
 			
-			if (!packFolder()) {
+			if (!packFolder(maxZipSize)) {
 				throw new Exception("Error during packing sources.");
 			}
 			
 			// check packed sources size
-			File zipFile = new File(zipFileLocation);
-			long size = zipFile.length();
-			if (size > maxZipSize) {
-				// if size greater that restricted value, stop scan
+			if (zippedSourcesBytes == null || zippedSourcesBytes.length == 0) {
+				// if size is greater that restricted value, stop scan
 				if (log.isEnabledFor(Level.ERROR)) {
-					log.error("Packed project size is greater than " + maxZipSize);
+					log.error("Packing sources has failed: empty packed source ");
 				}
-				throw new Exception("Packed project size is greater than " + maxZipSize);
+				throw new Exception("Packing sources has failed: empty packed source ");
 			}
+
+            if (zippedSourcesBytes.length > maxZipSize) {
+                // if size greater that restricted value, stop scan
+                if (log.isEnabledFor(Level.ERROR)) {
+                    log.error("Packed project size is greater than " + maxZipSize);
+                }
+                throw new Exception("Packed project size is greater than " + maxZipSize);
+            }
 		}
 
 		// check project src type
@@ -388,42 +389,7 @@ public class CxCLIScanJob extends CxScanJob {
 		RunScanResult runScanResult = null;
 		int count = 0;
 		String errMsg = "";
-		
-		byte[] fileContent = null;
-		if (zipFileLocation != null) {
-			params.setLocationPath(zipFileLocation);
-			File inputFile = new File(zipFileLocation);
-			FileInputStream fin = null;
-			try {
-				fin = new FileInputStream(inputFile);
-				fileContent = new byte[(int) inputFile.length()];
-				fin.read(fileContent);
-			} catch (FileNotFoundException e) {
-				if (log.isEnabledFor(Level.TRACE)) {
-					log.trace("Error opening packed sources file "
-							+ "to send to server: file not found.", e);
-				}
-				throw e;
-			} catch (SecurityException e) {
-				if (log.isEnabledFor(Level.TRACE)) {
-					log.trace("Error access packed sources file "
-							+ "while send them to server.", e);
-				}
-				throw e;
-			} catch (IOException e) {
-				if (log.isEnabledFor(Level.TRACE)) {
-					log.trace("Error reading packed sources file "
-							+ "while send them to server.", e);
-				}
-				throw e;
-			} finally {
-				try {
-					if (fin != null) {
-						fin.close();
-					}
-				} catch (Exception e) {}
-			}
-		}
+
 		SourceLocationType locationType = null;
 		RepositoryType repoType = null;
 		if (params.getLocationType() != null) {
@@ -462,7 +428,7 @@ public class CxCLIScanJob extends CxScanJob {
 		
 		// Start scan
 		int getStatusInterval = ConfigMgr.getCfgMgr().getIntProperty(ConfigMgr.KEY_PROGRESS_INTERVAL);
-		
+
 		while ((runScanResult == null || !runScanResult.isSuccesfullResponce())	&& count < retriesNum) {
 			
 			try {
@@ -479,18 +445,25 @@ public class CxCLIScanJob extends CxScanJob {
 					if (params.getLocationBranch() != null) {
 						srcCodeSett.getSourceControlSetting().setGITBranch(params.getLocationBranch());
 					}
+
+                    SourceFilterPatterns filterPatterns = new SourceFilterPatterns();
+                    filterPatterns.setExcludeFilesPatterns(StringUtils.join(params.getExcludedFiles(),','));
+                    filterPatterns.setExcludeFoldersPatterns(StringUtils.join(params.getExcludedFolders(),','));
+                    srcCodeSett.setSourceFilterLists(filterPatterns);
+
 					runScanResult = wsMgr.cliScan(sessionId, prjSett, srcCodeSett,params.isValidateFix(), params.isVisibleOthers());
 				}
 				else {
 					runScanResult = wsMgr.cliScan(sessionId, /*"CxServer\\" +*/ params.getFullProjName(),
 							(selectedPreset == null ? 0 : selectedPreset.getID()), 
 							(selectedConfig == null ? 0 : selectedConfig.getID()),
-							locationType, params.getLocationPath(), fileContent, 
+							locationType, params.getLocationPath(), zippedSourcesBytes,
 							params.getLocationUser(), params.getLocationPassword(),
 							repoType, params.getLocationURL(), 
 							params.getLocationPort(), params.getLocationBranch(),
 							params.getPrivateKey(),
-							params.isValidateFix(), params.isVisibleOthers());
+							params.isValidateFix(), params.isVisibleOthers(),
+                            params.getExcludedFiles(), params.getExcludedFolders());
 				}
 			}
 			catch (Throwable e) {
@@ -540,7 +513,7 @@ public class CxCLIScanJob extends CxScanJob {
 		runId = runScanResult.getRunId();
 	}
 	
-	private boolean packFolder() {
+	private boolean packFolder(long maxZipSize) {
 		File projectDir = new File(params.getLocationPath());
         if (!projectDir.exists()) {
             //if there is a semicolon separator, take the first path
@@ -567,44 +540,84 @@ public class CxCLIScanJob extends CxScanJob {
 			}
 			return false;
 		}
-		
-		File[] ignoredFolders = null;
-		if (params.hasExcludedParam()) {
-			ignoredFolders = canonicalIgnoredFolders(params.getExcludedFolders());
-		}
-		else {
-            String defaultExcludedFolders = ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_IGNORED_FOLDERS);
-			ignoredFolders = canonicalIgnoredFolders(StringUtils.split(defaultExcludedFolders," ,"));
-		}
 
-        String[] ignoredExtensions = null;
-        if (params.hasExcludedExtensionsParam())
+        ZipListener listener = new ZipListener() {
+            @Override
+            public void updateProgress(String fileName, long size) {
+            }
+        };
+        try {
+            Zipper zipper = new Zipper();
+            String[] excludePatterns = createExcludePatternsArray();
+            String[] includeAllPatterns = new String[]{"**/*"};//the default is to include all files
+            zippedSourcesBytes =  zipper.zip(new File(params.getLocationPath()),excludePatterns, includeAllPatterns, maxZipSize,listener);
+
+        } catch (Exception e)
         {
-            ignoredExtensions = params.getExcludedExtensions();
-        } else {
-		    String defaultExcludedExtensions = ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_IGNORED_EXTENSIONS);
-            ignoredExtensions = StringUtils.split(defaultExcludedExtensions," ,");
+            if (log.isEnabledFor(Level.ERROR)) {
+                log.error("Error occurred during zipping source files");
+            }
+            return false;
         }
-		
-		try {
-			File temp = File.createTempFile("prj", ".zip");
-			temp.deleteOnExit();
-			zipFileLocation = temp.getAbsolutePath();
-		}
-		catch (IOException e) {
-			if (log.isEnabledFor(Level.ERROR)) {
-				log.error("Error occurred during creating temporary packed file");
-			}
-			return false;
-		}
-		
-		
-		ZipPacker packer = new ZipPacker(params.getLocationPath(),
-				zipFileLocation, 
-				ignoredFolders,
-				ignoredExtensions);
-		return packer.zipFolder();
+        return true;
 	}
+
+    private String[] createExcludePatternsArray(){
+
+        LinkedList<String> excludePatterns = new LinkedList<String>();
+        try{
+            String defaultExcludedFolders = ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_EXCLUDED_FOLDERS);
+            for(String folder : StringUtils.split(defaultExcludedFolders,","))
+            {
+                String trimmedPattern = folder.trim();
+                if (trimmedPattern != "")
+                {
+                    excludePatterns.add("**/"+trimmedPattern.replace('\\', '/')+"/**/*");
+                }
+            }
+
+            String defaultExcludedFiles = ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_EXCLUDED_FILES);
+            for(String file : StringUtils.split(defaultExcludedFiles, ","))
+            {
+                String trimmedPattern = file.trim();
+                if (trimmedPattern != "")
+                {
+                    excludePatterns.add("**/" + trimmedPattern.replace('\\', '/'));
+                }
+            }
+
+            if (params.hasExcludedFoldersParam())
+            {
+                for(String folder : params.getExcludedFolders())
+                {
+                    String trimmedPattern = folder.trim();
+                    if (trimmedPattern != "")
+                    {
+                        excludePatterns.add("**/"+trimmedPattern.replace('\\', '/') +"/**/*");
+                    }
+                }
+            }
+
+            if (params.hasExcludedFilesParam())
+            {
+                for(String file : params.getExcludedFiles())
+                {
+                    String trimmedPattern = file.trim();
+                    if (trimmedPattern != "")
+                    {
+                        excludePatterns.add("**/" + trimmedPattern.replace('\\', '/'));
+                    }
+                }
+            }
+        } catch (Exception e)
+        {
+            if (log.isEnabledFor(Level.ERROR)) {
+                log.error("Error occurred creation of exclude patterns");
+            }
+        }
+        return excludePatterns.toArray(new String[]{});
+
+    }
 
     private File[] canonicalIgnoredFolders(String[] ignoredFolderNames )
     {

@@ -21,9 +21,8 @@ public abstract class GeneralScanCommand extends VerboseCommand {
     public static final Option PARAM_PDF_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results PDF file. Optional.").create("ReportPDF");
     public static final Option PARAM_CSV_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results CSV file. Optional.").create("ReportCSV");
     public static final Option PARAM_RTF_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results RTF file. Optional.").create("ReportRTF");
-    public static final Option PARAM_EXCLUDE = OptionBuilder.hasArgs().withArgName("file list").withDescription("List of ignored folders. Relative paths are resolved retalive to -LocationPath. Example: -LocationPathExclude test* log_*. Optional.").create("LocationPathExclude");
-    // Disabled
-    public static final Option PARAM_EXCLUDED_EXTENSIONS = OptionBuilder.hasArgs().withArgName("extensions list").withDescription("List of ignored extensions. Example: tmp bak gif log. Optional.").create("ExtensionsExclude");
+    public static final Option PARAM_EXCLUDE_FOLDERS = OptionBuilder.hasArgs().withArgName("folders list").withDescription("Comma separated list of folder path patterns to exclude from scan. Example: '-LocationFoldersExclude test*' excludes all folders which start with 'test' prefix. Optional.").withValueSeparator(',').create("LocationFoldersExclude");
+    public static final Option PARAM_EXCLUDE_FILES = OptionBuilder.hasArgs().withArgName("files list").withDescription("Comma separated list of file name patterns to exclude from scan. Example: '-LocationFilesExclude *.class' excludes all files with '.class' extension. Optional.").withValueSeparator(',').create("LocationFilesExclude");
 
 
 
@@ -36,8 +35,9 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 	public static String MSG_ERR_SRV_NAME_OR_NETWORK = "Server Name is invalid or network is unavailable.";
 	public static String MSG_ERR_PRJ_DIR_NOT_EXIST = "Project directory does not exist.";
 	public static String MSG_ERR_PRJ_PATH_NOT_DIR = "Project path does not reference a directory.";
-	public static String MSG_ERR_EXCLUDED_DIR = "Ignored folders list is invalid.";
-	
+	public static String MSG_ERR_EXCLUDED_DIR = "Excluded folders list is invalid.";
+    public static String MSG_ERR_EXCLUDED_FILES = "Excluded files list is invalid.";
+
 	public GeneralScanCommand() {
 		super();  // cli mode
 		initCommandLineOptions();
@@ -64,11 +64,12 @@ public abstract class GeneralScanCommand extends VerboseCommand {
         reportGroup.addOption(PARAM_CSV_FILE);
         reportGroup.addOption(PARAM_RTF_FILE);
         this.commandLineOptions.addOptionGroup(reportGroup);
-        this.commandLineOptions.addOption(PARAM_EXCLUDE);
+        this.commandLineOptions.addOption(PARAM_EXCLUDE_FOLDERS);
+        this.commandLineOptions.addOption(PARAM_EXCLUDE_FILES);
         // Excluded extension is hidden from the user
         // It was added to support Jenkins functionality, and since Jenking
         // do not use CLI any more, this option was disabled.
-        //this.commandLineOptions.addOption(PARAM_EXCLUDED_EXTENSIONS);
+        //this.commandLineOptions.addOption(PARAM_EXCLUDE_FILES);
     }
 
 
@@ -102,12 +103,21 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 	
 	@Override
 	public void checkParameters() throws CommandLineArgumentException {
-		if (scParams.hasExcludedParam()) {
+
+
+        if (scParams.hasExcludedFoldersParam()) {
 			String[] excludedFolders = scParams.getExcludedFolders();
 			if (excludedFolders == null || excludedFolders.length==0) {
 				throw new CommandLineArgumentException(MSG_ERR_EXCLUDED_DIR);
 			}
 		}
+
+        if (scParams.hasExcludedFilesParam()) {
+            String[] excludedFiles = scParams.getExcludedFiles();
+            if (excludedFiles == null || excludedFiles.length==0) {
+                throw new CommandLineArgumentException(MSG_ERR_EXCLUDED_FILES);
+            }
+        }
 	}
 	
 
@@ -187,10 +197,16 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 		keys.append("- Name or path to results CSV file. Optional.\n");
 		
 		keys.append(leftSpacing);
-		keys.append(PARAM_EXCLUDE);
+		keys.append(PARAM_EXCLUDE_FOLDERS);
 		keys.append(KEY_DESCR_INTEND_SINGLE);
-		keys.append("- Semicolon separated list of ignored folders. Optional. Example: "+PARAM_EXCLUDE+" 'test*;log_*'\n");
-		
+		keys.append("- Comma separated list of folder path patterns to exclude from scan. Example: -LocationFoldersExclude “**\\test*” excludes all folders which start with “test” prefix. Optional.\n");
+
+        keys.append(leftSpacing);
+        keys.append(PARAM_EXCLUDE_FILES);
+        keys.append(KEY_DESCR_INTEND_SINGLE);
+        keys.append("- Comma separated list of file name patterns to exclude from scan. Example: -LocationFilesExclude “*.class” excludes all .class files. Optional.\n");
+
+
 		//keys.append(super.getOptionalKeyDescriptions());
 		
 		return keys.toString();
@@ -208,7 +224,8 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 			+ "[ " + PARAM_PDF_FILE + " results.pdf ] "
 			+ "[ " + PARAM_CSV_FILE + " results.csv ] "
 			+ "[ " + PARAM_LOG_FILE + " logFile.log ] "
-			+ "[ " + PARAM_EXCLUDE + " \"DirName1;DirName2;DirName3\" ] "
+			+ "[ " + PARAM_EXCLUDE_FOLDERS + " \"DirName1,DirName2,DirName3\" ] "
+            + "[ " + PARAM_EXCLUDE_FILES + " \"FileName1,FileName2,FileName3\" ] "
 			 /*+ super.getOptionalParams()*/;
 	}
 	

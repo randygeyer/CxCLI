@@ -220,6 +220,17 @@
     <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
   </component>
   <component name="libraryTable">
+    <library name="Maven: com.checkmarx.components:zipper:1.1">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/checkmarx/components/zipper/1.1/zipper-1.1.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/com/checkmarx/components/zipper/1.1/zipper-1.1-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/com/checkmarx/components/zipper/1.1/zipper-1.1-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Maven: commons-collections:commons-collections:3.2.1">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar!/" />
@@ -229,6 +240,17 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: commons-io:commons-io:2.4">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-io/commons-io/2.4/commons-io-2.4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-io/commons-io/2.4/commons-io-2.4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/commons-io/commons-io/2.4/commons-io-2.4-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: jdom:jdom:1.1.1">
@@ -251,6 +273,28 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$MAVEN_REPOSITORY$/log4j/log4j/1.2.14/log4j-1.2.14-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.apache.ant:ant-launcher:1.9.2">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/ant/ant-launcher/1.9.2/ant-launcher-1.9.2.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/ant/ant-launcher/1.9.2/ant-launcher-1.9.2-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/ant/ant-launcher/1.9.2/ant-launcher-1.9.2-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Maven: org.apache.ant:ant:1.9.2">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/ant/ant/1.9.2/ant-1.9.2.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/ant/ant/1.9.2/ant-1.9.2-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/apache/ant/ant/1.9.2/ant-1.9.2-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: org.apache.commons:commons-lang3:3.1">
