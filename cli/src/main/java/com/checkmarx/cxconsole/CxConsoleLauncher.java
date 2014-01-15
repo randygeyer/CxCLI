@@ -7,6 +7,7 @@ import com.checkmarx.cxconsole.commands.ScanCommand;
 import com.checkmarx.cxconsole.utils.CommandLineArgumentException;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.ParseException;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.checkmarx.cxconsole.commands.CommandsFactory;
@@ -34,6 +35,7 @@ public class CxConsoleLauncher {
 	 */
 
     public static void main(String[] args) {
+        log.setLevel(Level.TRACE);
         runCli(args);
     }
 
@@ -45,6 +47,7 @@ public class CxConsoleLauncher {
 
     public static int runCli(String[] args) {
 		try {
+
             log.info("CxConsole version " + ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_VERSION));
 			log.info("CxConsole scan session started");
 			if (args == null || args.length == 0) {

@@ -220,15 +220,15 @@
     <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
   </component>
   <component name="libraryTable">
-    <library name="Maven: com.checkmarx.components:zipper:1.1">
+    <library name="Maven: com.checkmarx.components:zipper:1.2.0">
       <CLASSES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/checkmarx/components/zipper/1.1/zipper-1.1.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/checkmarx/components/zipper/1.2.0/zipper-1.2.0.jar!/" />
       </CLASSES>
       <JAVADOC>
-        <root url="jar://$MAVEN_REPOSITORY$/com/checkmarx/components/zipper/1.1/zipper-1.1-javadoc.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/checkmarx/components/zipper/1.2.0/zipper-1.2.0-javadoc.jar!/" />
       </JAVADOC>
       <SOURCES>
-        <root url="jar://$MAVEN_REPOSITORY$/com/checkmarx/components/zipper/1.1/zipper-1.1-sources.jar!/" />
+        <root url="jar://$MAVEN_REPOSITORY$/com/checkmarx/components/zipper/1.2.0/zipper-1.2.0-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Maven: commons-collections:commons-collections:3.2.1">

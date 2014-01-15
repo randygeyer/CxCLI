@@ -10,6 +10,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.ParseException;
+import org.apache.log4j.Level;
 
 public abstract class GeneralScanCommand extends VerboseCommand {
 
@@ -80,22 +81,40 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 			generatedHost = ConfigMgr.getWSMgr().resolveServiceLocation(scParams.getHost());
 		}
 		catch (javax.xml.ws.WebServiceException e) {
-			throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
+            if (log.isEnabledFor(Level.TRACE)) {
+                log.trace("",e);
+            }
+            throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
 		}
 		catch (IllegalArgumentException e) {
-			throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
+            if (log.isEnabledFor(Level.TRACE)) {
+                log.trace("",e);
+            }
+            throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
 		}
 		catch (java.net.UnknownHostException e) {
-			throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
+            if (log.isEnabledFor(Level.TRACE)) {
+                log.trace("",e);
+            }
+            throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
 		}
 		catch (MalformedURLException e) {
-			throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
+            if (log.isEnabledFor(Level.TRACE)) {
+                log.trace("",e);
+            }
+            throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
 		}
 		catch (IOException e) {
-			throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
+            if (log.isEnabledFor(Level.TRACE)) {
+                log.trace("",e);
+            }
+            throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
 		}
 		catch (Throwable e) {
-			throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
+            if (log.isEnabledFor(Level.TRACE)) {
+                log.trace("",e);
+            }
+            throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
 		}
 		
 		scParams.setHost(generatedHost);
