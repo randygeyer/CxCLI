@@ -21,6 +21,7 @@ import com.checkmarx.cxconsole.utils.ConfigMgr;
 public class CxConsoleLauncher {
 	
 	public static Logger log = Logger.getLogger("com.checkmarx.cxconsole.CxConsoleLauncher");
+    public static String MSG_ERR_SRV_NAME_OR_NETWORK = "Server Name is invalid or network is unavailable.";
 	
 	/**
 	 * CxConsole commands
@@ -71,7 +72,8 @@ public class CxConsoleLauncher {
                     command.resolveServerUrl();
                 }
                 catch (Exception e){
-                    log.fatal(GeneralScanCommand.MSG_ERR_SRV_NAME_OR_NETWORK+"\n");
+                    log.trace("",e);
+                    log.fatal(MSG_ERR_SRV_NAME_OR_NETWORK+"\n");
                     command.printHelp();
                     return CxConsoleCommand.CODE_ERRROR;
                 }

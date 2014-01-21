@@ -33,7 +33,6 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 	/*
 	 * Error messages
 	 */
-	public static String MSG_ERR_SRV_NAME_OR_NETWORK = "Server Name is invalid or network is unavailable.";
 	public static String MSG_ERR_PRJ_DIR_NOT_EXIST = "Project directory does not exist.";
 	public static String MSG_ERR_PRJ_PATH_NOT_DIR = "Project path does not reference a directory.";
 	public static String MSG_ERR_EXCLUDED_DIR = "Excluded folders list is invalid.";
@@ -80,41 +79,8 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 		try {
 			generatedHost = ConfigMgr.getWSMgr().resolveServiceLocation(scParams.getHost());
 		}
-		catch (javax.xml.ws.WebServiceException e) {
-            if (log.isEnabledFor(Level.TRACE)) {
-                log.trace("",e);
-            }
-            throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
-		}
-		catch (IllegalArgumentException e) {
-            if (log.isEnabledFor(Level.TRACE)) {
-                log.trace("",e);
-            }
-            throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
-		}
-		catch (java.net.UnknownHostException e) {
-            if (log.isEnabledFor(Level.TRACE)) {
-                log.trace("",e);
-            }
-            throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
-		}
-		catch (MalformedURLException e) {
-            if (log.isEnabledFor(Level.TRACE)) {
-                log.trace("",e);
-            }
-            throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
-		}
-		catch (IOException e) {
-            if (log.isEnabledFor(Level.TRACE)) {
-                log.trace("",e);
-            }
-            throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
-		}
-		catch (Throwable e) {
-            if (log.isEnabledFor(Level.TRACE)) {
-                log.trace("",e);
-            }
-            throw new Exception(MSG_ERR_SRV_NAME_OR_NETWORK, e);
+		catch (Exception e) {
+            throw e;
 		}
 		
 		scParams.setHost(generatedHost);
