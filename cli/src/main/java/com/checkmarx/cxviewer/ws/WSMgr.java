@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.xml.namespace.QName;
 
+import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxviewer.CxLogger;
 import com.checkmarx.cxviewer.ws.generated.*;
 import com.checkmarx.cxviewer.ws.results.GetConfigurationsListResult;
@@ -288,8 +289,9 @@ public class WSMgr extends WSMgrBase {
         
         scheduler.scheduleAtFixedRate(checkRepoStatusTask, 1, 3, TimeUnit.SECONDS);
         CxWSReportStatusResponse statusResp;
+        int reportTimeout = ConfigMgr.getCfgMgr().getIntProperty(ConfigMgr.REPORT_TIMEOUT);
         try {
-        	statusResp=checkRepoStatusTask.get(3, TimeUnit.MINUTES);
+        	statusResp=checkRepoStatusTask.get(reportTimeout, TimeUnit.MINUTES);
 		}
 		catch(Exception e) {
 			String err="Timeout to get scan("+scanId+") "+type+" report("+repoId+")";

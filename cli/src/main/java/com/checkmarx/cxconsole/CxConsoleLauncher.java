@@ -73,7 +73,7 @@ public class CxConsoleLauncher {
                 }
                 catch (Exception e){
                     log.trace("",e);
-                    log.fatal(MSG_ERR_SRV_NAME_OR_NETWORK+"\n");
+                    log.fatal(MSG_ERR_SRV_NAME_OR_NETWORK + " Error message: " + e.getMessage()+"\n");
                     command.printHelp();
                     return CxConsoleCommand.CODE_ERRROR;
                 }

@@ -22,7 +22,7 @@ public abstract class GeneralScanCommand extends VerboseCommand {
     public static final Option PARAM_PDF_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results PDF file. Optional.").create("ReportPDF");
     public static final Option PARAM_CSV_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results CSV file. Optional.").create("ReportCSV");
     public static final Option PARAM_RTF_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results RTF file. Optional.").create("ReportRTF");
-    public static final Option PARAM_EXCLUDE_FOLDERS = OptionBuilder.hasArgs().withArgName("folders list").withDescription("Comma separated list of folder path patterns to exclude from scan. Example: '-LocationFoldersExclude test*' excludes all folders which start with 'test' prefix. Optional.").withValueSeparator(',').create("LocationFoldersExclude");
+    public static final Option PARAM_EXCLUDE_FOLDERS = OptionBuilder.hasArgs().withArgName("folders list").withDescription("Comma separated list of folder path patterns to exclude from scan. Example: '-LocationPathExclude test*' excludes all folders which start with 'test' prefix. Optional.").withValueSeparator(',').create("LocationPathExclude");
     public static final Option PARAM_EXCLUDE_FILES = OptionBuilder.hasArgs().withArgName("files list").withDescription("Comma separated list of file name patterns to exclude from scan. Example: '-LocationFilesExclude *.class' excludes all files with '.class' extension. Optional.").withValueSeparator(',').create("LocationFilesExclude");
 
 
@@ -184,7 +184,7 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 		keys.append(leftSpacing);
 		keys.append(PARAM_EXCLUDE_FOLDERS);
 		keys.append(KEY_DESCR_INTEND_SINGLE);
-		keys.append("- Comma separated list of folder path patterns to exclude from scan. Example: -LocationFoldersExclude “**\\test*” excludes all folders which start with “test” prefix. Optional.\n");
+		keys.append("- Comma separated list of folder path patterns to exclude from scan. Example: -LocationPathExclude “**\\test*” excludes all folders which start with “test” prefix. Optional.\n");
 
         keys.append(leftSpacing);
         keys.append(PARAM_EXCLUDE_FILES);

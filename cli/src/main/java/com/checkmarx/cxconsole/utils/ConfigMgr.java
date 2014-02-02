@@ -25,6 +25,7 @@ public class ConfigMgr {
 	 */
 	public static String KEY_PROGRESS_INTERVAL 		= 	"scan.job.progress.interval";
 	public static String KEY_RETIRES 				= 	"scan.job.connection.retries";
+    public static String REPORT_TIMEOUT             =   "scan.job.report.timeout";
 	public static String KEY_EXCLUDED_FOLDERS       =	"scan.zip.ignored.folders";
 	public static String KEY_EXCLUDED_FILES 	    =   "scan.zip.ignored.files";
 	public static String KEY_MAX_ZIP_SIZE 			=	"scan.zip.max_size";
@@ -68,7 +69,8 @@ public class ConfigMgr {
 	}
 	
 	protected void loadDefaults() {
-		applicationProperties.put(KEY_PROGRESS_INTERVAL, "15");
+        applicationProperties.put(REPORT_TIMEOUT, "30");
+        applicationProperties.put(KEY_PROGRESS_INTERVAL, "15");
 		applicationProperties.put(KEY_RETIRES, "3");
 		applicationProperties.put(KEY_EXCLUDED_FOLDERS, "_cvs, .svn, .hg, .git, .bzr, bin, obj, backup");
 		applicationProperties.put(KEY_EXCLUDED_FILES, "*.DS_Store, *.ipr, *.iws, *.bak, *.tmp, *.aac, *.aif, *.iff, *.m3u, *.mid, *.mp3, *.mpa, *.ra, *.wav, *.wma, *.3g2, *.3gp, *.asf, *.asx, *.avi, *.flv, *.mov, *.mp4, *.mpg, *.rm, *.swf, *.vob, *.wmv, *.bmp, *.gif, *.jpg, *.png, *.psd, *.tif, *.jar, *.zip, *.rar, *.exe, *.dll, *.pdb, *.7z, *.gz, *.tar.gz, *.tar, *.ahtm, *.ahtml, *.fhtml, *.hdm, *.hdml, *.hsql, *.ht, *.hta, *.htc, *.htd, *.htmls, *.ihtml, *.mht, *.mhtm, *.mhtml, *.ssi, *.stm, *.stml, *.ttml, *.txn, *.xhtm, *.xhtml, *.class, *.iml");
