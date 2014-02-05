@@ -184,7 +184,7 @@ public class GetStatusOfScanResult extends SimpleResult {
 	}
 
 	public boolean isStatusFinished() {
-		return (runStatus != null && (runStatus == CurrentStatusEnum.FINISHED) || totalPercent == 100);
+		return (runStatus != null && runStatus == CurrentStatusEnum.FINISHED);
 	}
 	
 	public boolean isRunStatusCanceled() {		
