@@ -152,7 +152,7 @@
                         <configuration>
                             <wsdlOptions>
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/com/checkmarx/cxcviewer/ws/cxwsresolver.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/config/com/checkmarx/cxcviewer/ws/cxwsresolver.wsdl</wsdl>
                                     <extraargs>
                                         <extraarg>-p</extraarg>
                                         <extraarg>com.checkmarx.cxviewer.ws.resolver</extraarg>
@@ -171,7 +171,7 @@
                         <configuration>
                             <wsdlOptions>
                                 <wsdlOption>
-                                    <wsdl>${basedir}/src/main/resources/com/checkmarx/cxcviewer/ws/CxCLIWebServiceV1.wsdl</wsdl>
+                                    <wsdl>${basedir}/src/main/config/com/checkmarx/cxcviewer/ws/CxCLIWebServiceV1.wsdl</wsdl>
                                     <extraargs>
                                         <extraarg>-p</extraarg>
                                         <extraarg>com.checkmarx.cxviewer.ws.generated</extraarg>
