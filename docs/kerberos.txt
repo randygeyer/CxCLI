@@ -1,0 +1,3 @@
+Kerberos Authentication Notes
+
+Running LoginContext.login required java JDK 1.7 on windows. JDK 1.6 failed with exception.
