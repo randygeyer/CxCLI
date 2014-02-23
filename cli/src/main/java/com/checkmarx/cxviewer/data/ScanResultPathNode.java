@@ -3,7 +3,6 @@ package com.checkmarx.cxviewer.data;
 import java.io.Serializable;
 
 import com.checkmarx.cxviewer.annotation.PersistentField;
-import com.checkmarx.cxviewer.ws.generated.CxWSPathNode;
 
 public class ScanResultPathNode implements Serializable {
 
@@ -31,10 +30,8 @@ public class ScanResultPathNode implements Serializable {
 	private int length;
 
 	private transient ScanResult scanResult;
-	
-	private transient CxWSPathNode responceNode;
 
-	public ScanResultPathNode() {
+    public ScanResultPathNode() {
 	}
 	
 	public String getFullName() {
@@ -81,11 +78,7 @@ public class ScanResultPathNode implements Serializable {
 		this.length = length;
 	}
 
-	public void setResponceNode(CxWSPathNode responceNode) {
-		this.responceNode = responceNode;
-	}
-
-	@Deprecated
+    @Deprecated
 	public String getAdaptedFileName() {
 		return scanResult.getProjectName()+'/'+fileName.replace('\\', '/');
 	}
@@ -109,12 +102,8 @@ public class ScanResultPathNode implements Serializable {
 	public int getLength() {
 		return length;
 	}
-	
-	public CxWSPathNode getResponceNode() {
-		return responceNode;
-	}
-	
-	@Override
+
+    @Override
 	public String toString() {
 		return "<pathnode>\n\tfilename: " + fileName + "\n\tline: " + line + "\n\tcolumn: " + column + "\n\tlength: " + length + "\n\tname: " + name + "\n\tnodeId: " + nodeId + "\n\tscanResult: " + scanResult + "\n</pathnode>";
 	}
@@ -140,20 +129,5 @@ public class ScanResultPathNode implements Serializable {
 	public int hashCode() {
 		return 0;
 	}
-	
-	public static ScanResultPathNode adaptNode(CxWSPathNode responceNode) {
-		ScanResultPathNode nodeModel = new ScanResultPathNode();
-		
-		nodeModel.setFullName(responceNode.getFullName());
-		nodeModel.setFileName(responceNode.getFileName());
-		nodeModel.setName(responceNode.getName());
-		nodeModel.setNodeId(responceNode.getPathNodeId());
-		nodeModel.setLine(responceNode.getLine());
-		nodeModel.setColumn(responceNode.getColumn());
-		nodeModel.setLength(responceNode.getLength());
-		
-		nodeModel.setResponceNode(responceNode);
-		
-		return nodeModel;
-	}
+
 }

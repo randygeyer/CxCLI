@@ -11,6 +11,7 @@ import javax.xml.namespace.QName;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxviewer.CxLogger;
 import com.checkmarx.cxviewer.ws.generated.*;
+import com.checkmarx.cxviewer.ws.resolver.CxClientType;
 import com.checkmarx.cxviewer.ws.results.GetConfigurationsListResult;
 import com.checkmarx.cxviewer.ws.results.GetPresetsListResult;
 import com.checkmarx.cxviewer.ws.results.GetProjectConfigResult;

@@ -8,7 +8,7 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 
 import com.checkmarx.cxviewer.ws.WSMgr;
-import com.checkmarx.cxviewer.ws.generated.CxClientType;
+import com.checkmarx.cxviewer.ws.resolver.CxClientType;
 
 /**
  * Class responsible for loading CxConsole properties from corresponding 

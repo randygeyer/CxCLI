@@ -8,7 +8,6 @@ import java.util.TreeSet;
 
 import com.checkmarx.cxviewer.annotation.PersisentCompoundField;
 import com.checkmarx.cxviewer.annotation.PersistentField;
-import com.checkmarx.cxviewer.ws.generated.CxWSQueryVulnerabilityData;
 
 public class ScanResultQuery implements Serializable {
 
@@ -179,16 +178,5 @@ public class ScanResultQuery implements Serializable {
 				"\namount=" + resultsAmount + "\n</scanResultQuery>";
 	}
 	
-	public static ScanResultQuery adaptQuery(CxWSQueryVulnerabilityData data) {
-		ScanResultQuery model = new ScanResultQuery();
-		model.setId(data.getQueryId());
-		model.setCweId(data.getCWE());
-		model.setName(data.getQueryName());
-		model.setGroup(data.getGroupName());
-		model.setSeverity(data.getSeverity());
-		model.setResultsAmount(data.getAmountOfResults());
-		model.setQueryResults(new ArrayList<ScanResultPoint>());
-		
-		return model;
-	}
+
 }

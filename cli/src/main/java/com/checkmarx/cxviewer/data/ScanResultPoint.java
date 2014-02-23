@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import com.checkmarx.cxviewer.annotation.PersisentCompoundField;
 import com.checkmarx.cxviewer.annotation.PersistentField;
-import com.checkmarx.cxviewer.ws.generated.CxWSSingleResultData;
 import com.checkmarx.cxviewer.ws.results.SeverityEnum;
 
 public class ScanResultPoint implements Serializable {
@@ -239,24 +238,5 @@ public class ScanResultPoint implements Serializable {
 		}
 		return false;
 	}
-	
-	public static ScanResultPoint adaptResult(CxWSSingleResultData data) {
-		ScanResultPoint resultModel = new ScanResultPoint();
-		resultModel.setRemark(data.getComment());
-		resultModel.setSeverity(SeverityEnum.byCode(data.getSeverity()));
-		resultModel.setState("" + data.getState());
-		resultModel.setPathId(data.getPathId());
-		resultModel.setSrcFileName(data.getSourceFile());
-		resultModel.setSrcDirectory(data.getSourceFolder());
-		resultModel.setSrcLine(data.getSourceLine());
-		resultModel.setSrcObject(data.getSourceObject());
-		
-		resultModel.setDestFileName(data.getDestFile());
-		resultModel.setDestDirectory(data.getDestFolder());
-		resultModel.setDestLine(data.getDestLine());
-		resultModel.setDestObject(data.getDestObject());
-		resultModel.setAssignedUser(data.getAssignedUser());
-		
-		return resultModel;
-	}
+
 }

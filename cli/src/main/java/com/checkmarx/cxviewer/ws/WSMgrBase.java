@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import javax.xml.namespace.QName;
 
 import com.checkmarx.cxviewer.CxLogger;
-import com.checkmarx.cxviewer.ws.generated.CxClientType;
+import com.checkmarx.cxviewer.ws.resolver.CxClientType;
 
 
 abstract class WSMgrBase {
