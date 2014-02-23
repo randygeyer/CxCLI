@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://Checkmarx.com/v7" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://Checkmarx.com/v7" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://Checkmarx.com/v7" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" targetNamespace="http://Checkmarx.com/v7" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://Checkmarx.com/v7">
       <s:element name="SsoLogin">
@@ -104,6 +104,7 @@
           <s:element minOccurs="0" maxOccurs="1" name="SourceControlSetting" type="tns:SourceControlSettings" />
           <s:element minOccurs="0" maxOccurs="1" name="PackagedCode" type="tns:LocalCodeContainer" />
           <s:element minOccurs="0" maxOccurs="1" name="SourcePullingAction" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="SourceFilterLists" type="tns:SourceFilterPatterns" />
         </s:sequence>
       </s:complexType>
       <s:simpleType name="SourceLocationType">
@@ -172,6 +173,12 @@
         <s:sequence>
           <s:element minOccurs="0" maxOccurs="1" name="ZippedFile" type="s:base64Binary" />
           <s:element minOccurs="0" maxOccurs="1" name="FileName" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="SourceFilterPatterns">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="ExcludeFilesPatterns" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ExcludeFoldersPatterns" type="s:string" />
         </s:sequence>
       </s:complexType>
       <s:element name="ScanResponse">
@@ -369,6 +376,7 @@
           <s:element minOccurs="0" maxOccurs="1" name="SourceCodeSettings" type="tns:SourceCodeSettings" />
           <s:element minOccurs="0" maxOccurs="1" name="ScheduleSettings" type="tns:ScheduleSettings" />
           <s:element minOccurs="0" maxOccurs="1" name="ScanActionSettings" type="tns:ScanActionSettings" />
+          <s:element minOccurs="0" maxOccurs="1" name="ProjectIssueTrackingSettings" type="tns:CxWSProjectIssueTrackingSettings" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ScheduleSettings">
@@ -436,6 +444,24 @@
           <s:enumeration value="PostScanAction" />
         </s:restriction>
       </s:simpleType>
+      <s:complexType name="CxWSProjectIssueTrackingSettings">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="TrackingSystemID" type="s:long" />
+          <s:element minOccurs="0" maxOccurs="1" name="Params" type="tns:ArrayOfCxWSIssueTrackingParam" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfCxWSIssueTrackingParam">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="CxWSIssueTrackingParam" nillable="true" type="tns:CxWSIssueTrackingParam" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="CxWSIssueTrackingParam">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Value" />
+          <s:element minOccurs="0" maxOccurs="1" name="Type" type="s:string" />
+        </s:sequence>
+      </s:complexType>
       <s:element name="UpdateProjectIncrementalConfiguration">
         <s:complexType>
           <s:sequence>
@@ -474,27 +500,6 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="GetAssociatedGroupsListResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GetAssociatedGroupsListResult" type="tns:CxWSResponseGroupList" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:complexType name="CxWSResponseGroupList">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:CxWSBasicRepsonse">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="GroupList" type="tns:ArrayOfGroup" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="ArrayOfGroup">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="Group" nillable="true" type="tns:Group" />
-        </s:sequence>
-      </s:complexType>
       <s:complexType name="Group">
         <s:sequence>
           <s:element minOccurs="0" maxOccurs="1" name="GroupName" type="s:string" />
@@ -511,6 +516,27 @@
           <s:enumeration value="Server" />
         </s:restriction>
       </s:simpleType>
+      <s:complexType name="ArrayOfGroup">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Group" nillable="true" type="tns:Group" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetAssociatedGroupsListResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetAssociatedGroupsListResult" type="tns:CxWSResponseGroupList" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="CxWSResponseGroupList">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:CxWSBasicRepsonse">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="GroupList" type="tns:ArrayOfGroup" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
       <s:element name="GetStatusOfSingleScan">
         <s:complexType>
           <s:sequence>
@@ -1063,10 +1089,10 @@
   </wsdl:binding>
   <wsdl:service name="CxCLIWebServiceV1">
     <wsdl:port name="CxCLIWebServiceV1Soap" binding="tns:CxCLIWebServiceV1Soap">
-      <soap:address location="http://localhost:1515/Cxwebinterface/CLI/CxCLIWebServiceV1.asmx" />
+      <soap:address location="http://10.31.0.119/CxWebinterface/CLI/CxCLIWebServiceV1.asmx" />
     </wsdl:port>
     <wsdl:port name="CxCLIWebServiceV1Soap12" binding="tns:CxCLIWebServiceV1Soap12">
-      <soap12:address location="http://localhost:1515/Cxwebinterface/CLI/CxCLIWebServiceV1.asmx" />
+      <soap12:address location="http://10.31.0.119/CxWebinterface/CLI/CxCLIWebServiceV1.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
