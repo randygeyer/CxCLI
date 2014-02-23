@@ -15,7 +15,7 @@ import com.checkmarx.cxviewer.ws.resolver.CxWSResponseDiscovery;
 public class WSResolver {
 	protected static final String WS_NAME="CxWSResolver";
 	protected static String WS_NAMESPACE = "http://Checkmarx.com";
-	protected static String WS_URL="/cxwebinterface/cxWSResolver.asmx";
+	protected static String WS_URL="/cxwebinterface/cxWSResolver.asmx?WSDL";
 	
 	protected static CxWSResolverSoap wService;
 
