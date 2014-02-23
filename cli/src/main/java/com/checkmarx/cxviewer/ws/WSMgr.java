@@ -1,5 +1,6 @@
 package com.checkmarx.cxviewer.ws;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
@@ -22,9 +23,11 @@ import com.checkmarx.cxviewer.ws.results.LoginResult;
 import com.checkmarx.cxviewer.ws.results.RunScanResult;
 import com.checkmarx.cxviewer.ws.results.UpdateScanCommentResult;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 
 public class WSMgr extends WSMgrBase {
+    final static private Logger logger = Logger.getLogger(WSMgr.class);
 	protected static final String WS_NAME="CxCLIWebServiceV1";
 	protected CxCLIWebServiceV1Soap wService;
 	
@@ -38,9 +41,15 @@ public class WSMgr extends WSMgrBase {
 	
 	public Object connectWebService(URL wsdlLocation) {
 		QName serviceName = getWebServiceQName(wsdlLocation);
-		
-		CxCLIWebServiceV1 ws = new CxCLIWebServiceV1(wsdlLocation, serviceName);
-		wService = ws.getCxCLIWebServiceV1Soap();
+        try {
+		    final URL wsdlLocationWithWSDL = new URL(wsdlLocation.toString() + "?WSDL");
+            CxCLIWebServiceV1 ws = new CxCLIWebServiceV1(wsdlLocationWithWSDL, serviceName);
+            wService = ws.getCxCLIWebServiceV1Soap();
+        } catch (MalformedURLException e)
+        {
+            // We should never get here, as the correctness of wsdlLocation was already checked
+            logger.fatal("Malformed URL: " + wsdlLocation);
+        }
 		return wService;
 	}
 
