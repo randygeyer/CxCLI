@@ -57,6 +57,15 @@ public class CxConsoleLauncher {
 
 
             }
+
+            // TODO: Add Java 6 warning, and java 7 warning
+
+            System.setProperty("java.security.auth.login.config",System.class.getResource("/login.conf").toString());
+            System.setProperty("java.security.krb5.conf",System.class.getResource("/krb5.conf").toString());
+            System.setProperty("sun.security.krb5.debug", "true");   // TODO: Remove the debug option
+
+
+
             String commandName = args[0];
             String[] argumentsLessCommandName = java.util.Arrays.copyOfRange(args,1,args.length);
             CxConsoleCommand command = CommandsFactory.getCommand(commandName);

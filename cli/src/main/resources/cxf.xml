@@ -1,0 +1,29 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:sec="http://cxf.apache.org/configuration/security"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xmlns:http-conf="http://cxf.apache.org/transports/http/configuration"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+                           http://cxf.apache.org/transports/http/configuration
+                           http://cxf.apache.org/schemas/configuration/http-conf.xsd
+                           http://cxf.apache.org/configuration/security
+                           http://cxf.apache.org/schemas/configuration/security.xsd
+                           http://cxf.apache.org/jaxws
+                           http://cxf.apache.org/schemas/jaxws.xsd">
+
+
+
+    <http-conf:conduit name="{http://Checkmarx.com}CxWSResolverSoap.http-conduit"
+             xmlns="http://cxf.apache.org/transports/http/configuration">
+    <!--http-conf:conduit name="*.http-conduit"-->
+        <http-conf:authorization>
+            <sec:UserName>denisk</sec:UserName>
+            <sec:Password>cxden24</sec:Password>
+            <sec:AuthorizationType>Negotiate</sec:AuthorizationType>
+            <sec:Authorization>CXFClient</sec:Authorization>
+
+        </http-conf:authorization>
+    </http-conf:conduit>
+
+</beans>
