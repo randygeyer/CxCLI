@@ -58,11 +58,17 @@ public class CxConsoleLauncher {
 
             }
 
-            // TODO: Add Java 6 warning, and java 7 warning
+            javaVersionWarning();
 
             System.setProperty("java.security.auth.login.config",System.class.getResource("/login.conf").toString());
             System.setProperty("java.security.krb5.conf",System.class.getResource("/krb5.conf").toString());
             System.setProperty("sun.security.krb5.debug", "true");   // TODO: Remove the debug option
+
+            // Be sure to set the javax.security.auth.useSubjectCredsOnly system property value to false
+            // if you want the underlying mechanism to obtain credentials, rather than your application or
+            // a wrapper program (such as the Login utility used by some of the tutorials)
+            // performing authentication using JAAS.
+            System.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
 
 
 
@@ -119,4 +125,19 @@ public class CxConsoleLauncher {
             return CxConsoleCommand.CODE_ERRROR;
 		}
 	}
+
+    private static void javaVersionWarning()
+    {
+        try {
+            final String javaVersion = System.getProperty("java.version");
+            final int minorVersion = Integer.parseInt(javaVersion.split("\\.")[1]);
+            if (minorVersion < 7 )
+            {
+                log.info("Kerberos authentication is supported on JVM 1.7 and above, current JVM version: " + javaVersion);
+            }
+            // TODO: Add Java 8 warning - Pre-authentication feature is supported only on java 8
+        } catch (Throwable e) {
+            // This is just a warning, in case of errors, do nothing
+        }
+    }
 }
