@@ -103,7 +103,15 @@ public abstract class CxConsoleCommand {
 	 * @return true if current key is a flag
 	 */
 	protected abstract boolean isKeyFlag(String key);
-	
+
+    public void initKerberos()
+    {
+        final String username = commandLineArguments.getOptionValue(ScanCommand.PARAM_USER.getOpt());
+        System.setProperty("cxf.kerberos.username",username);
+        final String password = commandLineArguments.getOptionValue(ScanCommand.PARAM_PASSWORD.getOpt());
+        System.setProperty("cxf.kerberos.password",password);
+
+    }
 
 	
 	/*

@@ -49,16 +49,11 @@ public class CxConsoleLauncher {
     public static int runCli(String[] args) {
 		try {
 
-
-
-
             log.info("CxConsole version " + ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_VERSION));
 			log.info("CxConsole scan session started");
 			if (args == null || args.length == 0) {
                 log.fatal("Missing command name. Available commands: " + CommandsFactory.getCommnadNames());
                 return CxConsoleCommand.CODE_ERRROR;
-
-
             }
 
             javaVersionWarning();
@@ -73,7 +68,7 @@ public class CxConsoleLauncher {
 
             // TODO: Convert absolute paths to relative
             System.setProperty("java.security.auth.login.config","/Users/denis/Documents/iOSDevMac/Checkmarx/CLI/Project/cli/src/main/resources/login.conf");//  System.class.getResource("/login.conf").toString());
-            System.setProperty("java.security.krb5.conf","/Users/denis/Documents/iOSDevMac/Checkmarx/CLI/Project/cli/src/main/resources/krb5.conf");//  System.class.getResource("/krb5.conf").toString());
+            System.setProperty("java.security.krb5.conf","/Users/denis/Documents/iOSDevMac/Checkmarx/CLI/Project/cli/src/main/resources/krb5.conf"); // TODO: krb5.conf files should be taken from deployment config directory //  System.class.getResource("/krb5.conf").toString());
             System.setProperty("sun.security.krb5.debug", "true");   // TODO: Remove the debug option
             System.setProperty("auth.spnego.requireCredDelegation", "true");
 
@@ -96,7 +91,9 @@ public class CxConsoleLauncher {
 
             try {
                 command.parseArguments(argumentsLessCommandName);
+
                 try{
+                    command.initKerberos();
                     command.resolveServerUrl();
                 }
                 catch (Exception e){

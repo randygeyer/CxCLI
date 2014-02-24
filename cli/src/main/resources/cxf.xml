@@ -19,12 +19,14 @@
              -->
     <http-conf:conduit name="*.http-conduit">
         <http-conf:authorization>
-            <sec:UserName>petert</sec:UserName>
-            <sec:Password>12qwaszx</sec:Password>
+            <sec:UserName>${cxf.kerberos.username}</sec:UserName>
+            <sec:Password>${cxf.kerberos.password}</sec:Password>
             <sec:AuthorizationType>Negotiate</sec:AuthorizationType>
             <sec:Authorization>CXFClient</sec:Authorization>
 
         </http-conf:authorization>
+        <http-conf:authSupplier class="com.checkmarx.cxviewer.utils.DynamicAuthSupplier"/>
     </http-conf:conduit>
+
 
 </beans>
