@@ -58,25 +58,12 @@ public class CxConsoleLauncher {
 
             javaVersionWarning();
 
-            /*
-                Taken from POC:
-                System.setProperty("java.security.auth.login.config",System.class.getResource("/login.conf").getPath());
-                System.setProperty("java.security.krb5.conf",System.class.getResource("/krb5.conf").getPath());
-                System.setProperty("sun.security.krb5.debug", "true");
-                System.setProperty("auth.spnego.requireCredDelegation", "true");
-            */
 
             // TODO: Convert absolute paths to relative
             System.setProperty("java.security.auth.login.config","/Users/denis/Documents/iOSDevMac/Checkmarx/CLI/Project/cli/src/main/resources/login.conf");//  System.class.getResource("/login.conf").toString());
-            System.setProperty("java.security.krb5.conf","/Users/denis/Documents/iOSDevMac/Checkmarx/CLI/Project/cli/src/main/resources/krb5.conf"); // TODO: krb5.conf files should be taken from deployment config directory //  System.class.getResource("/krb5.conf").toString());
+            System.setProperty("java.security.krb5.conf",System.getProperty("user.dir") + "/config/krb5.conf"); // TODO: krb5.conf files should be taken from deployment config directory //  System.class.getResource("/krb5.conf").toString());
             System.setProperty("sun.security.krb5.debug", "true");   // TODO: Remove the debug option
             System.setProperty("auth.spnego.requireCredDelegation", "true");
-
-            // Be sure to set the javax.security.auth.useSubjectCredsOnly system property value to false
-            // if you want the underlying mechanism to obtain credentials, rather than your application or
-            // a wrapper program (such as the Login utility used by some of the tutorials)
-            // performing authentication using JAAS.
-//            System.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
 
 
 

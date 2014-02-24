@@ -25,6 +25,10 @@
             <source>target/classes/log4j.properties</source>
             <outputDirectory>/</outputDirectory>
         </file>
+        <file>
+            <source>src/main/config/krb5.conf</source>
+            <outputDirectory>config</outputDirectory>
+        </file>
     </files>
 
     <dependencySets>

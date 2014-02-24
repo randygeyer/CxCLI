@@ -13,10 +13,6 @@
                            http://cxf.apache.org/schemas/jaxws.xsd">
 
 
-
-    <!--conduit name="{http://Checkmarx.com}CxWSResolverSoap.http-conduit"
-             xmlns="http://cxf.apache.org/transports/http/configuration"
-             -->
     <http-conf:conduit name="*.http-conduit">
         <http-conf:authorization>
             <sec:UserName>${cxf.kerberos.username}</sec:UserName>
