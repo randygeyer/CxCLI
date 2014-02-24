@@ -2,4 +2,4 @@ Kerberos Authentication Notes
 
 Running LoginContext.login required java JDK 1.7 on windows. JDK 1.6 failed with exception.
 
-Pre-authentication feature requires JDK 1.8. To work with JDK 1.7, enable the "Do not require Kerberos preauthentication" checkbox in LDAP server.
+Pre-authentication should be required on the server. This is the default setting.
