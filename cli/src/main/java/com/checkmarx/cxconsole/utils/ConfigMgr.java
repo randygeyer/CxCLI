@@ -36,7 +36,10 @@ public class ConfigMgr {
 	public static String KEY_FILE_APP_MAX_ROLLS 	=	"scan.log.appender.file.max_rolls";
 	public static String KEY_CLI_APP_PATTERN 		=	"scan.log.appender.console.pattern";
 	public static String KEY_VERSION 				=	"cxconsole.version";
-	
+	public static String KEY_USE_KERBEROS_AUTH		=	"use_kerberos_authentication";
+	public static String KEY_KERBEROS_USERNAME		=	"kerberos.username";
+	public static String KEY_KERBEROS_PASSWORD		=	"kerberos.password";
+
 	private String CONFIG_DIR_RELATIVE_PATH = "/config";
 	private String CONFIG_FILE = "/cx_console.properties";
 	
@@ -82,7 +85,10 @@ public class ConfigMgr {
 		applicationProperties.put(KEY_FILE_APP_MAX_SIZE, "10MB");
 		applicationProperties.put(KEY_FILE_APP_MAX_ROLLS, "10");
 		applicationProperties.put(KEY_VERSION, "7.1");
-		
+		applicationProperties.put(KEY_USE_KERBEROS_AUTH, "false");
+		applicationProperties.put(KEY_KERBEROS_USERNAME, "");
+		applicationProperties.put(KEY_KERBEROS_PASSWORD, "");
+
 		
 		String userDir = System.getProperty("user.dir");
 		File propsFile = new File(userDir + CONFIG_DIR_RELATIVE_PATH + CONFIG_FILE);

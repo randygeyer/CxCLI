@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.checkmarx.cxconsole.utils.CommandLineArgumentException;
+import com.checkmarx.cxconsole.utils.ConfigMgr;
+import com.checkmarx.cxviewer.utils.DynamicAuthSupplier;
 import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 
@@ -106,11 +108,16 @@ public abstract class CxConsoleCommand {
 
     public void initKerberos()
     {
-        final String username = commandLineArguments.getOptionValue(ScanCommand.PARAM_USER.getOpt());
-        System.setProperty("cxf.kerberos.username",username);
-        final String password = commandLineArguments.getOptionValue(ScanCommand.PARAM_PASSWORD.getOpt());
-        System.setProperty("cxf.kerberos.password",password);
+        final boolean isUsingKerberos = "true".equalsIgnoreCase(ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_USE_KERBEROS_AUTH));
+        if (isUsingKerberos)
+        {
+            final String username = ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_KERBEROS_USERNAME);
+            System.setProperty("cxf.kerberos.username",username);
+            final String password = ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_KERBEROS_PASSWORD);
+            System.setProperty("cxf.kerberos.password",password);
 
+        }
+        DynamicAuthSupplier.setKerberosActive(isUsingKerberos);
     }
 
 	
