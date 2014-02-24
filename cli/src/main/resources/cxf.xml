@@ -14,12 +14,13 @@
 
 
 
-    <http-conf:conduit name="{http://Checkmarx.com}CxWSResolverSoap.http-conduit"
-             xmlns="http://cxf.apache.org/transports/http/configuration">
-    <!--http-conf:conduit name="*.http-conduit"-->
+    <!--conduit name="{http://Checkmarx.com}CxWSResolverSoap.http-conduit"
+             xmlns="http://cxf.apache.org/transports/http/configuration"
+             -->
+    <http-conf:conduit name="*.http-conduit">
         <http-conf:authorization>
-            <sec:UserName>denisk</sec:UserName>
-            <sec:Password>cxden24</sec:Password>
+            <sec:UserName>petert</sec:UserName>
+            <sec:Password>12qwaszx</sec:Password>
             <sec:AuthorizationType>Negotiate</sec:AuthorizationType>
             <sec:Authorization>CXFClient</sec:Authorization>
 
