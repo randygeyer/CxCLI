@@ -69,13 +69,12 @@ public class WSResolver {
 				}
 			}
 			
-			QName serviceName = new QName(WS_NAMESPACE, WS_NAME);
 
 			// Temporary solution
 			SSLUtilities.trustAllHostnames();
 			SSLUtilities.trustAllHttpsCertificates();
 
-			CxWSResolver ws = new CxWSResolver(wsdlLocation, serviceName);
+			CxWSResolver ws = new CxWSResolver(wsdlLocation);
 			wService=ws.getCxWSResolverSoap();
 		}
 		return wService;
