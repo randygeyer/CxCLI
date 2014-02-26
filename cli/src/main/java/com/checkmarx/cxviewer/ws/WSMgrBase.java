@@ -22,7 +22,7 @@ abstract class WSMgrBase {
 
 	protected CxClientType clientType=CxClientType.NONE;
 	protected int version = 0;
-    protected int cli_webservice_version = 1;
+    private final int CLI_WEBSERVICE_VERSION = 1;
 
 	
 	/**
@@ -54,7 +54,7 @@ abstract class WSMgrBase {
 			return validateAndGetServerName(serverName);
 		}
 		
-		String wsdlLocation=WSResolver.getServiceURL(serverName, clientType.value(), cli_webservice_version);
+		String wsdlLocation=WSResolver.getServiceURL(serverName, clientType.value(), CLI_WEBSERVICE_VERSION);
 		if (wsdlLocation==null) {
 			throw new Exception("Cannot resolve WS location");
 		}
