@@ -157,7 +157,7 @@ public class ConfigMgr {
 	
 	public static WSMgr getWSMgr() {
 		if (wsMgr == null) {
-			wsMgr = new WSMgr(CxClientType.CLI, getCfgMgr().getProperty(ConfigMgr.KEY_VERSION));
+			wsMgr = new WSMgr();
 		}
 		
 		return wsMgr;

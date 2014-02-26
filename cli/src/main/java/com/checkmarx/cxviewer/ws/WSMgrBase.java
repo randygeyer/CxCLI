@@ -21,7 +21,6 @@ abstract class WSMgrBase {
 	protected static String WS_NAMESPACE = "http://Checkmarx.com";
 
 	protected CxClientType clientType=CxClientType.NONE;
-	protected int version = 0;
     private final int CLI_WEBSERVICE_VERSION = 1;
 
 	
@@ -38,16 +37,7 @@ abstract class WSMgrBase {
 	 */
 	public abstract Object connectWebService(URL wsdlLocation);
 	
-	public WSMgrBase(CxClientType clientType, String version) {
-		this.clientType=clientType;
-		if (version!=null) {
-			try {
-				this.version=Integer.parseInt(version.split("\\.")[0]);
-			}
-			catch(NumberFormatException e) {
-			}
-		}
-	}
+
 
 	public String resolveServiceLocation(String serverName) throws Exception {
 		if (serverName.endsWith("asmx")) {
@@ -180,17 +170,5 @@ abstract class WSMgrBase {
 		return m.matches();
 	}
 	
-	protected QName getWebServiceQName(URL wsdlLocation) {
-		String wsNamespace=WS_NAMESPACE;
-		if (version>0) {
-			wsNamespace=WS_NAMESPACE+"/v"+version;
-		}
-		QName serviceName = new QName(wsNamespace, getWSName());
 
-		// Temporary solution
-		SSLUtilities.trustAllHostnames();
-		SSLUtilities.trustAllHttpsCertificates();
-		
-		return serviceName;
-	}
 }

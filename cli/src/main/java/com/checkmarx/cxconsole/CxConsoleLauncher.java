@@ -5,6 +5,7 @@ import java.io.Console;
 import com.checkmarx.cxconsole.commands.GeneralScanCommand;
 import com.checkmarx.cxconsole.commands.ScanCommand;
 import com.checkmarx.cxconsole.utils.CommandLineArgumentException;
+import com.checkmarx.cxviewer.ws.SSLUtilities;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.ParseException;
 import org.apache.log4j.Level;
@@ -63,7 +64,9 @@ public class CxConsoleLauncher {
             System.setProperty("sun.security.krb5.debug", "true");   // TODO: Remove the debug option
             System.setProperty("auth.spnego.requireCredDelegation", "true");
 
-
+            // Temporary solution
+            SSLUtilities.trustAllHostnames();
+            SSLUtilities.trustAllHttpsCertificates();
 
             String commandName = args[0];
             String[] argumentsLessCommandName = java.util.Arrays.copyOfRange(args,1,args.length);

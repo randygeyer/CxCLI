@@ -31,8 +31,8 @@ public class WSMgr extends WSMgrBase {
 	protected static final String WS_NAME="CxCLIWebServiceV1";
 	protected CxCLIWebServiceV1Soap wService;
 	
-	public WSMgr(CxClientType clientType, String version) {
-		super(clientType, version);
+	public WSMgr() {
+
 	}
 	
 	public String getWSName() {
@@ -40,10 +40,10 @@ public class WSMgr extends WSMgrBase {
 	}
 	
 	public Object connectWebService(URL wsdlLocation) {
-		QName serviceName = getWebServiceQName(wsdlLocation);
+		//QName serviceName =   //getWebServiceQName(wsdlLocation);
         try {
 		    final URL wsdlLocationWithWSDL = new URL(wsdlLocation.toString() + "?WSDL");
-            CxCLIWebServiceV1 ws = new CxCLIWebServiceV1(wsdlLocationWithWSDL, serviceName);
+            CxCLIWebServiceV1 ws = new CxCLIWebServiceV1(wsdlLocationWithWSDL);
             wService = ws.getCxCLIWebServiceV1Soap();
         } catch (MalformedURLException e)
         {
