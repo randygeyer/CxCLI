@@ -5,38 +5,36 @@ import java.net.URL;
 
 import javax.xml.namespace.QName;
 
-import com.checkmarx.cxviewer.CxLogger;
 import com.checkmarx.cxviewer.ws.resolver.CxClientType;
 import com.checkmarx.cxviewer.ws.resolver.CxWSResolver;
 import com.checkmarx.cxviewer.ws.resolver.CxWSResolverSoap;
 import com.checkmarx.cxviewer.ws.resolver.CxWSResponseDiscovery;
+import org.apache.log4j.Logger;
 
 
 public class WSResolver {
-	protected static final String WS_NAME="CxWSResolver";
+    private static final Logger logger = Logger.getLogger(WSResolver.class);
+    protected static final String WS_NAME="CxWSResolver";
 	protected static String WS_NAMESPACE = "http://Checkmarx.com";
 	protected static String WS_URL="/cxwebinterface/cxWSResolver.asmx?WSDL";
 	
 	protected static CxWSResolverSoap wService;
 
 	
-	public static String getServiceURL(String server, String clientType, int version) {
-		CxClientType type=CxClientType.NONE;
-		try {
-			type=CxClientType.fromValue(clientType);
-		}
-		catch(Exception e) {
-		}
+	public static String getServiceURL(String server, int version) {
+
 		wService=getWService(server);
 		if (wService!=null) {
-			CxWSResponseDiscovery resp=wService.getWebServiceUrl(type, version);
+			CxWSResponseDiscovery resp=wService.getWebServiceUrl(CxClientType.CLI, version);
 			if (!resp.isIsSuccesfull()) {
-				CxLogger.getLogger().error("CxWebserviceResolver error: "+resp.getErrorMessage());
-			}
-			return resp.getServiceURL();
+				logger.error("CxWebserviceResolver error: "+resp.getErrorMessage());
+                return null;
+			} else {
+			    return resp.getServiceURL();
+            }
 		}
 		else {
-			CxLogger.getLogger().error("No CxWebserviceResolver is available");
+			logger.error("No CxWebserviceResolver is available");
 		}
 		return null;
 	}
@@ -53,7 +51,7 @@ public class WSResolver {
 					wsdlLocation =new URL(wsdlURL);
 				}
 				catch (MalformedURLException e) {
-					CxLogger.getLogger().error("Cannot access CxWebserviceResolver "+wsdlURL+": "+e.getMessage());
+					logger.error("Cannot access CxWebserviceResolver " + wsdlURL + ": " + e.getMessage());
 					//try HTTPS
 					wsdlURL="https://"+server+WS_URL;
 					wsdlLocation=null;
@@ -65,7 +63,7 @@ public class WSResolver {
 					wsdlLocation =new URL(wsdlURL);
 				}
 				catch (MalformedURLException e) {
-					CxLogger.getLogger().error("Cannot access CxWebserviceResolver "+wsdlURL+": "+e.getMessage());
+					logger.error("Cannot access CxWebserviceResolver " + wsdlURL + ": " + e.getMessage());
 					return null;
 				}
 			}

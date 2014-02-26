@@ -30,17 +30,12 @@ public class WSMgr extends WSMgrBase {
     final static private Logger logger = Logger.getLogger(WSMgr.class);
 	protected static final String WS_NAME="CxCLIWebServiceV1";
 	protected CxCLIWebServiceV1Soap wService;
-	
-	public WSMgr() {
 
-	}
-	
 	public String getWSName() {
 		return WS_NAME;
 	}
 	
 	public Object connectWebService(URL wsdlLocation) {
-		//QName serviceName =   //getWebServiceQName(wsdlLocation);
         try {
 		    final URL wsdlLocationWithWSDL = new URL(wsdlLocation.toString() + "?WSDL");
             CxCLIWebServiceV1 ws = new CxCLIWebServiceV1(wsdlLocationWithWSDL);
