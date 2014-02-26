@@ -111,6 +111,11 @@ public abstract class CxConsoleCommand {
         final boolean isUsingKerberos = "true".equalsIgnoreCase(ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_USE_KERBEROS_AUTH));
         if (isUsingKerberos)
         {
+            System.setProperty("java.security.auth.login.config", System.class.getResource("/login.conf").toString());
+            System.setProperty("java.security.krb5.conf",System.getProperty("user.dir") + "/config/krb5.conf");
+            System.setProperty("sun.security.krb5.debug", "false");
+            System.setProperty("auth.spnego.requireCredDelegation", "true");
+
             final String username = ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_KERBEROS_USERNAME);
             System.setProperty("cxf.kerberos.username",username);
             final String password = ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_KERBEROS_PASSWORD);

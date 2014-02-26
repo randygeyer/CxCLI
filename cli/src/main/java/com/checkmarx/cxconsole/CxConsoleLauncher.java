@@ -57,13 +57,6 @@ public class CxConsoleLauncher {
                 return CxConsoleCommand.CODE_ERRROR;
             }
 
-            javaVersionWarning();
-
-            System.setProperty("java.security.auth.login.config", System.class.getResource("/login.conf").toString());
-            System.setProperty("java.security.krb5.conf",System.getProperty("user.dir") + "/config/krb5.conf");
-            System.setProperty("sun.security.krb5.debug", "true");   // TODO: Remove the debug option
-            System.setProperty("auth.spnego.requireCredDelegation", "true");
-
             // Temporary solution
             SSLUtilities.trustAllHostnames();
             SSLUtilities.trustAllHttpsCertificates();
@@ -123,19 +116,4 @@ public class CxConsoleLauncher {
             return CxConsoleCommand.CODE_ERRROR;
 		}
 	}
-
-    private static void javaVersionWarning()
-    {
-        try {
-            final String javaVersion = System.getProperty("java.version");
-            final int minorVersion = Integer.parseInt(javaVersion.split("\\.")[1]);
-            if (minorVersion < 7 )
-            {
-                log.info("Kerberos authentication is supported on JVM 1.7 and above, current JVM version: " + javaVersion);
-            }
-            // TODO: Add Java 8 warning - Pre-authentication feature is supported only on java 8
-        } catch (Throwable e) {
-            // This is just a warning, in case of errors, do nothing
-        }
-    }
 }
