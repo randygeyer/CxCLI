@@ -14,6 +14,9 @@
 
 
     <http-conf:conduit name="*.http-conduit">
+        <http-conf:tlsClientParameters disableCNCheck="true"
+                                       useHttpsURLConnectionDefaultHostnameVerifier="true"
+                                       useHttpsURLConnectionDefaultSslSocketFactory="true"/>
         <http-conf:authorization>
             <sec:UserName>${cxf.kerberos.username}</sec:UserName>
             <sec:Password>${cxf.kerberos.password}</sec:Password>
