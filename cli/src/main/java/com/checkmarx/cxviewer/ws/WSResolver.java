@@ -17,15 +17,16 @@ public class WSResolver {
     protected static final String WS_NAME="CxWSResolver";
 	protected static String WS_NAMESPACE = "http://Checkmarx.com";
 	protected static String WS_URL="/cxwebinterface/cxWSResolver.asmx?WSDL";
-	
-	protected static CxWSResolverSoap wService;
+    private final static int CLI_WEBSERVICE_VERSION = 1;
+
+    protected static CxWSResolverSoap wService;
 
 	
-	public static String getServiceURL(String server, int version) {
+	public static String getServiceURL(String server) {
 
 		wService=getWService(server);
 		if (wService!=null) {
-			CxWSResponseDiscovery resp=wService.getWebServiceUrl(CxClientType.CLI, version);
+			CxWSResponseDiscovery resp=wService.getWebServiceUrl(CxClientType.CLI, CLI_WEBSERVICE_VERSION);
 			if (!resp.isIsSuccesfull()) {
 				logger.error("CxWebserviceResolver error: "+resp.getErrorMessage());
                 return null;
