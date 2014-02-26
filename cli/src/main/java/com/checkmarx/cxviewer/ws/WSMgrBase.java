@@ -22,7 +22,7 @@ abstract class WSMgrBase {
 
 	protected CxClientType clientType=CxClientType.NONE;
 	protected int version = 0;
-    private final int cli_webservice_version = 7; // This should be 1 for server v7.1.3, and 7 for server v7.1.2
+    protected int cli_webservice_version = 1;
 
 	
 	/**
