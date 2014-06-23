@@ -30,6 +30,7 @@ public class ScanParams {
 	private boolean isVerbose = false;
 	private boolean isVisibleOthers = true;
 	private boolean isValidateFix = false;
+    private boolean ignoreScanWithUnchangedSource = true;
 	private String spFolderName;
 	private LocationType locationType;
 	private String locationPath;
@@ -149,6 +150,7 @@ public class ScanParams {
 	    isValidateFix = commandLine.hasOption(ScanCommand.PARAM_INCREMENTAL.getOpt());
 		isVisibleOthers = !commandLine.hasOption(ScanCommand.PARAM_PRIVATE.getOpt());
         isSsoLoginUsed = commandLine.hasOption(ScanCommand.PARAM_USE_SSO.getOpt());
+        ignoreScanWithUnchangedSource = !commandLine.hasOption(ScanCommand.PARAM_FORCE_SCAN.getOpt());
         hasUserParam = commandLine.hasOption(ScanCommand.PARAM_USER.getOpt());
         hasPasswordParam = commandLine.hasOption(ScanCommand.PARAM_PASSWORD.getOpt());
 
@@ -368,4 +370,11 @@ public class ScanParams {
         return hasPasswordParam;
     }
 
+    public boolean isIgnoreScanWithUnchangedSource() {
+        return ignoreScanWithUnchangedSource;
+    }
+
+    public void setIgnoreScanWithUnchangedSource(boolean ignoreScanWithUnchangedSource) {
+        this.ignoreScanWithUnchangedSource = ignoreScanWithUnchangedSource;
+    }
 }

@@ -73,7 +73,7 @@ public abstract class CxConsoleCommand {
     {
         HelpFormatter helpFormatter = new HelpFormatter();
         String header = "\nThe \"Scan\" command allows to scan new and existing projects. It accepts all project settings as an arguments, similar to Web interface.";
-        String footer = "\n(c) 2013 CheckMarx.com LTD, All Rights Reserved\n";
+        String footer = "\n(c) 2014 CheckMarx.com LTD, All Rights Reserved\n";
         helpFormatter.setLeftPadding(4);
         helpFormatter.printHelp(120,getCommandName(),header,commandLineOptions,footer,true);
 

@@ -451,7 +451,7 @@ public class CxCLIScanJob extends CxScanJob {
                     filterPatterns.setExcludeFoldersPatterns(StringUtils.join(params.getExcludedFolders(),','));
                     srcCodeSett.setSourceFilterLists(filterPatterns);
 
-					runScanResult = wsMgr.cliScan(sessionId, prjSett, srcCodeSett,params.isValidateFix(), params.isVisibleOthers());
+					runScanResult = wsMgr.cliScan(sessionId, prjSett, srcCodeSett,params.isValidateFix(), params.isVisibleOthers(),params.isIgnoreScanWithUnchangedSource());
 				}
 				else {
 					runScanResult = wsMgr.cliScan(sessionId, /*"CxServer\\" +*/ params.getFullProjName(),
@@ -463,7 +463,7 @@ public class CxCLIScanJob extends CxScanJob {
 							params.getLocationPort(), params.getLocationBranch(),
 							params.getPrivateKey(),
 							params.isValidateFix(), params.isVisibleOthers(),
-                            params.getExcludedFiles(), params.getExcludedFolders());
+                            params.getExcludedFiles(), params.getExcludedFolders(), params.isIgnoreScanWithUnchangedSource());
 				}
 			}
 			catch (Throwable e) {

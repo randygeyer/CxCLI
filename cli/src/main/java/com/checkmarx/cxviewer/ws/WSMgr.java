@@ -131,13 +131,15 @@ public class WSMgr extends WSMgrBase {
 	public RunScanResult cliScan(String sessionId, String fullProjectName, long presetId, long configId,
 			SourceLocationType locationType, String locationpath, byte[] fileBytes, String user, String password,
 			RepositoryType repositoryType, String locationURL, Integer locationport, String locationBrach,
-			String privateKey, boolean incremental, boolean visibleToOther, String[] excludeFilesPatterns, String[] excludeFoldersPatterns) {
+			String privateKey, boolean incremental, boolean visibleToOther, String[] excludeFilesPatterns,
+            String[] excludeFoldersPatterns, boolean ignoreScanWithUnchangedSource) {
 
 		RunScanResult responseObj = new RunScanResult();
 
 		CliScanArgs args = new CliScanArgs();
 		args.setIsIncremental(incremental);
 		args.setIsPrivateScan(!visibleToOther);
+        args.setIgnoreScanWithUnchangedCode(ignoreScanWithUnchangedSource);
 		ProjectSettings projectSettings = new ProjectSettings();
 		// projectSettings.setAssociatedGroupID(usergroup);
 		// projectSettings.setProjectID(projectId);
@@ -183,6 +185,15 @@ public class WSMgr extends WSMgrBase {
 				sourceControlSetting.setRepository(repositoryType);
 				switch (repositoryType) {
 				case SVN:
+                    sourceControlSetting.setUserCredentials(creds);
+                    generateScanPaths = true;
+                    if (privateKey != null) {
+                        sourceControlSetting.setUseSSH(true);
+                        sourceControlSetting.setProtocol(SourceControlProtocolType.SSH);
+                        sourceControlSetting.setSSHPrivateKey(privateKey);
+                        sourceControlSetting.setSSHPublicKey("EmptyStab");
+                    }
+                    break;
 				case TFS:
                 case PERFORCE:
 					// sourceControlSetting.setUseSSL(false);
@@ -192,8 +203,8 @@ public class WSMgr extends WSMgrBase {
 				case GIT:
 					sourceControlSetting.setGITBranch(locationBrach);
 					if (privateKey != null) {
-						sourceControlSetting.setProtocol(SourceControlProtocolType.SSH);
-						sourceControlSetting.setUseSSL(true);
+                        sourceControlSetting.setUseSSH(true);
+                        sourceControlSetting.setProtocol(SourceControlProtocolType.SSH);
 						sourceControlSetting.setSSHPrivateKey(privateKey);
 						sourceControlSetting.setSSHPublicKey("EmptyStab");
 					}
@@ -235,13 +246,14 @@ public class WSMgr extends WSMgrBase {
 	}
 
 	public RunScanResult cliScan(String sessionId, ProjectSettings projectSettings, SourceCodeSettings srcCodeSettings,
-			boolean incremental, boolean visibleToOther) {
+			boolean incremental, boolean visibleToOther, boolean ignoreScanWithUnchangedSource) {
 
 		RunScanResult responseObj = new RunScanResult();
 
 		CliScanArgs args = new CliScanArgs();
 		args.setIsIncremental(incremental);
 		args.setIsPrivateScan(!visibleToOther);
+        args.setIgnoreScanWithUnchangedCode(ignoreScanWithUnchangedSource);
 
 		args.setPrjSettings(projectSettings);
 		args.setSrcCodeSettings(srcCodeSettings);

@@ -47,7 +47,7 @@ public class ScanCommand extends GeneralScanCommand {
             .withDescription("Sources GIT branch. Required if -LocationType is GIT. Optional.").create("LocationBranch");
 
     public static final Option PARAM_LOCATION_PRIVATE_KEY = OptionBuilder.withArgName("file").hasArg()
-            .withDescription("GIT private key location. Required  if -LocationType is GIT in SSH mode.").create("LocationPrivateKey");
+            .withDescription("GIT/SVN private key location. Required  if -LocationType is GIT/SVN in SSH mode.").create("LocationPrivateKey");
 
   //  PARAM_LOCATION_PUBLIC_KEY option disabled because the private key parameter contains both the private and the public keys
   //  public static final Option PARAM_LOCATION_PUBLIC_KEY = OptionBuilder.withArgName("file").hasArg()
@@ -66,6 +66,8 @@ public class ScanCommand extends GeneralScanCommand {
     public static final Option PARAM_USE_SSO = OptionBuilder.withDescription("SSO login method is used, available only on Windows. Optional.").create("useSSO");
 
     public static final Option PARAM_SCAN_COMMENT = OptionBuilder.withArgName("text").withDescription("Scan comment. Example: -comment 'important scan1'. Optional.").hasArg().create("comment");
+
+    public static final Option PARAM_FORCE_SCAN = OptionBuilder.withDescription("Force scan on source code, which has not been changed since the last scan of the same project. Optional.").create("ForceScan");
 
     public static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
 
@@ -96,6 +98,7 @@ public class ScanCommand extends GeneralScanCommand {
         this.commandLineOptions.addOption(PARAM_PRIVATE);
         this.commandLineOptions.addOption(PARAM_SCAN_COMMENT);
         this.commandLineOptions.addOption(PARAM_USE_SSO);
+        this.commandLineOptions.addOption(PARAM_FORCE_SCAN);
     }
 
 	@Override
@@ -195,7 +198,7 @@ public class ScanCommand extends GeneralScanCommand {
 	@Override
 	public String getUsageExamples() {
 		return "\n\nCxConsole Scan -Projectname SP\\Cx\\Engine\\AST -CxServer http://localhost -cxuser admin@cx -cxpassword admin -locationtype folder -locationpath C:\\cx -preset All -incremental -reportpdf a.pdf\n"
-				+ "CxConsole Scan -projectname SP\\Cx\\Engine\\AST -cxserver http://localhost -cxuser admin@cx -cxpassword admin -locationtype tfs -locationurl http://vsts2003:8080 -locationuser dm\\matys -locationpassword XYZ -preset default -reportxml a.xml -reportpdf b.pdf -incremental\n"
+				+ "CxConsole Scan -projectname SP\\Cx\\Engine\\AST -cxserver http://localhost -cxuser admin@cx -cxpassword admin -locationtype tfs -locationurl http://vsts2003:8080 -locationuser dm\\matys -locationpassword XYZ -preset default -reportxml a.xml -reportpdf b.pdf -incremental -forcescan\n"
 				+ "CxConsole Scan -projectname SP\\Cx\\Engine\\AST -cxserver http://localhost -cxuser admin@cx -cxpassword admin -locationtype share -locationpath '\\\\storage\\path1;\\\\storage\\path2' -locationuser dm\\matys -locationpassword XYZ -preset \"Sans 25\" -reportxls a.xls -reportpdf b.pdf -private -verbose -log a.log\n -LocationPathExclude test*, *log* -LocationFilesExclude web.config , *.class\n";
 	}
 
@@ -204,7 +207,8 @@ public class ScanCommand extends GeneralScanCommand {
 	@Override
 	protected boolean isKeyFlag(String key) {
 		return /*super.isKeyFlag(key) || */PARAM_INCREMENTAL.getOpt().equalsIgnoreCase(key)
-				|| PARAM_PRIVATE.getOpt().equalsIgnoreCase(key) || PARAM_USE_SSO.getOpt().equalsIgnoreCase(key);
+				|| PARAM_PRIVATE.getOpt().equalsIgnoreCase(key) || PARAM_USE_SSO.getOpt().equalsIgnoreCase(key)
+                || PARAM_FORCE_SCAN.getOpt().equalsIgnoreCase(key);
 	}
 
 	/*
@@ -299,7 +303,7 @@ public class ScanCommand extends GeneralScanCommand {
 
 		if (scParams.getLocationPrivateKey() != null
 				&& scParams.getLocationType() != null
-				&& scParams.getLocationType() == LocationType.git) {
+				&& (scParams.getLocationType() == LocationType.git || scParams.getLocationType() == LocationType.svn)){
 			File keyFile = new File(scParams.getLocationPrivateKey().trim());
 			if (!keyFile.exists()) {
 				throw new CommandLineArgumentException("Private key file is not found " + "["
