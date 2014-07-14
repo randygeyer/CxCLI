@@ -76,6 +76,11 @@ public class WSResolver {
 
 			CxWSResolver ws = new CxWSResolver(wsdlLocation);
 			wService=ws.getCxWSResolverSoap();
+
+            //dynamically setting off the CXF client WSDL schema validation - needed for schema backward compatibility.
+            org.apache.cxf.endpoint.Client client = org.apache.cxf.frontend.ClientProxy.getClient(wService);
+            org.apache.cxf.endpoint.Endpoint cxfEndpoint = client.getEndpoint();
+            cxfEndpoint.getEndpointInfo().setProperty("set-jaxb-validation-event-handler", "false");
 		}
 		return wService;
 	}

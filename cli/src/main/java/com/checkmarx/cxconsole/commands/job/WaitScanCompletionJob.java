@@ -18,7 +18,7 @@ public class WaitScanCompletionJob implements Callable<Boolean> {
 	private String sessionId;
 	private String runId;
 	private String finalMessage;
-	
+	private CurrentStatusEnum currentStatusEnum;
 	private long scanId;
 	private long resultId;
 
@@ -71,6 +71,7 @@ public class WaitScanCompletionJob implements Callable<Boolean> {
 				if (statusOfScanResult != null && statusOfScanResult.isSuccesfullResponce()) {
 					// Update progress bar
 					totalPercentScanned = statusOfScanResult.getTotalPercent();
+                    currentStatusEnum = statusOfScanResult.getRunStatus();
 					log.info("Total scan worked: " + totalPercentScanned  + "%");
 					if (statusOfScanResult.isStatusFailed()) {
 						// Scan failed
@@ -199,4 +200,8 @@ public class WaitScanCompletionJob implements Callable<Boolean> {
 	public long getScanId() {
 		return scanId;
 	}
+
+    public CurrentStatusEnum getCurrentStatusEnum() {
+        return currentStatusEnum;
+    }
 }

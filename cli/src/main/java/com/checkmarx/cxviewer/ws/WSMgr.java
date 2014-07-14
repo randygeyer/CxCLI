@@ -40,6 +40,12 @@ public class WSMgr extends WSMgrBase {
 		    final URL wsdlLocationWithWSDL = new URL(wsdlLocation.toString() + "?WSDL");
             CxCLIWebServiceV1 ws = new CxCLIWebServiceV1(wsdlLocationWithWSDL);
             wService = ws.getCxCLIWebServiceV1Soap();
+
+            //dynamically setting off the CXF client WSDL schema validation - needed for schema backward compatibility.
+            org.apache.cxf.endpoint.Client client = org.apache.cxf.frontend.ClientProxy.getClient(wService);
+            org.apache.cxf.endpoint.Endpoint cxfEndpoint = client.getEndpoint();
+            cxfEndpoint.getEndpointInfo().setProperty("set-jaxb-validation-event-handler", "false");
+
         } catch (MalformedURLException e)
         {
             // We should never get here, as the correctness of wsdlLocation was already checked

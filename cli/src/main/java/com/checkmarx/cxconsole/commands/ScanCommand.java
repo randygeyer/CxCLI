@@ -32,10 +32,10 @@ public class ScanCommand extends GeneralScanCommand {
             .withDescription("Local or shared path to sources or source repository branch. Required if -LocationType is folder/shared.").create("LocationPath");
 
     public static final Option PARAM_LOCATION_USER = OptionBuilder.withArgName("username").hasArg()
-            .withDescription("Source control or network username. Required if -LocationType is TFS/SVN/Perforce/shared.").create("LocationUser");
+            .withDescription("Source control or network username. Required if -LocationType is TFS/Perforce/shared.").create("LocationUser");
 
     public static final Option PARAM_LOCATION_PWD = OptionBuilder.withArgName("password").hasArg()
-            .withDescription("Source control or network password. Required if -LocationType is TFS/SVN/Perforce/shared.").create("LocationPassword");
+            .withDescription("Source control or network password. Required if -LocationType is TFS/Perforce/shared.").create("LocationPassword");
 
     public static final Option PARAM_LOCATION_URL = OptionBuilder.withArgName("url").hasArg()
             .withDescription("Source control URL. Required if -LocationType is TFS/SVN/GIT/Perforce. For Perforce SSL, set ssl:<URL> .").create("LocationURL");
@@ -59,13 +59,13 @@ public class ScanCommand extends GeneralScanCommand {
     public static final Option PARAM_CONFIGURATION = OptionBuilder.withArgName("configuration").hasArg()
             .withDescription("If configuration is not set, \"Default Configuration\" will be used for a new project. Possible values: [ \"Default Configuration\" | \"Japanese (Shift-JIS)\" ] Optional.").create("Configuration");
 
-    public static final Option PARAM_INCREMENTAL = OptionBuilder.withDescription("Run incremental scan instead of full scan. Optional.").create("incremental");
+    public static final Option PARAM_INCREMENTAL = OptionBuilder.withDescription("Run incremental scan instead of full scan. Optional.").create("Incremental");
 
-    public static final Option PARAM_PRIVATE = OptionBuilder.withDescription("Scan will not be visible to other users. Optional.").create("private");
+    public static final Option PARAM_PRIVATE = OptionBuilder.withDescription("Scan will not be visible to other users. Optional.").create("Private");
 
-    public static final Option PARAM_USE_SSO = OptionBuilder.withDescription("SSO login method is used, available only on Windows. Optional.").create("useSSO");
+    public static final Option PARAM_USE_SSO = OptionBuilder.withDescription("SSO login method is used, available only on Windows. Optional.").create("UseSSO");
 
-    public static final Option PARAM_SCAN_COMMENT = OptionBuilder.withArgName("text").withDescription("Scan comment. Example: -comment 'important scan1'. Optional.").hasArg().create("comment");
+    public static final Option PARAM_SCAN_COMMENT = OptionBuilder.withArgName("text").withDescription("Scan comment. Example: -comment 'important scan1'. Optional.").hasArg().create("Comment");
 
     public static final Option PARAM_FORCE_SCAN = OptionBuilder.withDescription("Force scan on source code, which has not been changed since the last scan of the same project. Optional.").create("ForceScan");
 
@@ -242,15 +242,15 @@ public class ScanCommand extends GeneralScanCommand {
             throw new CommandLineArgumentException(PARAM_LOCATION_URL.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS/Perforce");
         }
 
-        if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs || scParams.getLocationType() == LocationType.perforce) &&
+        if ((scParams.getLocationType() == LocationType.tfs || scParams.getLocationType() == LocationType.perforce) &&
              scParams.getLocationUser()==null )
         {
-            throw new CommandLineArgumentException(PARAM_LOCATION_USER.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS/Perforce");
+            throw new CommandLineArgumentException(PARAM_LOCATION_USER.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is TFS/Perforce");
         }
-        if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs) &&
+        if ((scParams.getLocationType() == LocationType.tfs) &&
              scParams.getLocationPassword() == null )
         {
-            throw new CommandLineArgumentException(PARAM_LOCATION_PWD.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS");
+            throw new CommandLineArgumentException(PARAM_LOCATION_PWD.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is TFS");
         }
 
         if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs || scParams.getLocationType() == LocationType.perforce) &&

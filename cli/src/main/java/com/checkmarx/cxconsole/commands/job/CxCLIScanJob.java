@@ -134,15 +134,12 @@ public class CxCLIScanJob extends CxScanJob {
 		} finally {
 			executor.shutdownNow();
 		}
-		
-		if (!waiterJob.getFinalMessage().isEmpty() 
-				&& waiterJob.getFinalMessage().contains("Source code has not changed since last scan")) {
-			/*if (log.isEnabledFor(Level.INFO)) {
-				log.info("ScanProject execution result: " + waiterJob.getFinalMessage());
-			}*/
-			return CxConsoleCommand.CODE_OK;
+
+		if (params.isIgnoreScanWithUnchangedSource() && scanId == -1 && waiterJob.getCurrentStatusEnum() == CurrentStatusEnum.FINISHED) {
+            log.info("Scan finished with ScanId = (-1): finish Scan Job");
+            return CxConsoleCommand.CODE_OK;
 		}
-		
+
 		//update scan comment
 		String comment=params.getScanComment();
 		if (comment!=null) {
