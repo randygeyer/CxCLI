@@ -137,7 +137,12 @@ public class ScanParams {
 			}
 		} else {
 			if (locationType == LocationType.svn) {
-				locationPort = 80;
+				if (locationURL.toLowerCase().startsWith("svn://")) {
+                    locationPort = 3690;
+                }
+                else {
+                    locationPort = 80;
+                }
 			} else if (locationType == LocationType.tfs) {
 				locationPort = 8080;
 			}

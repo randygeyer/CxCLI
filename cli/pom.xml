@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.checkmarx</groupId>
-    <artifactId>CxConsole</artifactId>
-    <version>7.1.5.1</version>
+    <artifactId>CxConsolePlugin</artifactId>
+    <version>7.1.5.2</version>
     <packaging>jar</packaging>
 
     <name>cli</name>
