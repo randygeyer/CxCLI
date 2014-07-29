@@ -11,6 +11,7 @@ import javax.xml.namespace.QName;
 
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxviewer.CxLogger;
+import com.checkmarx.cxviewer.utils.CXFConfigurationUtils;
 import com.checkmarx.cxviewer.ws.generated.*;
 import com.checkmarx.cxviewer.ws.resolver.CxClientType;
 import com.checkmarx.cxviewer.ws.results.GetConfigurationsListResult;
@@ -23,6 +24,7 @@ import com.checkmarx.cxviewer.ws.results.LoginResult;
 import com.checkmarx.cxviewer.ws.results.RunScanResult;
 import com.checkmarx.cxviewer.ws.results.UpdateScanCommentResult;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.cxf.transports.http.configuration.ConnectionType;
 import org.apache.log4j.Logger;
 
 
@@ -41,10 +43,11 @@ public class WSMgr extends WSMgrBase {
             CxCLIWebServiceV1 ws = new CxCLIWebServiceV1(wsdlLocationWithWSDL);
             wService = ws.getCxCLIWebServiceV1Soap();
 
-            //dynamically setting off the CXF client WSDL schema validation - needed for schema backward compatibility.
-            org.apache.cxf.endpoint.Client client = org.apache.cxf.frontend.ClientProxy.getClient(wService);
-            org.apache.cxf.endpoint.Endpoint cxfEndpoint = client.getEndpoint();
-            cxfEndpoint.getEndpointInfo().setProperty("set-jaxb-validation-event-handler", "false");
+            CXFConfigurationUtils.disableSchemaValidation(wService);
+
+            if("false".equalsIgnoreCase(ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_USE_KERBEROS_AUTH))) {
+                CXFConfigurationUtils.setNTLMAuthentication(wService);
+            }
 
         } catch (MalformedURLException e)
         {
