@@ -1,6 +1,10 @@
 package com.checkmarx.cxconsole.commands;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -8,106 +12,129 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import com.checkmarx.cxconsole.utils.CommandLineArgumentException;
-import org.apache.commons.cli.*;
-
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
 import org.apache.log4j.Level;
 
 import com.checkmarx.cxconsole.commands.job.CxCLIScanJob;
+import com.checkmarx.cxconsole.utils.CommandLineArgumentException;
 import com.checkmarx.cxconsole.utils.LocationType;
 
 public class ScanCommand extends GeneralScanCommand {
 
 	public static String COMMAND_SCAN = "Scan";
 
-    public static final Option PARAM_PRJ_NAME = OptionBuilder.withArgName("project name").hasArg().isRequired().withDescription("A full absolute name of a project. " +
-            "The full Project name includes the whole path to the project, including Server, service provider, company, and team. " +
-            "Example:  -ProjectName \"CxServer\\SP\\Company\\Users\\bs java\" " +
-            "If project with such a name doesn't exist in the system, new project will be created.").create("ProjectName");
+	public static final Option PARAM_PRJ_NAME = OptionBuilder.create("ProjectName");
+	// TODO: Check if CLI lib can check for correct param value
+	public static final Option PARAM_LOCATION_TYPE = OptionBuilder.withArgName(LocationType.stringOfValues()).hasArg()
+			.withDescription("Source location type: folder, shared, SVN, TFS, GIT, Perforce").create("LocationType"); 
 
-    public static final Option PARAM_LOCATION_TYPE = OptionBuilder.withArgName(LocationType.stringOfValues()).hasArg()
-            .withDescription("Source location type: folder, shared, SVN, TFS, GIT, Perforce").create("LocationType");    // TODO: Check if CLI lib can check for correct param value
+	public static final Option PARAM_LOCATION_PATH = OptionBuilder
+			.withArgName("path")
+			.hasArg()
+			.withDescription(
+					"Local or shared path to sources or source repository branch. Required if -LocationType is folder/shared.")
+			.create("LocationPath");
 
-    public static final Option PARAM_LOCATION_PATH = OptionBuilder.withArgName("path").hasArg()
-            .withDescription("Local or shared path to sources or source repository branch. Required if -LocationType is folder/shared.").create("LocationPath");
+	public static final Option PARAM_LOCATION_USER = OptionBuilder.withArgName("username").hasArg()
+			.withDescription("Source control or network username. Required if -LocationType is TFS/Perforce/shared.")
+			.create("LocationUser");
 
-    public static final Option PARAM_LOCATION_USER = OptionBuilder.withArgName("username").hasArg()
-            .withDescription("Source control or network username. Required if -LocationType is TFS/Perforce/shared.").create("LocationUser");
+	public static final Option PARAM_LOCATION_PWD = OptionBuilder.withArgName("password").hasArg()
+			.withDescription("Source control or network password. Required if -LocationType is TFS/Perforce/shared.")
+			.create("LocationPassword");
 
-    public static final Option PARAM_LOCATION_PWD = OptionBuilder.withArgName("password").hasArg()
-            .withDescription("Source control or network password. Required if -LocationType is TFS/Perforce/shared.").create("LocationPassword");
+	public static final Option PARAM_LOCATION_URL = OptionBuilder
+			.withArgName("url")
+			.hasArg()
+			.withDescription(
+					"Source control URL. Required if -LocationType is TFS/SVN/GIT/Perforce. For Perforce SSL, set ssl:<URL> .")
+			.create("LocationURL");
 
-    public static final Option PARAM_LOCATION_URL = OptionBuilder.withArgName("url").hasArg()
-            .withDescription("Source control URL. Required if -LocationType is TFS/SVN/GIT/Perforce. For Perforce SSL, set ssl:<URL> .").create("LocationURL");
+	public static final Option PARAM_LOCATION_PORT = OptionBuilder.withArgName("url").hasArg()
+			.withDescription("Source control system port. Default 8080/80/1666 (TFS/SVN/Perforce). Optional.")
+			.create("LocationPort");
 
-    public static final Option PARAM_LOCATION_PORT = OptionBuilder.withArgName("url").hasArg()
-            .withDescription("Source control system port. Default 8080/80/1666 (TFS/SVN/Perforce). Optional.").create("LocationPort");
+	public static final Option PARAM_LOCATION_BRANCH = OptionBuilder.withArgName("branch").hasArg()
+			.withDescription("Sources GIT branch. Required if -LocationType is GIT. Optional.").create("LocationBranch");
 
-    public static final Option PARAM_LOCATION_BRANCH = OptionBuilder.withArgName("branch").hasArg()
-            .withDescription("Sources GIT branch. Required if -LocationType is GIT. Optional.").create("LocationBranch");
+	public static final Option PARAM_LOCATION_PRIVATE_KEY = OptionBuilder.withArgName("file").hasArg()
+			.withDescription("GIT/SVN private key location. Required  if -LocationType is GIT/SVN in SSH mode.")
+			.create("LocationPrivateKey");
 
-    public static final Option PARAM_LOCATION_PRIVATE_KEY = OptionBuilder.withArgName("file").hasArg()
-            .withDescription("GIT/SVN private key location. Required  if -LocationType is GIT/SVN in SSH mode.").create("LocationPrivateKey");
+	// PARAM_LOCATION_PUBLIC_KEY option disabled because the private key
+	// parameter contains both the private and the public keys
+	// public static final Option PARAM_LOCATION_PUBLIC_KEY =
+	// OptionBuilder.withArgName("file").hasArg()
+	// .withDescription("GIT public key location. Required  if -LocationType is GIT in SSH mode.").create("LocationPublicKey");
 
-  //  PARAM_LOCATION_PUBLIC_KEY option disabled because the private key parameter contains both the private and the public keys
-  //  public static final Option PARAM_LOCATION_PUBLIC_KEY = OptionBuilder.withArgName("file").hasArg()
-  //          .withDescription("GIT public key location. Required  if -LocationType is GIT in SSH mode.").create("LocationPublicKey");
+	public static final Option PARAM_PRESET = OptionBuilder
+			.withArgName("preset")
+			.hasArg()
+			.withDescription(
+					"If preset is not specified, will use the predefined preset for an existing project, and Default preset for a new project. Optional.")
+			.create("Preset");
 
-    public static final Option PARAM_PRESET = OptionBuilder.withArgName("preset").hasArg()
-            .withDescription("If preset is not specified, will use the predefined preset for an existing project, and Default preset for a new project. Optional.").create("Preset");
+	public static final Option PARAM_CONFIGURATION = OptionBuilder
+			.withArgName("configuration")
+			.hasArg()
+			.withDescription(
+					"If configuration is not set, \"Default Configuration\" will be used for a new project. Possible values: [ \"Default Configuration\" | \"Japanese (Shift-JIS)\" ] Optional.")
+			.create("Configuration");
 
-    public static final Option PARAM_CONFIGURATION = OptionBuilder.withArgName("configuration").hasArg()
-            .withDescription("If configuration is not set, \"Default Configuration\" will be used for a new project. Possible values: [ \"Default Configuration\" | \"Japanese (Shift-JIS)\" ] Optional.").create("Configuration");
+	public static final Option PARAM_INCREMENTAL = OptionBuilder.withDescription(
+			"Run incremental scan instead of full scan. Optional.").create("Incremental");
 
-    public static final Option PARAM_INCREMENTAL = OptionBuilder.withDescription("Run incremental scan instead of full scan. Optional.").create("Incremental");
+	public static final Option PARAM_PRIVATE = OptionBuilder
+			.withDescription("Scan will not be visible to other users. Optional.").create("Private");
 
-    public static final Option PARAM_PRIVATE = OptionBuilder.withDescription("Scan will not be visible to other users. Optional.").create("Private");
+	public static final Option PARAM_USE_SSO = OptionBuilder.withDescription(
+			"SSO login method is used, available only on Windows. Optional.").create("UseSSO");
 
-    public static final Option PARAM_USE_SSO = OptionBuilder.withDescription("SSO login method is used, available only on Windows. Optional.").create("UseSSO");
+	public static final Option PARAM_SCAN_COMMENT = OptionBuilder.withArgName("text")
+			.withDescription("Scan comment. Example: -comment 'important scan1'. Optional.").hasArg().create("Comment");
 
-    public static final Option PARAM_SCAN_COMMENT = OptionBuilder.withArgName("text").withDescription("Scan comment. Example: -comment 'important scan1'. Optional.").hasArg().create("Comment");
+	public static final Option PARAM_FORCE_SCAN = OptionBuilder.withDescription(
+			"Force scan on source code, which has not been changed since the last scan of the same project. Optional.").create(
+			"ForceScan");
 
-    public static final Option PARAM_FORCE_SCAN = OptionBuilder.withDescription("Force scan on source code, which has not been changed since the last scan of the same project. Optional.").create("ForceScan");
+	public static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
 
-    public static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
+	public static String MSG_ERR_SSO_WINDOWS_SUPPORT = "SSO login method is available only on Windows";
 
-    public static String MSG_ERR_SSO_WINDOWS_SUPPORT = "SSO login method is available only on Windows";
+	public static String MSG_ERR_MISSING_USER_PASSWORD = "Missing username/password parameters";
 
-    public static String MSG_ERR_MISSING_USER_PASSWORD = "Missing username/password parameters";
-
-    public ScanCommand() {
+	public ScanCommand() {
 		super();
-        initCommandLineOptions();
+		initCommandLineOptions();
 	}
 
-    private void initCommandLineOptions()
-    {
-        this.commandLineOptions.addOption(PARAM_PRJ_NAME);
-        this.commandLineOptions.addOption(PARAM_LOCATION_TYPE);
-        this.commandLineOptions.addOption(PARAM_LOCATION_PATH);
-        this.commandLineOptions.addOption(PARAM_LOCATION_USER);
-        this.commandLineOptions.addOption(PARAM_LOCATION_PWD);
-        this.commandLineOptions.addOption(PARAM_LOCATION_URL);
-        this.commandLineOptions.addOption(PARAM_LOCATION_PORT);
-        this.commandLineOptions.addOption(PARAM_LOCATION_BRANCH);
-        this.commandLineOptions.addOption(PARAM_LOCATION_PRIVATE_KEY);
-        //this.commandLineOptions.addOption(PARAM_LOCATION_PUBLIC_KEY);
-        this.commandLineOptions.addOption(PARAM_PRESET);
-        this.commandLineOptions.addOption(PARAM_CONFIGURATION);
-        this.commandLineOptions.addOption(PARAM_INCREMENTAL);
-        this.commandLineOptions.addOption(PARAM_PRIVATE);
-        this.commandLineOptions.addOption(PARAM_SCAN_COMMENT);
-        this.commandLineOptions.addOption(PARAM_USE_SSO);
-        this.commandLineOptions.addOption(PARAM_FORCE_SCAN);
-    }
+	private void initCommandLineOptions() {
+		this.commandLineOptions.addOption(PARAM_PRJ_NAME);
+		this.commandLineOptions.addOption(PARAM_LOCATION_TYPE);
+		this.commandLineOptions.addOption(PARAM_LOCATION_PATH);
+		this.commandLineOptions.addOption(PARAM_LOCATION_USER);
+		this.commandLineOptions.addOption(PARAM_LOCATION_PWD);
+		this.commandLineOptions.addOption(PARAM_LOCATION_URL);
+		this.commandLineOptions.addOption(PARAM_LOCATION_PORT);
+		this.commandLineOptions.addOption(PARAM_LOCATION_BRANCH);
+		this.commandLineOptions.addOption(PARAM_LOCATION_PRIVATE_KEY);
+		// this.commandLineOptions.addOption(PARAM_LOCATION_PUBLIC_KEY);
+		this.commandLineOptions.addOption(PARAM_PRESET);
+		this.commandLineOptions.addOption(PARAM_CONFIGURATION);
+		this.commandLineOptions.addOption(PARAM_INCREMENTAL);
+		this.commandLineOptions.addOption(PARAM_PRIVATE);
+		this.commandLineOptions.addOption(PARAM_SCAN_COMMENT);
+		this.commandLineOptions.addOption(PARAM_USE_SSO);
+		this.commandLineOptions.addOption(PARAM_FORCE_SCAN);
+	}
 
 	@Override
 	protected void executeCommand() {
 
-		if (scParams.getLocationPrivateKey() != null)
-        {
+		if (scParams.getLocationPrivateKey() != null) {
 			BufferedReader in = null;
-            File keyFile = new File(scParams.getLocationPrivateKey());
+			File keyFile = new File(scParams.getLocationPrivateKey());
 			try {
 				in = new BufferedReader(new FileReader(keyFile));
 				String line;
@@ -164,11 +191,9 @@ public class ScanCommand extends GeneralScanCommand {
 		} catch (ExecutionException e) {
 			if (log.isEnabledFor(Level.ERROR)) {
 				if (e.getCause().getMessage() != null) {
-					log.error("Error during scan job execution: "
-							+ e.getCause().getMessage());
+					log.error("Error during scan job execution: " + e.getCause().getMessage(), e);
 				} else {
-					log.error("Error during scan job execution: "
-							+ e.getCause());
+					log.error("Error during scan job execution: " + e.getCause(), e);
 				}
 			}
 			if (log.isEnabledFor(Level.TRACE)) {
@@ -202,13 +227,11 @@ public class ScanCommand extends GeneralScanCommand {
 				+ "CxConsole Scan -projectname SP\\Cx\\Engine\\AST -cxserver http://localhost -cxuser admin@cx -cxpassword admin -locationtype share -locationpath '\\\\storage\\path1;\\\\storage\\path2' -locationuser dm\\matys -locationpassword XYZ -preset \"Sans 25\" -reportxls a.xls -reportpdf b.pdf -private -verbose -log a.log\n -LocationPathExclude test*, *log* -LocationFilesExclude web.config , *.class\n";
 	}
 
-
-
 	@Override
 	protected boolean isKeyFlag(String key) {
-		return /*super.isKeyFlag(key) || */PARAM_INCREMENTAL.getOpt().equalsIgnoreCase(key)
+		return /* super.isKeyFlag(key) || */PARAM_INCREMENTAL.getOpt().equalsIgnoreCase(key)
 				|| PARAM_PRIVATE.getOpt().equalsIgnoreCase(key) || PARAM_USE_SSO.getOpt().equalsIgnoreCase(key)
-                || PARAM_FORCE_SCAN.getOpt().equalsIgnoreCase(key);
+				|| PARAM_FORCE_SCAN.getOpt().equalsIgnoreCase(key);
 	}
 
 	/*
@@ -220,111 +243,98 @@ public class ScanCommand extends GeneralScanCommand {
 		if (scParams.getSpFolderName() != null) {
 			File projectDir = new File(scParams.getSpFolderName().trim());
 			if (!projectDir.exists()) {
-				throw new CommandLineArgumentException(MSG_ERR_FOLDER_NOT_EXIST + "["
-						+ scParams.getSpFolderName() + "]");
+				throw new CommandLineArgumentException(MSG_ERR_FOLDER_NOT_EXIST + "[" + scParams.getSpFolderName() + "]");
 			}
 
 			if (!projectDir.isDirectory()) {
-				throw new CommandLineArgumentException(MSG_ERR_FOLDER_NOT_EXIST + "["
-						+ scParams.getSpFolderName() + "]");
+				throw new CommandLineArgumentException(MSG_ERR_FOLDER_NOT_EXIST + "[" + scParams.getSpFolderName() + "]");
 			}
 		}
-		if (scParams.getLocationType() == LocationType.folder
-			&& scParams.getLocationPath() == null)
-        {
-			throw new CommandLineArgumentException(PARAM_LOCATION_PATH.getOpt() + " is missing. Parameter should be specified since "
-				+ PARAM_LOCATION_TYPE.getOpt() + " is [" + scParams.getLocationType() + "]");
+		if (scParams.getLocationType() == LocationType.folder && scParams.getLocationPath() == null) {
+			throw new CommandLineArgumentException(PARAM_LOCATION_PATH.getOpt()
+					+ " is missing. Parameter should be specified since " + PARAM_LOCATION_TYPE.getOpt() + " is ["
+					+ scParams.getLocationType() + "]");
 		}
 
-        if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs || scParams.getLocationType() == LocationType.perforce) &&
-             scParams.getLocationURL()==null)
-        {
-            throw new CommandLineArgumentException(PARAM_LOCATION_URL.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS/Perforce");
-        }
+		if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs || scParams
+				.getLocationType() == LocationType.perforce) && scParams.getLocationURL() == null) {
+			throw new CommandLineArgumentException(PARAM_LOCATION_URL.getOpt() + " is not specified. Required when "
+					+ PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS/Perforce");
+		}
 
-        if ((scParams.getLocationType() == LocationType.tfs || scParams.getLocationType() == LocationType.perforce) &&
-             scParams.getLocationUser()==null )
-        {
-            throw new CommandLineArgumentException(PARAM_LOCATION_USER.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is TFS/Perforce");
-        }
-        if ((scParams.getLocationType() == LocationType.tfs) &&
-             scParams.getLocationPassword() == null )
-        {
-            throw new CommandLineArgumentException(PARAM_LOCATION_PWD.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is TFS");
-        }
+		if ((scParams.getLocationType() == LocationType.tfs || scParams.getLocationType() == LocationType.perforce)
+				&& scParams.getLocationUser() == null) {
+			throw new CommandLineArgumentException(PARAM_LOCATION_USER.getOpt() + " is not specified. Required when "
+					+ PARAM_LOCATION_TYPE.getOpt() + " is TFS/Perforce");
+		}
+		if ((scParams.getLocationType() == LocationType.tfs) && scParams.getLocationPassword() == null) {
+			throw new CommandLineArgumentException(PARAM_LOCATION_PWD.getOpt() + " is not specified. Required when "
+					+ PARAM_LOCATION_TYPE.getOpt() + " is TFS");
+		}
 
-        if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs || scParams.getLocationType() == LocationType.perforce) &&
-             scParams.getLocationPath()==null)
-        {
-            throw new CommandLineArgumentException(PARAM_LOCATION_PATH.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS/Perforce");
-        }
+		if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs || scParams
+				.getLocationType() == LocationType.perforce) && scParams.getLocationPath() == null) {
+			throw new CommandLineArgumentException(PARAM_LOCATION_PATH.getOpt() + " is not specified. Required when "
+					+ PARAM_LOCATION_TYPE.getOpt() + " is SVN/TFS/Perforce");
+		}
 
-        if ((scParams.getLocationType() == LocationType.git) &&
-                scParams.getLocationURL()==null)
-        {
-            throw new CommandLineArgumentException(PARAM_LOCATION_URL.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is GIT");
-        }
+		if ((scParams.getLocationType() == LocationType.git) && scParams.getLocationURL() == null) {
+			throw new CommandLineArgumentException(PARAM_LOCATION_URL.getOpt() + " is not specified. Required when "
+					+ PARAM_LOCATION_TYPE.getOpt() + " is GIT");
+		}
 
-        if ((scParams.getLocationType() == LocationType.git) &&
-                scParams.getLocationBranch()==null)
-        {
-            throw new CommandLineArgumentException(PARAM_LOCATION_BRANCH.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is GIT");
-        }
+		if ((scParams.getLocationType() == LocationType.git) && scParams.getLocationBranch() == null) {
+			throw new CommandLineArgumentException(PARAM_LOCATION_BRANCH.getOpt() + " is not specified. Required when "
+					+ PARAM_LOCATION_TYPE.getOpt() + " is GIT");
+		}
 
-        if ((scParams.getLocationType() == LocationType.shared) &&
-                scParams.getLocationPath()==null)
-        {
-            throw new CommandLineArgumentException(PARAM_LOCATION_PATH.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is shared");
-        }
+		if ((scParams.getLocationType() == LocationType.shared) && scParams.getLocationPath() == null) {
+			throw new CommandLineArgumentException(PARAM_LOCATION_PATH.getOpt() + " is not specified. Required when "
+					+ PARAM_LOCATION_TYPE.getOpt() + " is shared");
+		}
 
-        if ((scParams.getLocationType() == LocationType.shared) &&
-                scParams.getLocationUser()==null)
-        {
-            throw new CommandLineArgumentException(PARAM_LOCATION_USER.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is shared");
-        }
+		if ((scParams.getLocationType() == LocationType.shared) && scParams.getLocationUser() == null) {
+			throw new CommandLineArgumentException(PARAM_LOCATION_USER.getOpt() + " is not specified. Required when "
+					+ PARAM_LOCATION_TYPE.getOpt() + " is shared");
+		}
 
-        if ((scParams.getLocationType() == LocationType.shared) &&
-                scParams.getLocationPassword()==null)
-        {
-            throw new CommandLineArgumentException(PARAM_LOCATION_PWD.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is shared");
-        }
+		if ((scParams.getLocationType() == LocationType.shared) && scParams.getLocationPassword() == null) {
+			throw new CommandLineArgumentException(PARAM_LOCATION_PWD.getOpt() + " is not specified. Required when "
+					+ PARAM_LOCATION_TYPE.getOpt() + " is shared");
+		}
 
-        if ((scParams.getLocationType() == LocationType.folder) &&
-                scParams.getLocationPath()==null)
-        {
-            throw new CommandLineArgumentException(PARAM_LOCATION_PATH.getOpt() + " is not specified. Required when " + PARAM_LOCATION_TYPE.getOpt() + " is folder");
-        }
+		if ((scParams.getLocationType() == LocationType.folder) && scParams.getLocationPath() == null) {
+			throw new CommandLineArgumentException(PARAM_LOCATION_PATH.getOpt() + " is not specified. Required when "
+					+ PARAM_LOCATION_TYPE.getOpt() + " is folder");
+		}
 
-		if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs || scParams.getLocationType() == LocationType.perforce)
-				&& scParams.getLocationPort() == null) {
+		if ((scParams.getLocationType() == LocationType.svn || scParams.getLocationType() == LocationType.tfs || scParams
+				.getLocationType() == LocationType.perforce) && scParams.getLocationPort() == null) {
 			throw new CommandLineArgumentException("Invalid location port ["
 					+ commandLineArguments.getOptionValue(PARAM_LOCATION_PORT.getOpt()) + "]");
 		}
 
-		if (scParams.getLocationPrivateKey() != null
-				&& scParams.getLocationType() != null
-				&& (scParams.getLocationType() == LocationType.git || scParams.getLocationType() == LocationType.svn)){
+		if (scParams.getLocationPrivateKey() != null && scParams.getLocationType() != null
+				&& (scParams.getLocationType() == LocationType.git || scParams.getLocationType() == LocationType.svn)) {
 			File keyFile = new File(scParams.getLocationPrivateKey().trim());
 			if (!keyFile.exists()) {
-				throw new CommandLineArgumentException("Private key file is not found " + "["
-						+ scParams.getLocationPrivateKey() + "]");
+				throw new CommandLineArgumentException("Private key file is not found " + "[" + scParams.getLocationPrivateKey()
+						+ "]");
 			}
 			if (keyFile.isDirectory()) {
-				throw new CommandLineArgumentException("Private key file preferences folder "
-						+ "[" + scParams.getLocationPrivateKey() + "]");
+				throw new CommandLineArgumentException("Private key file preferences folder " + "["
+						+ scParams.getLocationPrivateKey() + "]");
 			}
-
 
 		}
 
-        if(scParams.isSsoLoginUsed()){
-            if (!isWindows()){
-                throw new CommandLineArgumentException(MSG_ERR_SSO_WINDOWS_SUPPORT);
-            }
-        }
-        else if (!scParams.hasUserParam() || !scParams.hasPasswordParam()){
-            throw new CommandLineArgumentException(MSG_ERR_MISSING_USER_PASSWORD);
-        }
+		if (scParams.isSsoLoginUsed()) {
+			if (!isWindows()) {
+				throw new CommandLineArgumentException(MSG_ERR_SSO_WINDOWS_SUPPORT);
+			}
+		} else if (!scParams.hasUserParam() || !scParams.hasPasswordParam()) {
+			throw new CommandLineArgumentException(MSG_ERR_MISSING_USER_PASSWORD);
+		}
 
 	}
 
@@ -333,29 +343,28 @@ public class ScanCommand extends GeneralScanCommand {
 
 		String logFileLocation = commandLineArguments.getOptionValue(PARAM_LOG_FILE.getOpt());
 		String projectName = commandLineArguments.getOptionValue(PARAM_PRJ_NAME.getOpt());
-		if (projectName!=null) {
-			projectName = projectName.replaceAll("/","\\\\");
+		if (projectName != null) {
+			projectName = projectName.replaceAll("/", "\\\\");
 		}
 		// String usrHomeDir = System.getProperty("user.home");
 		// CxLogger.getLogger().info("Log user dir: " +
 		// System.getProperty("user.dir"));
 
 		String[] parts = projectName.split("\\\\");
-		String usrDir = System.getProperty("user.dir") + File.separator + normalizeLogPath(parts[parts.length - 1]) + File.separator;
+		String usrDir = System.getProperty("user.dir") + File.separator + normalizeLogPath(parts[parts.length - 1])
+				+ File.separator;
 
 		// String usrHomeDir = "";
 		if (logFileLocation == null) {
 			logFileLocation = usrDir + normalizeLogPath(parts[parts.length - 1]) + ".log";
-		}
-		else {
+		} else {
 			File logpath = new File(logFileLocation);
 			if (logpath.isAbsolute()) {
 				// Path is absolute
 				if (logFileLocation.endsWith(File.separator)) {
 					// Directory path
 					logFileLocation = logFileLocation + parts[parts.length - 1] + ".log";
-				}
-				else {
+				} else {
 					// File path
 					if (logFileLocation.contains(File.separator)) {
 						String dirPath = logFileLocation.substring(0, logFileLocation.lastIndexOf(File.separator));
@@ -365,14 +374,12 @@ public class ScanCommand extends GeneralScanCommand {
 						}
 					}
 				}
-			}
-			else {
+			} else {
 				// Path is not absolute
 				if (logFileLocation.endsWith(File.separator)) {
 					// Directory path
 					logFileLocation = usrDir + logFileLocation + parts[parts.length - 1] + ".log";
-				}
-				else {
+				} else {
 					// File path
 					if (logFileLocation.contains(File.separator)) {
 						String dirPath = logFileLocation.substring(0, logFileLocation.lastIndexOf(File.separator));
@@ -389,12 +396,12 @@ public class ScanCommand extends GeneralScanCommand {
 
 		return logFileLocation;
 	}
-	
+
 	private String normalizeLogPath(String projectName) {
 		if (projectName == null || projectName.isEmpty()) {
 			return "cx_scan.log";
 		}
-		
+
 		String normalPathName = "";
 		normalPathName = projectName.replace("\\", "_");
 		normalPathName = normalPathName.replace("/", "_");
@@ -408,27 +415,26 @@ public class ScanCommand extends GeneralScanCommand {
 		return normalPathName;
 	}
 
-    public static boolean isWindows() {
-        boolean isWindows = (System.getProperty("os.name").indexOf("Windows") >= 0);
-        return isWindows;
-    }
-
+	public static boolean isWindows() {
+		boolean isWindows = (System.getProperty("os.name").indexOf("Windows") >= 0);
+		return isWindows;
+	}
 
 	@Override
 	public String getMandatoryParams() {
-		return super.getMandatoryParams() + PARAM_PRJ_NAME
-				+ " fullProjectName "/* + PARAM_LOCATION_TYPE + " ltype" */;
+		return super.getMandatoryParams() + PARAM_PRJ_NAME + " fullProjectName "/*
+																				 * +
+																				 * PARAM_LOCATION_TYPE
+																				 * +
+																				 * " ltype"
+																				 */;
 	}
-
-
-
-
 
 	@Override
 	public String getKeyDescriptions() {
 		String leftSpacing = "  ";
 		StringBuilder keys = new StringBuilder(super.getKeyDescriptions());
-		
+
 		keys.append(leftSpacing);
 		keys.append(PARAM_PRJ_NAME);
 		keys.append(KEY_DESCR_INTEND_SMALL);
