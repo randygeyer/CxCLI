@@ -3,3 +3,8 @@ CxConsole_V7/bin
 cli/target
 cli.iws
 cli/work
+cli/.classpath
+cli/.project
+cli/.settings/org.eclipse.core.resources.prefs
+cli/.settings/org.eclipse.jdt.core.prefs
+cli/.settings/org.eclipse.m2e.core.prefs

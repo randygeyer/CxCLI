@@ -207,6 +207,13 @@
       </item>
     </group>
   </component>
+  <component name="ProjectDictionaryState">
+    <dictionary name="sergeyk">
+      <words>
+        <w>checkmarx</w>
+      </words>
+    </dictionary>
+  </component>
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/cli.iml" filepath="$PROJECT_DIR$/cli.iml" />
@@ -781,4 +788,3 @@
     </library>
   </component>
 </project>
-
