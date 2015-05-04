@@ -15,21 +15,17 @@
 		<cxfver>2.7.10</cxfver>
 	</properties>
 
-
-
 	<dependencies>
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
 			<version>3.2.1</version>
-
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -45,7 +41,6 @@
 			<artifactId>zipper</artifactId>
 			<version>RELEASE</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-frontend-jaxws</artifactId>
@@ -86,11 +81,11 @@
 				<configuration>
 					<archive>
 						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
 							<mainClass>com.checkmarx.cxconsole.CxConsoleLauncher</mainClass>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-
 						</manifest>
 						<manifestEntries>
 							<Class-Path>.</Class-Path>
@@ -106,8 +101,10 @@
 				</configuration>
 				<executions>
 					<execution>
-						<id>make-assembly</id> <!-- this is used for inheritance merges -->
-						<phase>package</phase> <!-- bind to the packaging phase -->
+						<id>make-assembly</id>
+						<!-- this is used for inheritance merges -->
+						<phase>package</phase>
+						<!-- bind to the packaging phase -->
 						<goals>
 							<goal>single</goal>
 						</goals>
@@ -173,55 +170,14 @@
 					</execution>
 				</executions>
 			</plugin>
-
-			<!--Web service generation plugin
-                Currently disabled because the old web services directory contains
-                old unused classed whose removal required code cleanup. When the code
-                is clean, automatic generation can be enabled again !-->
-			<!--<plugin>
-            <groupId>org.jvnet.jax-ws-commons</groupId>
-            <artifactId>jaxws-maven-plugin</artifactId>
-            <version>2.3</version>
-            <executions>
-                <execution>
-                    <id>CxCLIWebService</id>
-                    <phase>generate-sources</phase>
-                    <goals>
-                        <goal>wsimport</goal>
-                    </goals>
-                    <configuration>
-                        <wsdlUrls>
-                            <wsdlUrl>${basedir}/src/main/resources/com/checkmarx/cxcviewer/ws/CxCLIWebServiceV1.wsdl</wsdlUrl>
-                        </wsdlUrls>
-                        <packageName>com.checkmarx.cxviewer.ws.generated</packageName>
-                        <target>2.1</target>
-                    </configuration>
-                </execution>
-                <execution>
-                    <id>cxwsresolver</id>
-                    <phase>generate-sources</phase>
-                    <goals>
-                        <goal>wsimport</goal>
-                    </goals>
-                    <configuration>
-                        <wsdlUrls>
-                            <wsdlUrl>${basedir}/src/main/resources/com/checkmarx/cxcviewer/ws/cxwsresolver.wsdl</wsdlUrl>
-                        </wsdlUrls>
-                        <packageName>com.checkmarx.cxviewer.ws.resolver</packageName>
-                        <target>2.1</target>
-                    </configuration>
-                </execution>
-            </executions>
-
-        </plugin> -->
 		</plugins>
+
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
 			</resource>
 		</resources>
-
 
 	</build>
 
