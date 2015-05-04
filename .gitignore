@@ -9,3 +9,4 @@ cli/.settings/org.eclipse.core.resources.prefs
 cli/.settings/org.eclipse.jdt.core.prefs
 cli/.settings/org.eclipse.m2e.core.prefs
 cli/.gradle/
+*.log
