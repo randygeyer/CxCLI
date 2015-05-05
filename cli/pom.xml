@@ -89,6 +89,7 @@
 						</manifest>
 						<manifestEntries>
 							<Repository-Version>${env.GIT_COMMIT}</Repository-Version>
+							<Implementation-Build>${env.BUILD_NUMBER}</Implementation-Build>
 							<Class-Path>.</Class-Path>
 						</manifestEntries>
 					</archive>
