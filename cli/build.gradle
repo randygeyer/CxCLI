@@ -1,0 +1,77 @@
+plugins {
+    id "com.jfrog.artifactory" version "3.1.0"
+	id "no.nils.wsdl2java" version "0.6"
+}
+
+apply plugin: 'java'
+apply plugin: 'maven'
+// apply plugin: 'distribution'
+apply plugin: 'java-library-distribution'
+group = 'com.checkmarx'
+version = '7.1.8.1'
+compileJava.options.encoding = 'UTF-8'
+
+description = "cli"
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+jar.doFirst {
+	manifest {
+		attributes	'Implementation-Title': project.description,
+					'Implementation-Version': project.version,
+					'Main-Class': 'com.checkmarx.cxconsole.CxConsoleLauncher',
+					'Class-Path': configurations.runtime.files.collect { "lib/$it.name" }.join(' '),
+					'Repository-Version': repositoryVersion
+							// <Implementation-Build>${env.BUILD_NUMBER}</Implementation-Build>
+	}
+}
+
+
+project.ext {
+  mavenRepo = "http://10.31.1.81:8081/artifactory"
+}
+
+repositories {       
+     maven { url "${project.mavenRepo}/libs-release" } 
+}
+
+dependencies {
+    compile  'commons-collections:commons-collections:3.2.1',
+     'org.apache.commons:commons-lang3:3.1',
+     'log4j:log4j:1.2.14',
+     'org.jdom:jdom:1.1.3',
+     'com.checkmarx.components:zipper:1.+',
+     'org.apache.cxf:cxf-rt-frontend-jaxws:3.1.1',
+     'org.apache.cxf:cxf-rt-ws-security:3.1.1',
+     'org.apache.cxf:cxf-rt-transports-http-jetty:3.1.1',
+     'org.springframework:spring-context:4.0.1.RELEASE'
+}
+ 
+wsdl2java {
+    generatedWsdlDir = file("build/generated-sources")  // target directory for generated source code
+    wsdlDir = file("src/main/config/com/checkmarx/cxcviewer/ws") // define to support incremental build
+    wsdlsToGenerate = [ 
+                ['-p', 'com.checkmarx.cxviewer.ws.resolver', '-client', 'src/main/config/com/checkmarx/cxcviewer/ws/cxwsresolver.wsdl'],
+                ['-p', 'com.checkmarx.cxviewer.ws.generated', '-client', 'src/main/config/com/checkmarx/cxcviewer/ws/CxCLIWebServiceV1.wsdl']
+        ]
+    cxfVersion = "3.1.1"
+}
+
+distributions {
+    main {
+        baseName = 'CxConsolePlugin'
+        contents {
+		//	from jar.outputs.files
+            from { 'src/main/scripts' }
+			from('src/main') {
+				include 'config/krb5.conf'
+			}
+			from ('src/main/resources'){
+                include 'cx_console.properties'
+                filter{ it.replaceAll("\$\\{pom.version\\}" , version)}
+                into 'config'
+            }
+        }
+    }
+}
