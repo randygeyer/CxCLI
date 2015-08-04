@@ -1,9 +1,6 @@
 package com.checkmarx.cxconsole.commands.job;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,18 +9,26 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.checkmarx.components.zipper.ZipListener;
-import com.checkmarx.components.zipper.Zipper;
-import com.checkmarx.cxviewer.ws.generated.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import com.checkmarx.components.zipper.ZipListener;
+import com.checkmarx.components.zipper.Zipper;
 import com.checkmarx.cxconsole.commands.CxConsoleCommand;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxconsole.utils.LocationType;
 import com.checkmarx.cxconsole.utils.ScanParams;
-import com.checkmarx.cxconsole.utils.ZipPacker;
+import com.checkmarx.cxviewer.ws.generated.ConfigurationSet;
+import com.checkmarx.cxviewer.ws.generated.Credentials;
+import com.checkmarx.cxviewer.ws.generated.CurrentStatusEnum;
+import com.checkmarx.cxviewer.ws.generated.Preset;
+import com.checkmarx.cxviewer.ws.generated.ProjectDisplayData;
+import com.checkmarx.cxviewer.ws.generated.ProjectSettings;
+import com.checkmarx.cxviewer.ws.generated.RepositoryType;
+import com.checkmarx.cxviewer.ws.generated.SourceCodeSettings;
+import com.checkmarx.cxviewer.ws.generated.SourceFilterPatterns;
+import com.checkmarx.cxviewer.ws.generated.SourceLocationType;
 import com.checkmarx.cxviewer.ws.results.GetConfigurationsListResult;
 import com.checkmarx.cxviewer.ws.results.GetPresetsListResult;
 import com.checkmarx.cxviewer.ws.results.GetProjectConfigResult;
@@ -348,7 +353,7 @@ public class CxCLIScanJob extends CxScanJob {
 			}
 		} else {
 			if (presets != null && presets.size() > 0) {
-				selectedPreset = presets.get(0); //the first preset should be the default (order determined by server)
+				selectedPreset = new Preset(); // Zero preset will be send. Server will decide what preset to use.
 			}
 		}
 		
@@ -617,27 +622,7 @@ public class CxCLIScanJob extends CxScanJob {
 
     }
 
-    private File[] canonicalIgnoredFolders(String[] ignoredFolderNames )
-    {
-        File[] ignoredFolders = new File[ignoredFolderNames.length];
-        for (int i = 0; i<ignoredFolderNames.length;i++)
-        {
-            ignoredFolders[i]=new File(ignoredFolderNames[i]);
-            if (!ignoredFolders[i].isAbsolute())
-            {
-                ignoredFolders[i]=new File(params.getLocationPath() + File.separator + ignoredFolderNames[i]);
-            }
-            try {
-                ignoredFolders[i] = ignoredFolders[i].getCanonicalFile();
-            } catch (IOException e)
-            {
-                // ignore - in case of exception, the ignoredFolders[i] value will not be converted to canonical file.
-            }
-        }
-        return ignoredFolders;
-    }
-
-	@Override
+    @Override
 	protected String getProjectName() {		
 		return params.getFullProjName();
 	}
