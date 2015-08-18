@@ -3,7 +3,7 @@ package com.checkmarx.cxviewer.ws;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.xml.namespace.QName;
+import org.apache.log4j.Logger;
 
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxviewer.utils.CXFConfigurationUtils;
@@ -11,8 +11,6 @@ import com.checkmarx.cxviewer.ws.resolver.CxClientType;
 import com.checkmarx.cxviewer.ws.resolver.CxWSResolver;
 import com.checkmarx.cxviewer.ws.resolver.CxWSResolverSoap;
 import com.checkmarx.cxviewer.ws.resolver.CxWSResponseDiscovery;
-import org.apache.cxf.transports.http.configuration.ConnectionType;
-import org.apache.log4j.Logger;
 
 
 public class WSResolver {

@@ -7,13 +7,32 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javax.xml.namespace.QName;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxviewer.CxLogger;
 import com.checkmarx.cxviewer.utils.CXFConfigurationUtils;
-import com.checkmarx.cxviewer.ws.generated.*;
-import com.checkmarx.cxviewer.ws.resolver.CxClientType;
+import com.checkmarx.cxviewer.ws.generated.ArrayOfScanPath;
+import com.checkmarx.cxviewer.ws.generated.CliScanArgs;
+import com.checkmarx.cxviewer.ws.generated.Credentials;
+import com.checkmarx.cxviewer.ws.generated.CxCLIWebServiceV1;
+import com.checkmarx.cxviewer.ws.generated.CxCLIWebServiceV1Soap;
+import com.checkmarx.cxviewer.ws.generated.CxWSBasicRepsonse;
+import com.checkmarx.cxviewer.ws.generated.CxWSCreateReportResponse;
+import com.checkmarx.cxviewer.ws.generated.CxWSReportRequest;
+import com.checkmarx.cxviewer.ws.generated.CxWSReportStatusResponse;
+import com.checkmarx.cxviewer.ws.generated.CxWSReportType;
+import com.checkmarx.cxviewer.ws.generated.CxWSResponseScanResults;
+import com.checkmarx.cxviewer.ws.generated.LocalCodeContainer;
+import com.checkmarx.cxviewer.ws.generated.ProjectSettings;
+import com.checkmarx.cxviewer.ws.generated.RepositoryType;
+import com.checkmarx.cxviewer.ws.generated.ScanPath;
+import com.checkmarx.cxviewer.ws.generated.SourceCodeSettings;
+import com.checkmarx.cxviewer.ws.generated.SourceControlProtocolType;
+import com.checkmarx.cxviewer.ws.generated.SourceControlSettings;
+import com.checkmarx.cxviewer.ws.generated.SourceFilterPatterns;
+import com.checkmarx.cxviewer.ws.generated.SourceLocationType;
 import com.checkmarx.cxviewer.ws.results.GetConfigurationsListResult;
 import com.checkmarx.cxviewer.ws.results.GetPresetsListResult;
 import com.checkmarx.cxviewer.ws.results.GetProjectConfigResult;
@@ -23,9 +42,6 @@ import com.checkmarx.cxviewer.ws.results.GetTeamsListResult;
 import com.checkmarx.cxviewer.ws.results.LoginResult;
 import com.checkmarx.cxviewer.ws.results.RunScanResult;
 import com.checkmarx.cxviewer.ws.results.UpdateScanCommentResult;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.cxf.transports.http.configuration.ConnectionType;
-import org.apache.log4j.Logger;
 
 
 public class WSMgr extends WSMgrBase {
@@ -33,11 +49,13 @@ public class WSMgr extends WSMgrBase {
 	protected static final String WS_NAME="CxCLIWebServiceV1";
 	protected CxCLIWebServiceV1Soap wService;
 
+	@Override
 	public String getWSName() {
 		return WS_NAME;
 	}
 	
-	public Object connectWebService(URL wsdlLocation) {
+	@Override
+	public void connectWebService(URL wsdlLocation) {
         try {
 		    final URL wsdlLocationWithWSDL = new URL(wsdlLocation.toString() + "?WSDL");
             CxCLIWebServiceV1 ws = new CxCLIWebServiceV1(wsdlLocationWithWSDL);
@@ -54,7 +72,6 @@ public class WSMgr extends WSMgrBase {
             // We should never get here, as the correctness of wsdlLocation was already checked
             logger.fatal("Malformed URL: " + wsdlLocation);
         }
-		return wService;
 	}
 
 	public LoginResult login(String userName, String password) {
@@ -302,7 +319,8 @@ public class WSMgr extends WSMgrBase {
 		final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 		FutureTask<CxWSReportStatusResponse> checkRepoStatusTask=new FutureTask<CxWSReportStatusResponse>(new Thread(), null) {
 			CxWSReportStatusResponse statusResp;
-            public void run() {
+            @Override
+			public void run() {
             	statusResp=wService.getScanReportStatus(sessionId, repoId);
         		if (statusResp.isIsReady()) {
         			// status report is ready

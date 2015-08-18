@@ -7,10 +7,9 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.namespace.QName;
+import javax.xml.ws.WebServiceException;
 
 import com.checkmarx.cxviewer.CxLogger;
-import com.checkmarx.cxviewer.ws.resolver.CxClientType;
 
 
 abstract class WSMgrBase {
@@ -33,7 +32,7 @@ abstract class WSMgrBase {
 	 * @param wsdlLocation
 	 * @return
 	 */
-	public abstract Object connectWebService(URL wsdlLocation);
+	public abstract void connectWebService(URL wsdlLocation);
 	
 
 
@@ -155,6 +154,7 @@ abstract class WSMgrBase {
 	 * @param name
 	 * @return
 	 */
+	@Deprecated
 	public static boolean isValidProjectName(String name) {
 		Pattern nameCheckPattern = Pattern.compile("[\\d]+.*");
 		Matcher m = nameCheckPattern.matcher(name);
