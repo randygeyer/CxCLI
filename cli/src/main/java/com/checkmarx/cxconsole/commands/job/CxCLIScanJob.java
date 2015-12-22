@@ -538,7 +538,7 @@ public class CxCLIScanJob extends CxScanJob {
 		if (!projectDir.isDirectory()) {
 			if (log.isEnabledFor(Level.ERROR)) {
 				log.error("Project path [" + params.getLocationPath()
-						+ "] shold point to directory.");
+						+ "] should point to a directory.");
 			}
 			return false;
 		}
