@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.FixCrLfFilter
+
 plugins {
 	id "no.nils.wsdl2java" version "0.8"
 	id "com.jfrog.artifactory" version "3.1.2"
@@ -82,6 +84,8 @@ distributions {
 				filter{
 					it.replaceAll('cx_console\\.jar' , jar.archiveName )
 				}
+				filter(FixCrLfFilter.class,
+						eol:FixCrLfFilter.CrLf.newInstance("lf"))
 			}
 			from('src/main') {
 				include 'config/krb5.conf'
