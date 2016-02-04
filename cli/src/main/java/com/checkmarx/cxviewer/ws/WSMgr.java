@@ -7,32 +7,13 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.checkmarx.cxviewer.ws.generated.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxviewer.CxLogger;
 import com.checkmarx.cxviewer.utils.CXFConfigurationUtils;
-import com.checkmarx.cxviewer.ws.generated.ArrayOfScanPath;
-import com.checkmarx.cxviewer.ws.generated.CliScanArgs;
-import com.checkmarx.cxviewer.ws.generated.Credentials;
-import com.checkmarx.cxviewer.ws.generated.CxCLIWebServiceV1;
-import com.checkmarx.cxviewer.ws.generated.CxCLIWebServiceV1Soap;
-import com.checkmarx.cxviewer.ws.generated.CxWSBasicRepsonse;
-import com.checkmarx.cxviewer.ws.generated.CxWSCreateReportResponse;
-import com.checkmarx.cxviewer.ws.generated.CxWSReportRequest;
-import com.checkmarx.cxviewer.ws.generated.CxWSReportStatusResponse;
-import com.checkmarx.cxviewer.ws.generated.CxWSReportType;
-import com.checkmarx.cxviewer.ws.generated.CxWSResponseScanResults;
-import com.checkmarx.cxviewer.ws.generated.LocalCodeContainer;
-import com.checkmarx.cxviewer.ws.generated.ProjectSettings;
-import com.checkmarx.cxviewer.ws.generated.RepositoryType;
-import com.checkmarx.cxviewer.ws.generated.ScanPath;
-import com.checkmarx.cxviewer.ws.generated.SourceCodeSettings;
-import com.checkmarx.cxviewer.ws.generated.SourceControlProtocolType;
-import com.checkmarx.cxviewer.ws.generated.SourceControlSettings;
-import com.checkmarx.cxviewer.ws.generated.SourceFilterPatterns;
-import com.checkmarx.cxviewer.ws.generated.SourceLocationType;
 import com.checkmarx.cxviewer.ws.results.GetConfigurationsListResult;
 import com.checkmarx.cxviewer.ws.results.GetPresetsListResult;
 import com.checkmarx.cxviewer.ws.results.GetProjectConfigResult;
@@ -158,7 +139,7 @@ public class WSMgr extends WSMgrBase {
 			SourceLocationType locationType, String locationpath, byte[] fileBytes, String user, String password,
 			RepositoryType repositoryType, String locationURL, Integer locationport, String locationBrach,
 			String privateKey, boolean incremental, boolean visibleToOther, String[] excludeFilesPatterns,
-            String[] excludeFoldersPatterns, boolean ignoreScanWithUnchangedSource) {
+            String[] excludeFoldersPatterns, boolean ignoreScanWithUnchangedSource, boolean isPerforceWorkspaceMode) {
 
 		RunScanResult responseObj = new RunScanResult();
 
@@ -225,6 +206,11 @@ public class WSMgr extends WSMgrBase {
 					// sourceControlSetting.setUseSSL(false);
 					sourceControlSetting.setUserCredentials(creds);
                     generateScanPaths = true;
+					if(isPerforceWorkspaceMode){
+						sourceControlSetting.setPerforceBrowsingMode(CxWSPerforceBrowsingMode.WORKSPACE);
+					}else{
+						sourceControlSetting.setPerforceBrowsingMode(CxWSPerforceBrowsingMode.DEPOT);
+					}
 					break;
 				case GIT:
 					sourceControlSetting.setGITBranch(locationBrach);

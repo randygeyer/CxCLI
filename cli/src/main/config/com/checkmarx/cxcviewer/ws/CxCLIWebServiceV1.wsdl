@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://Checkmarx.com/v7" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://Checkmarx.com/v7" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://Checkmarx.com/v7" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://Checkmarx.com/v7" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://Checkmarx.com/v7">
       <s:element name="SsoLogin">
@@ -52,6 +52,8 @@
               <s:element minOccurs="1" maxOccurs="1" name="ShowSaaSPackageDetails" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="IsAdviseChangePassword" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="IsAllowedToManageITSServers" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="AllowedToChangeNotExploitable" type="s:boolean" />
+              <s:element minOccurs="1" maxOccurs="1" name="IsAllowedToDeleteScans" type="s:boolean" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -87,6 +89,7 @@
           <s:element minOccurs="1" maxOccurs="1" name="IsIncremental" type="s:boolean" />
           <s:element minOccurs="0" maxOccurs="1" name="Comment" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="IgnoreScanWithUnchangedCode" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="ClientOrigin" type="tns:CxClientType" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ProjectSettings">
@@ -97,6 +100,20 @@
           <s:element minOccurs="0" maxOccurs="1" name="AssociatedGroupID" type="s:string" />
           <s:element minOccurs="1" maxOccurs="1" name="ScanConfigurationID" type="s:long" />
           <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Owner" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsPublic" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="OpenSourceSettings" type="tns:ProjectSharedLocation" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ProjectSharedLocation">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Path" type="tns:ArrayOfString" />
+          <s:element minOccurs="0" maxOccurs="1" name="Credentials" type="tns:Credentials" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfString">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="SourceCodeSettings">
@@ -144,6 +161,8 @@
           <s:element minOccurs="1" maxOccurs="1" name="GitLsViewType" type="tns:GitLsRemoteViewType" />
           <s:element minOccurs="0" maxOccurs="1" name="SSHPublicKey" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="SSHPrivateKey" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="GitHubSettings" type="tns:GitHubIntegrationSettings" />
+          <s:element minOccurs="1" maxOccurs="1" name="PerforceBrowsingMode" type="tns:CxWSPerforceBrowsingMode" />
         </s:sequence>
       </s:complexType>
       <s:simpleType name="RepositoryType">
@@ -172,6 +191,20 @@
           <s:enumeration value="ALL" />
         </s:restriction>
       </s:simpleType>
+      <s:complexType name="GitHubIntegrationSettings">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="ContributorCredentials" type="tns:Credentials" />
+          <s:element minOccurs="0" maxOccurs="1" name="OwnerCredentials" type="tns:Credentials" />
+          <s:element minOccurs="1" maxOccurs="1" name="EventsThreshold" type="s:int" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="CxWSPerforceBrowsingMode">
+        <s:restriction base="s:string">
+          <s:enumeration value="None" />
+          <s:enumeration value="Depot" />
+          <s:enumeration value="Workspace" />
+        </s:restriction>
+      </s:simpleType>
       <s:complexType name="LocalCodeContainer">
         <s:sequence>
           <s:element minOccurs="0" maxOccurs="1" name="ZippedFile" type="s:base64Binary" />
@@ -184,6 +217,21 @@
           <s:element minOccurs="0" maxOccurs="1" name="ExcludeFoldersPatterns" type="s:string" />
         </s:sequence>
       </s:complexType>
+      <s:simpleType name="CxClientType">
+        <s:restriction base="s:string">
+          <s:enumeration value="None" />
+          <s:enumeration value="WebPortal" />
+          <s:enumeration value="CLI" />
+          <s:enumeration value="Eclipse" />
+          <s:enumeration value="VS" />
+          <s:enumeration value="InteliJ" />
+          <s:enumeration value="Audit" />
+          <s:enumeration value="SDK" />
+          <s:enumeration value="Jenkins" />
+          <s:enumeration value="TFSBuild" />
+          <s:enumeration value="Other" />
+        </s:restriction>
+      </s:simpleType>
       <s:element name="ScanResponse">
         <s:complexType>
           <s:sequence>
@@ -328,6 +376,7 @@
           <s:element minOccurs="0" maxOccurs="1" name="Preset" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="LastScanDate" type="tns:CxDateTime" />
           <s:element minOccurs="1" maxOccurs="1" name="TotalScans" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsPublic" type="s:boolean" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="UserPermission">
@@ -380,6 +429,8 @@
           <s:element minOccurs="0" maxOccurs="1" name="ScheduleSettings" type="tns:ScheduleSettings" />
           <s:element minOccurs="0" maxOccurs="1" name="ScanActionSettings" type="tns:ScanActionSettings" />
           <s:element minOccurs="0" maxOccurs="1" name="ProjectIssueTrackingSettings" type="tns:CxWSProjectIssueTrackingSettings" />
+          <s:element minOccurs="0" maxOccurs="1" name="CustomFields" type="tns:ArrayOfCxWSProjectCustomField" />
+          <s:element minOccurs="0" maxOccurs="1" name="DataRetentionSettings" type="tns:DataRetentionSettings" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="ScheduleSettings">
@@ -387,6 +438,9 @@
           <s:element minOccurs="1" maxOccurs="1" name="Schedule" type="tns:ScheduleType" />
           <s:element minOccurs="0" maxOccurs="1" name="ScheduledDays" type="tns:ArrayOfDayOfWeek" />
           <s:element minOccurs="0" maxOccurs="1" name="Time" type="tns:CxDateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="StartSchedulingPeriod" type="tns:CxDateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="EndSchedulingPeriod" type="tns:CxDateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="SchedulingFrequency" type="s:int" />
         </s:sequence>
       </s:complexType>
       <s:simpleType name="ScheduleType">
@@ -429,11 +483,6 @@
           <s:element minOccurs="1" maxOccurs="1" name="Action" type="tns:ScanActionType" />
         </s:sequence>
       </s:complexType>
-      <s:complexType name="ArrayOfString">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
-        </s:sequence>
-      </s:complexType>
       <s:simpleType name="ScanEventType">
         <s:restriction base="s:string">
           <s:enumeration value="BeforeScanStarts" />
@@ -463,6 +512,22 @@
           <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="Value" />
           <s:element minOccurs="0" maxOccurs="1" name="Type" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfCxWSProjectCustomField">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="CxWSProjectCustomField" nillable="true" type="tns:CxWSProjectCustomField" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="CxWSProjectCustomField">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="CustomFieldId" type="s:long" />
+          <s:element minOccurs="0" maxOccurs="1" name="Value" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="DataRetentionSettings">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="NumOfScansToKeep" type="s:int" />
         </s:sequence>
       </s:complexType>
       <s:element name="UpdateProjectIncrementalConfiguration">
@@ -584,6 +649,9 @@
               <s:element minOccurs="0" maxOccurs="1" name="TimeFinished" type="tns:CxDateTime" />
               <s:element minOccurs="0" maxOccurs="1" name="TimeBeginWorking" type="tns:CxDateTime" />
               <s:element minOccurs="1" maxOccurs="1" name="CurrentStatus" type="tns:CurrentStatusEnum" />
+              <s:element minOccurs="0" maxOccurs="1" name="ServerName" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="Origin" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="IsPublic" type="s:boolean" />
               <s:element minOccurs="1" maxOccurs="1" name="PartialResults" type="s:boolean" />
             </s:sequence>
           </s:extension>
@@ -1094,10 +1162,10 @@
   </wsdl:binding>
   <wsdl:service name="CxCLIWebServiceV1">
     <wsdl:port name="CxCLIWebServiceV1Soap" binding="tns:CxCLIWebServiceV1Soap">
-      <soap:address location="http://localhost:1515/CxWebInterface/CLI/CxCLIWebServiceV1.asmx" />
+      <soap:address location="http://localhost:1515/Cxwebinterface/cli/cxcliwebservicev1.asmx" />
     </wsdl:port>
     <wsdl:port name="CxCLIWebServiceV1Soap12" binding="tns:CxCLIWebServiceV1Soap12">
-      <soap12:address location="http://localhost:1515/CxWebInterface/CLI/CxCLIWebServiceV1.asmx" />
+      <soap12:address location="http://localhost:1515/Cxwebinterface/cli/cxcliwebservicev1.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

@@ -465,7 +465,8 @@ public class CxCLIScanJob extends CxScanJob {
 							params.getLocationPort(), params.getLocationBranch(),
 							params.getPrivateKey(),
 							params.isValidateFix(), params.isVisibleOthers(),
-                            params.getExcludedFiles(), params.getExcludedFolders(), params.isIgnoreScanWithUnchangedSource());
+                            params.getExcludedFiles(), params.getExcludedFolders(), params.isIgnoreScanWithUnchangedSource(),
+							params.getIsPerforceWorkspaceMode());
 				}
 			}
 			catch (Throwable e) {

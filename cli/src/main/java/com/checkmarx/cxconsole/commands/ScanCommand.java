@@ -63,6 +63,8 @@ public class ScanCommand extends GeneralScanCommand {
 
     public static final Option PARAM_FORCE_SCAN = OptionBuilder.withDescription("Force scan on source code, which has not been changed since the last scan of the same project. Optional.").create("ForceScan");
 
+    public static final Option PARAM_WORKSPACE = OptionBuilder.withDescription("Use location path to specify Perforce workspace name. Optional.").create("WorkspaceMode");
+
     public static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
 
     public static String MSG_ERR_SSO_WINDOWS_SUPPORT = "SSO login method is available only on Windows";
@@ -92,6 +94,7 @@ public class ScanCommand extends GeneralScanCommand {
         this.commandLineOptions.addOption(PARAM_SCAN_COMMENT);
         this.commandLineOptions.addOption(PARAM_USE_SSO);
         this.commandLineOptions.addOption(PARAM_FORCE_SCAN);
+        this.commandLineOptions.addOption(PARAM_WORKSPACE);
     }
 
     @Override
@@ -199,7 +202,7 @@ public class ScanCommand extends GeneralScanCommand {
     protected boolean isKeyFlag(String key) {
         return /*super.isKeyFlag(key) || */PARAM_INCREMENTAL.getOpt().equalsIgnoreCase(key)
                 || PARAM_PRIVATE.getOpt().equalsIgnoreCase(key) || PARAM_USE_SSO.getOpt().equalsIgnoreCase(key)
-                || PARAM_FORCE_SCAN.getOpt().equalsIgnoreCase(key);
+                || PARAM_FORCE_SCAN.getOpt().equalsIgnoreCase(key) || PARAM_WORKSPACE.getOpt().equalsIgnoreCase(key);
     }
 
     /*
@@ -295,6 +298,12 @@ public class ScanCommand extends GeneralScanCommand {
             }
 
 
+        }
+
+        if (scParams.getIsPerforceWorkspaceMode() &&
+                scParams.getLocationType() != null &&
+                scParams.getLocationType() != LocationType.perforce) {
+            throw new CommandLineArgumentException(PARAM_WORKSPACE.getOpt() + " should be specified only when " + PARAM_LOCATION_TYPE.getOpt() + " is Perforce");
         }
 
         if (scParams.isSsoLoginUsed()) {

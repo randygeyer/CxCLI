@@ -51,6 +51,7 @@ public class ScanParams {
     private boolean isSsoLoginUsed = false;
     private boolean hasPasswordParam = false;
     private boolean hasUserParam = false;
+	private boolean isPerforceWorkspaceMode = false;
 
 	
 	public ScanParams(CommandLine commandLine) {
@@ -158,6 +159,7 @@ public class ScanParams {
         ignoreScanWithUnchangedSource = !commandLine.hasOption(ScanCommand.PARAM_FORCE_SCAN.getOpt());
         hasUserParam = commandLine.hasOption(ScanCommand.PARAM_USER.getOpt());
         hasPasswordParam = commandLine.hasOption(ScanCommand.PARAM_PASSWORD.getOpt());
+		isPerforceWorkspaceMode = commandLine.hasOption(ScanCommand.PARAM_WORKSPACE.getOpt());
 
 		if (commandLine.hasOption(ScanCommand.PARAM_EXCLUDE_FOLDERS.getOpt())){
 			hasExcludedFoldersParam = true;
@@ -382,4 +384,6 @@ public class ScanParams {
     public void setIgnoreScanWithUnchangedSource(boolean ignoreScanWithUnchangedSource) {
         this.ignoreScanWithUnchangedSource = ignoreScanWithUnchangedSource;
     }
+
+	public boolean getIsPerforceWorkspaceMode(){ return isPerforceWorkspaceMode; }
 }
