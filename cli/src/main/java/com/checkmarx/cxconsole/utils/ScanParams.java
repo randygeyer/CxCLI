@@ -386,4 +386,6 @@ public class ScanParams {
     }
 
 	public boolean getIsPerforceWorkspaceMode(){ return isPerforceWorkspaceMode; }
+
+	public void setIsPerforceWorkspaceMode(boolean isPerforceWorkspaceMode){ this.isPerforceWorkspaceMode = isPerforceWorkspaceMode; }
 }

@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import com.checkmarx.cxviewer.ws.generated.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -19,16 +20,6 @@ import com.checkmarx.cxconsole.commands.CxConsoleCommand;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxconsole.utils.LocationType;
 import com.checkmarx.cxconsole.utils.ScanParams;
-import com.checkmarx.cxviewer.ws.generated.ConfigurationSet;
-import com.checkmarx.cxviewer.ws.generated.Credentials;
-import com.checkmarx.cxviewer.ws.generated.CurrentStatusEnum;
-import com.checkmarx.cxviewer.ws.generated.Preset;
-import com.checkmarx.cxviewer.ws.generated.ProjectDisplayData;
-import com.checkmarx.cxviewer.ws.generated.ProjectSettings;
-import com.checkmarx.cxviewer.ws.generated.RepositoryType;
-import com.checkmarx.cxviewer.ws.generated.SourceCodeSettings;
-import com.checkmarx.cxviewer.ws.generated.SourceFilterPatterns;
-import com.checkmarx.cxviewer.ws.generated.SourceLocationType;
 import com.checkmarx.cxviewer.ws.results.GetConfigurationsListResult;
 import com.checkmarx.cxviewer.ws.results.GetPresetsListResult;
 import com.checkmarx.cxviewer.ws.results.GetProjectConfigResult;
@@ -75,9 +66,13 @@ public class CxCLIScanJob extends CxScanJob {
 		if (params.getLocationType() == null && this.projectConfig!=null) {
 			if (!this.projectConfig.getProjectConfig().getSourceCodeSettings().getSourceOrigin().equals(SourceLocationType.LOCAL)) {
 				params.setLocationType(getLocationType(this.projectConfig.getProjectConfig().getSourceCodeSettings()));
+				if(params.getLocationType() == LocationType.perforce){
+					boolean isworkspace = (this.projectConfig.getProjectConfig().getSourceCodeSettings().getSourceControlSetting().getPerforceBrowsingMode() == CxWSPerforceBrowsingMode.WORKSPACE);
+					params.setIsPerforceWorkspaceMode(isworkspace);
+				}
 			}
 		}
-		
+
 		if (params.getLocationType() == LocationType.folder) {
 			long maxZipSize = ConfigMgr.getCfgMgr().getLongProperty(ConfigMgr.KEY_MAX_ZIP_SIZE);
 			maxZipSize *= (1024*1024);
