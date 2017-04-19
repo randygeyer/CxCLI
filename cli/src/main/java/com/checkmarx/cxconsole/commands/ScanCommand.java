@@ -1,6 +1,8 @@
 package com.checkmarx.cxconsole.commands;
 
+import com.checkmarx.cxconsole.commands.job.CxCLIOsaScanJob;
 import com.checkmarx.cxconsole.commands.job.CxCLIScanJob;
+import com.checkmarx.cxconsole.commands.job.CxScanJob;
 import com.checkmarx.cxconsole.utils.CommandLineArgumentException;
 import com.checkmarx.cxconsole.utils.LocationType;
 import org.apache.commons.cli.Option;
@@ -12,7 +14,7 @@ import java.util.concurrent.*;
 
 public class ScanCommand extends GeneralScanCommand {
 
-    public static String COMMAND_SCAN = "Scan";
+    public static String COMMAND_SCAN = Commands.SCAN.value();
 
     public static final Option PARAM_PRJ_NAME = OptionBuilder.withArgName("project name").hasArg().isRequired().withDescription("A full absolute name of a project. " +
             "The full Project name includes the whole path to the project, including Server, service provider, company, and team. " +
@@ -65,6 +67,8 @@ public class ScanCommand extends GeneralScanCommand {
 
     public static final Option PARAM_WORKSPACE = OptionBuilder.withDescription("Use location path to specify Perforce workspace name. Optional.").create("WorkspaceMode");
 
+    public static final Option PARAM_ENABLE_OSA = OptionBuilder.withDescription("Enable Open Source Analysis (OSA). It requires the -LocationType to be folder/shared.  Optional.)").create("EnableOsa");
+
     public static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
 
     public static String MSG_ERR_SSO_WINDOWS_SUPPORT = "SSO login method is available only on Windows";
@@ -86,7 +90,6 @@ public class ScanCommand extends GeneralScanCommand {
         this.commandLineOptions.addOption(PARAM_LOCATION_PORT);
         this.commandLineOptions.addOption(PARAM_LOCATION_BRANCH);
         this.commandLineOptions.addOption(PARAM_LOCATION_PRIVATE_KEY);
-        //this.commandLineOptions.addOption(PARAM_LOCATION_PUBLIC_KEY);
         this.commandLineOptions.addOption(PARAM_PRESET);
         this.commandLineOptions.addOption(PARAM_CONFIGURATION);
         this.commandLineOptions.addOption(PARAM_INCREMENTAL);
@@ -95,11 +98,13 @@ public class ScanCommand extends GeneralScanCommand {
         this.commandLineOptions.addOption(PARAM_USE_SSO);
         this.commandLineOptions.addOption(PARAM_FORCE_SCAN);
         this.commandLineOptions.addOption(PARAM_WORKSPACE);
+        this.commandLineOptions.addOption(PARAM_ENABLE_OSA);
     }
 
     @Override
     protected void executeCommand() {
 
+        String scanType = "";
         if (scParams.getLocationPrivateKey() != null) {
             BufferedReader in = null;
             File keyFile = new File(scParams.getLocationPrivateKey());
@@ -141,7 +146,17 @@ public class ScanCommand extends GeneralScanCommand {
             }
         }
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        CxCLIScanJob job = new CxCLIScanJob(scParams);
+        CxScanJob job;
+        if (this instanceof OsaScanCommand) {
+            job = new CxCLIOsaScanJob(scParams);
+            scanType = "OSA";
+        } else if (this instanceof ScanCommand) {
+            job = new CxCLIScanJob(scParams);
+        } else {
+            log.error("Command was not found. Available commands:\n" + CommandsFactory.getCommandNames());
+            errorCode = CODE_ERRROR;
+            return;
+        }
         job.setLog(log);
 
         Future<Integer> future = executor.submit(job);
@@ -153,29 +168,29 @@ public class ScanCommand extends GeneralScanCommand {
             }
         } catch (InterruptedException e) {
             if (log.isEnabledFor(Level.DEBUG)) {
-                log.debug("Scan job was interrupted.", e);
+                log.debug(scanType +"Scan job was interrupted.", e);
             }
             errorCode = CODE_ERRROR;
         } catch (ExecutionException e) {
             if (log.isEnabledFor(Level.ERROR)) {
                 if (e.getCause().getMessage() != null) {
-                    log.error("Error during scan job execution: "
+                    log.error("Error during " + scanType + " scan job execution: "
                             + e.getCause().getMessage());
                 } else {
-                    log.error("Error during scan job execution: "
+                    log.error("Error during " + scanType + " scan job execution: "
                             + e.getCause());
                 }
             }
             if (log.isEnabledFor(Level.TRACE)) {
-                log.trace("Error during scan job execution.", e);
+                log.trace("Error during " + scanType + " scan job execution.", e);
             }
             errorCode = CODE_ERRROR;
         } catch (TimeoutException e) {
             if (log.isEnabledFor(Level.ERROR)) {
-                log.error("Scan job failed due to timeout.");
+                log.error(scanType + "Scan job failed due to timeout.");
             }
             if (log.isEnabledFor(Level.TRACE)) {
-                log.trace("Scan job failed due to timeout.", e);
+                log.trace(scanType + "Scan job failed due to timeout.", e);
             }
             errorCode = CODE_ERRROR;
         } finally {
@@ -312,6 +327,11 @@ public class ScanCommand extends GeneralScanCommand {
             }
         } else if (!scParams.hasUserParam() || !scParams.hasPasswordParam()) {
             throw new CommandLineArgumentException(MSG_ERR_MISSING_USER_PASSWORD);
+        }
+
+        if (scParams.isOsaEnabled() && scParams.getLocationType() != LocationType.folder && scParams.getLocationType() != LocationType.shared) {
+            throw new CommandLineArgumentException(PARAM_ENABLE_OSA.getOpt() + " should be specified only when " + PARAM_LOCATION_TYPE.getOpt() + " is folder/shared");
+
         }
 
     }

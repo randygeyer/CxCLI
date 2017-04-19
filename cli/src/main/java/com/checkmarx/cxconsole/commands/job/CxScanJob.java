@@ -1,5 +1,16 @@
 package com.checkmarx.cxconsole.commands.job;
 
+import com.checkmarx.cxconsole.utils.ConfigMgr;
+import com.checkmarx.cxconsole.utils.ScanParams;
+import com.checkmarx.cxosa.CxRestClient;
+import com.checkmarx.cxviewer.ws.WSMgr;
+import com.checkmarx.cxviewer.ws.results.GetConfigurationsListResult;
+import com.checkmarx.cxviewer.ws.results.GetPresetsListResult;
+import com.checkmarx.cxviewer.ws.results.GetTeamsListResult;
+import com.checkmarx.cxviewer.ws.results.LoginResult;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -8,19 +19,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.Callable;
-import java.net.Authenticator;
-
-import com.checkmarx.cxconsole.authentication.CxNTLMAuthetication;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
-import com.checkmarx.cxconsole.utils.ConfigMgr;
-import com.checkmarx.cxconsole.utils.ScanParams;
-import com.checkmarx.cxviewer.ws.WSMgr;
-import com.checkmarx.cxviewer.ws.results.GetConfigurationsListResult;
-import com.checkmarx.cxviewer.ws.results.GetPresetsListResult;
-import com.checkmarx.cxviewer.ws.results.GetTeamsListResult;
-import com.checkmarx.cxviewer.ws.results.LoginResult;
 
 public class CxScanJob implements Callable<Integer> {
 
@@ -35,7 +33,8 @@ public class CxScanJob implements Callable<Integer> {
 	 * WebService manager used to connect and communicate server
 	 */
 	protected WSMgr wsMgr;
-	
+
+	protected CxRestClient restClient;
 	// Current scan identifier
 	protected String runId;
 	// Current session ID
@@ -96,7 +95,7 @@ public class CxScanJob implements Callable<Integer> {
 				}*/
 				
 				if (log.isEnabledFor(Level.INFO)) {
-					log.info("Log in");
+					log.info("Logging into the Checkmarx service.");
 				}
 
                 // Login
@@ -169,8 +168,15 @@ public class CxScanJob implements Callable<Integer> {
 	
 	
 	private File initFile(String fileName) {
+
+		String folderPath = gerWorkDirectory();
+		String resultFilePath =  initFilePath(fileName, ".xml", folderPath);
+		return new File(resultFilePath);
+	}
+
+	public String gerWorkDirectory(){
 		String folderPath = params.getSrcPath();
-		String resultFilePath = "";
+
 		if (folderPath == null || folderPath.isEmpty()) {
 			//in case of ScanProject command
 			String prjName = normalizePathString(params.getProjName());
@@ -187,9 +193,7 @@ public class CxScanJob implements Callable<Integer> {
 			}
 			//folderPath = "";
 		}
-		
-		resultFilePath = initFilePath(fileName, ".xml", folderPath);
-		return new File(resultFilePath);
+		return folderPath;
 	}
 	
 	protected String normalizePathString(String projectName) {
@@ -366,11 +370,42 @@ public class CxScanJob implements Callable<Integer> {
 		
 		return request;
 	}
-	
+
+	protected boolean isProjectDirectoryValid() {
+		File projectDir = new File(params.getLocationPath());
+		if (!projectDir.exists()) {
+			//if there is a semicolon separator, take the first path
+			String[] paths = params.getLocationPath().split(";");
+			if (paths != null && paths.length > 0) {
+				projectDir = new File(paths[0]);
+			}
+			if (projectDir.exists()) {
+				params.setLocationPath(paths[0]);
+			} else {
+				if (log.isEnabledFor(Level.ERROR)) {
+					log.error("Project directory [" + params.getLocationPath()
+							+ "] does not exist.");
+				}
+				return false;
+			}
+		}
+
+
+		if (!projectDir.isDirectory()) {
+			if (log.isEnabledFor(Level.ERROR)) {
+				log.error("Project path [" + params.getLocationPath()
+						+ "] should point to a directory.");
+			}
+			return false;
+		}
+
+		return true;
+	}
+
 	public void setLog(Logger log) {
 		this.log = log;
 	}
-	
+
 	/*
 	 * Generates project name according to folder name 
 	 */

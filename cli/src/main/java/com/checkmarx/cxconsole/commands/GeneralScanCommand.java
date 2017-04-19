@@ -25,6 +25,12 @@ public abstract class GeneralScanCommand extends VerboseCommand {
     public static final Option PARAM_EXCLUDE_FOLDERS = OptionBuilder.hasArgs().withArgName("folders list").withDescription("Comma separated list of folder path patterns to exclude from scan. Example: '-LocationPathExclude test*' excludes all folders which start with 'test' prefix. Optional.").withValueSeparator(',').create("LocationPathExclude");
     public static final Option PARAM_EXCLUDE_FILES = OptionBuilder.hasArgs().withArgName("files list").withDescription("Comma separated list of file name patterns to exclude from scan. Example: '-LocationFilesExclude *.class' excludes all files with '.class' extension. Optional.").withValueSeparator(',').create("LocationFilesExclude");
 
+	public static final Option PARAM_OSA_PDF_FILE = OptionBuilder.withDescription("Generate OSA PDF report . Optional.").create("OsaReportPDF");
+	public static final Option PARAM_OSA_HTML_FILE = OptionBuilder.withDescription("Generate OSA HTML report. Optional.").create("OsaReportHTML");
+
+	public static final Option PARAM_OSA_EXCLUDE_FILES = OptionBuilder.hasArgs().withArgName("files list").withDescription("Comma separated list of file name patterns to exclude from OSA scan. Example: '-OsaFilesExclude *.class' excludes all files with '.class' extension. Optional.").withValueSeparator(',').create("OsaFilesExclude");
+	public static final Option PARAM_OSA_EXCLUDE_FOLDERS = OptionBuilder.hasArgs().withArgName("folders list").withDescription("Comma separated list of folder path patterns to exclude from OSA scan. Example: '-OsaPathExclude test' excludes all folders which start with 'test' prefix. Optional.").withValueSeparator(',').create("OsaPathExclude");
+
 
 
 	protected Integer timeout;
@@ -66,10 +72,15 @@ public abstract class GeneralScanCommand extends VerboseCommand {
         this.commandLineOptions.addOptionGroup(reportGroup);
         this.commandLineOptions.addOption(PARAM_EXCLUDE_FOLDERS);
         this.commandLineOptions.addOption(PARAM_EXCLUDE_FILES);
-        // Excluded extension is hidden from the user
-        // It was added to support Jenkins functionality, and since Jenking
-        // do not use CLI any more, this option was disabled.
-        //this.commandLineOptions.addOption(PARAM_EXCLUDE_FILES);
+
+		OptionGroup osaReportGroup = new OptionGroup();
+		osaReportGroup.setRequired(false);
+		osaReportGroup.addOption(PARAM_OSA_PDF_FILE);
+		osaReportGroup.addOption(PARAM_OSA_HTML_FILE);
+		osaReportGroup.addOption(PARAM_RTF_FILE);
+		this.commandLineOptions.addOptionGroup(osaReportGroup);
+		this.commandLineOptions.addOption(PARAM_OSA_EXCLUDE_FOLDERS);
+		this.commandLineOptions.addOption(PARAM_OSA_EXCLUDE_FILES);
     }
 
 
@@ -82,7 +93,7 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 		catch (Exception e) {
             throw e;
 		}
-		
+		scParams.setOriginHost(scParams.getHost());
 		scParams.setHost(generatedHost);
 	}
 	
@@ -180,7 +191,17 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 		keys.append(PARAM_CSV_FILE);
 		keys.append(KEY_DESCR_INTEND_SMALL);
 		keys.append("- Name or path to results CSV file. Optional.\n");
-		
+
+		keys.append(leftSpacing);
+		keys.append(PARAM_OSA_PDF_FILE );
+		keys.append(KEY_DESCR_INTEND_SMALL);
+		keys.append("- Name or path to results OSA PDF file. Optional.\n");
+
+		keys.append(leftSpacing);
+		keys.append(PARAM_OSA_HTML_FILE);
+		keys.append(KEY_DESCR_INTEND_SMALL);
+		keys.append("- Name or path to results OSA HTML file. Optional.\n");
+
 		keys.append(leftSpacing);
 		keys.append(PARAM_EXCLUDE_FOLDERS);
 		keys.append(KEY_DESCR_INTEND_SINGLE);
@@ -190,6 +211,21 @@ public abstract class GeneralScanCommand extends VerboseCommand {
         keys.append(PARAM_EXCLUDE_FILES);
         keys.append(KEY_DESCR_INTEND_SINGLE);
         keys.append("- Comma separated list of file name patterns to exclude from scan. Example: -LocationFilesExclude “*.class” excludes all .class files. Optional.\n");
+
+		keys.append(leftSpacing);
+		keys.append(PARAM_EXCLUDE_FILES);
+		keys.append(KEY_DESCR_INTEND_SINGLE);
+		keys.append("- Comma separated list of file name patterns to exclude from scan. Example: -LocationFilesExclude “*.class” excludes all .class files. Optional.\n");
+
+		keys.append(leftSpacing);
+		keys.append(PARAM_OSA_EXCLUDE_FOLDERS);
+		keys.append(KEY_DESCR_INTEND_SINGLE);
+		keys.append("- Comma separated list of folder path patterns to exclude from OSA scan. Example: '-OsaLocationPathExclude test' excludes all folders which start with 'test' prefix. Optional.\n");
+
+keys.append(leftSpacing);
+		keys.append(PARAM_OSA_EXCLUDE_FILES);
+		keys.append(KEY_DESCR_INTEND_SINGLE);
+		keys.append("- Comma separated list of file name patterns to exclude from OSA scan. Example: '-OsaLocationFilesExclude *.class' excludes all files with '.class' extension. Optional.\n");
 
 
 		//keys.append(super.getOptionalKeyDescriptions());
