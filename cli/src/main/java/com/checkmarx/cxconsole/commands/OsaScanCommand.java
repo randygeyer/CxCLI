@@ -22,9 +22,9 @@ public class OsaScanCommand extends ScanCommand {
     @Override
     public String getUsageExamples() {
         return "\n\nrunCxConsole.cmd OsaScan -Projectname SP\\Cx\\Engine\\AST -CxServer http://localhost -cxuser admin -cxpassword admin -locationType folder -locationpath C:\\cx  -OsaFilesExclude *.class OsaPathExclude src,temp -verbose \n"
-                + "runCxConsole.cmd  OsaScan -projectname SP\\Cx\\Engine\\AST -cxserver http://localhost -cxuser admin -cxpassword admin -locationtype folder -locationurl http://vsts2003:8080 -locationuser dm\\matys -locationpassword XYZ  -OsaReportPDF a.pdf -\n"
-                + "runCxConsole.cmd  OsaScan -projectname SP\\Cx\\Engine\\AST -cxserver http://localhost -cxuser admin -cxpassword admin -locationtype shared -locationpath '\\storage\\path1;\\storage\\path2' -locationuser dm\\matys -locationpassword XYZ  -OsaReportPDF a.pdf -OsaReportHTML b.html  -verbose -log a.log\n \n"
-                + "runCxConsole.cmd  OsaScan -Projectname CxServer\\SP\\Company\\my project -CxServer http://localhost -cxuser admin -cxpassword admin -locationtype folder -locationpath C:\\Users\\some_project -OsaFilesExclude *.bat -OsaReportPDF c:\\temp\\file.pdf -v";
+                + "runCxConsole.cmd  OsaScan -projectname SP\\Cx\\Engine\\AST -cxserver http://localhost -cxuser admin -cxpassword admin -locationtype folder -locationurl http://vsts2003:8080 -locationuser dm\\matys -locationpassword XYZ  -OsaReportPDF -\n"
+                + "runCxConsole.cmd  OsaScan -projectname SP\\Cx\\Engine\\AST -cxserver http://localhost -cxuser admin -cxpassword admin -locationtype shared -locationpath '\\storage\\path1;\\storage\\path2' -locationuser dm\\matys -locationpassword XYZ  -OsaReportPDF -OsaReportHTML -verbose -log a.log\n \n"
+                + "runCxConsole.cmd  OsaScan -Projectname CxServer\\SP\\Company\\my project -CxServer http://localhost -cxuser admin -cxpassword admin -locationtype folder -locationpath C:\\Users\\some_project -OsaFilesExclude *.bat -OsaReportPDF -v";
     }
 
     @Override

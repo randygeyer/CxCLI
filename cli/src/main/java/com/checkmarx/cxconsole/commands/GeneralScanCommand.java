@@ -73,12 +73,8 @@ public abstract class GeneralScanCommand extends VerboseCommand {
         this.commandLineOptions.addOption(PARAM_EXCLUDE_FOLDERS);
         this.commandLineOptions.addOption(PARAM_EXCLUDE_FILES);
 
-		OptionGroup osaReportGroup = new OptionGroup();
-		osaReportGroup.setRequired(false);
-		osaReportGroup.addOption(PARAM_OSA_PDF_FILE);
-		osaReportGroup.addOption(PARAM_OSA_HTML_FILE);
-		osaReportGroup.addOption(PARAM_RTF_FILE);
-		this.commandLineOptions.addOptionGroup(osaReportGroup);
+		this.commandLineOptions.addOption(PARAM_OSA_PDF_FILE);
+		this.commandLineOptions.addOption(PARAM_OSA_HTML_FILE);
 		this.commandLineOptions.addOption(PARAM_OSA_EXCLUDE_FOLDERS);
 		this.commandLineOptions.addOption(PARAM_OSA_EXCLUDE_FILES);
     }
