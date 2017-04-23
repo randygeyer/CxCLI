@@ -100,8 +100,7 @@ public class ScanParams {
             }
         }
 
-        if (commandLine.hasOption(PARAM_LOCATION_TYPE.getOpt()))
-        {
+        if (commandLine.hasOption(PARAM_LOCATION_TYPE.getOpt())) {
             locationType = LocationType.byName(commandLine.getOptionValue(PARAM_LOCATION_TYPE.getOpt()));
         }
 
@@ -118,8 +117,7 @@ public class ScanParams {
         locationUser = commandLine.getOptionValue(PARAM_LOCATION_USER.getOpt());
         locationPassword = commandLine.getOptionValue(PARAM_LOCATION_PWD.getOpt());
 
-        if (locationType == LocationType.perforce && !commandLine.hasOption(PARAM_LOCATION_PWD.getOpt()))
-        {
+        if (locationType == LocationType.perforce && !commandLine.hasOption(PARAM_LOCATION_PWD.getOpt())) {
             // In Perforce the password is not mandatory in case of a new user
             locationPassword = "";
         }
@@ -146,14 +144,12 @@ public class ScanParams {
             if (locationType == LocationType.svn) {
                 if (locationURL.toLowerCase().startsWith("svn://")) {
                     locationPort = 3690;
-                }
-                else {
+                } else {
                     locationPort = 80;
                 }
             } else if (locationType == LocationType.tfs) {
                 locationPort = 8080;
-			}
-            else if (locationType == LocationType.perforce) {
+            } else if (locationType == LocationType.perforce) {
                 locationPort = 1666;
             }
         }
@@ -178,12 +174,11 @@ public class ScanParams {
         }
 
         isOsaEnabled = commandLine.hasOption(PARAM_ENABLE_OSA.getOpt());
-        if (isOsaEnabled) {
-            osaExcludedFiles= commandLine.getOptionValues(PARAM_OSA_EXCLUDE_FILES.getOpt());
-            osaExcludedFolders =  commandLine.getOptionValues(PARAM_OSA_EXCLUDE_FOLDERS.getOpt());
-            osaReportHTML = commandLine.hasOption((PARAM_OSA_HTML_FILE.getOpt()));
-            osaReportPDF = commandLine.hasOption(PARAM_OSA_PDF_FILE.getOpt());
-        }
+        osaExcludedFiles = commandLine.getOptionValues(PARAM_OSA_EXCLUDE_FILES.getOpt());
+        osaExcludedFolders = commandLine.getOptionValues(PARAM_OSA_EXCLUDE_FOLDERS.getOpt());
+        osaReportHTML = commandLine.hasOption((PARAM_OSA_HTML_FILE.getOpt()));
+        osaReportPDF = commandLine.hasOption(PARAM_OSA_PDF_FILE.getOpt());
+
     }
 
     public String getHost() {
