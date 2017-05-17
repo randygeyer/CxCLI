@@ -2,6 +2,7 @@ package com.checkmarx.cxosa.utils;
 
 import com.checkmarx.components.zipper.ZipListener;
 import com.checkmarx.components.zipper.Zipper;
+import com.checkmarx.cxconsole.utils.ConfigMgr;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
@@ -15,15 +16,16 @@ import java.io.OutputStream;
 /**
  * Created by Galn on 06/04/2017.
  */
-public abstract   class OsaUtils {
+public abstract class OsaUtils {
     private static int numOfZippedFiles = 0;
-    private static Logger log ;
+    private static Logger log;
     private static final String TEMP_FILE_NAME_TO_ZIP = "CxZippedSource";
 
     public static File zipWorkspaceFolder(String fileExcluded, String folderExclusions, long maxZipSizeInBytes, String path, Logger log)
             throws InterruptedException, IOException {
 
-        String combinedFilterPattern = generatePattern(folderExclusions, fileExcluded);
+        String combinedFilterPattern = generatePattern(folderExclusions, fileExcluded + ", Checkmarx/Reports/*.*");
+
         ZipListener zipListener = new ZipListener() {
             public void updateProgress(String fileName, long size) {
                 numOfZippedFiles++;
@@ -62,14 +64,10 @@ public abstract   class OsaUtils {
         String excludeFoldersPattern = processExcludeFolders(folderExclusions);
         String excludeFilesPattern = processExcludeFiles(filterPattern);
 
-        if (StringUtils.isEmpty(excludeFilesPattern) && StringUtils.isEmpty(excludeFoldersPattern)) {
-            return "";
-        } else if (!StringUtils.isEmpty(excludeFilesPattern) && StringUtils.isEmpty(excludeFoldersPattern)) {
-            return excludeFilesPattern;
-        } else if (StringUtils.isEmpty(excludeFilesPattern) && !StringUtils.isEmpty(excludeFoldersPattern)) {
-            return excludeFoldersPattern;
+        if (!StringUtils.isEmpty(excludeFilesPattern) && !StringUtils.isEmpty(excludeFoldersPattern)) {
+            return excludeFilesPattern + "," + excludeFoldersPattern ;
         } else {
-            return excludeFilesPattern + "," + excludeFoldersPattern;
+            return excludeFilesPattern + excludeFoldersPattern;
         }
     }
 
@@ -83,10 +81,9 @@ public abstract   class OsaUtils {
 
         for (String p : patterns) {
             p = p.trim();
-            if (p.length() > 0) {
+            if (p.length() > 0 && !p.equals("null"))  {
                 result.append("!**/");
                 result.append(p);
-
                 result.append("/**/*, ");
             }
         }
@@ -95,7 +92,7 @@ public abstract   class OsaUtils {
     }
 
     private static String processExcludeFiles(String filesExclusions) {
-        if (StringUtils.isEmpty(filesExclusions)) {
+        if (StringUtils.isEmpty(filesExclusions) ) {
             return "";
         }
         filesExclusions.replace(",,", ",");
@@ -104,7 +101,7 @@ public abstract   class OsaUtils {
         String[] patterns = StringUtils.split(filesExclusions, ",\n");
         for (String p : patterns) {
             p = p.trim();
-            if (p.length() > 0) {
+            if (p.length() > 0 && !p.equals("null")) {
                 result.append("!**/");
                 result.append(p);
                 result.append(", ");
