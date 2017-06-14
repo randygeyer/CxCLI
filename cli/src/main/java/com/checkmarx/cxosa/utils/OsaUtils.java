@@ -2,7 +2,6 @@ package com.checkmarx.cxosa.utils;
 
 import com.checkmarx.components.zipper.ZipListener;
 import com.checkmarx.components.zipper.Zipper;
-import com.checkmarx.cxconsole.utils.ConfigMgr;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
@@ -65,7 +64,7 @@ public abstract class OsaUtils {
         String excludeFilesPattern = processExcludeFiles(filterPattern);
 
         if (!StringUtils.isEmpty(excludeFilesPattern) && !StringUtils.isEmpty(excludeFoldersPattern)) {
-            return excludeFilesPattern + "," + excludeFoldersPattern ;
+            return excludeFilesPattern + "," + excludeFoldersPattern;
         } else {
             return excludeFilesPattern + excludeFoldersPattern;
         }
@@ -81,7 +80,7 @@ public abstract class OsaUtils {
 
         for (String p : patterns) {
             p = p.trim();
-            if (p.length() > 0 && !p.equals("null"))  {
+            if (p.length() > 0 && !p.equals("null")) {
                 result.append("!**/");
                 result.append(p);
                 result.append("/**/*, ");
@@ -92,7 +91,7 @@ public abstract class OsaUtils {
     }
 
     private static String processExcludeFiles(String filesExclusions) {
-        if (StringUtils.isEmpty(filesExclusions) ) {
+        if (StringUtils.isEmpty(filesExclusions)) {
             return "";
         }
         filesExclusions.replace(",,", ",");
@@ -121,7 +120,6 @@ public abstract class OsaUtils {
         }
 
     }
-
     public static void setLogger(Logger log) {
         OsaUtils.log = log;
     }

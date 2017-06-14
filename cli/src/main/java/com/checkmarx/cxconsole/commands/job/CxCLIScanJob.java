@@ -532,9 +532,8 @@ public class CxCLIScanJob extends CxScanJob {
 
         } catch (Exception e) {
             log.trace(e);
-            if (log.isEnabledFor(Level.ERROR)) {
-                log.error("Error occurred during zipping source files. Error message: " + e.getMessage());
-            }
+            log.error("Error occurred during zipping source files. Error message: " + e.getMessage());
+
             return false;
         }
         return true;

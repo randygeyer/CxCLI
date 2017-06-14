@@ -1,12 +1,9 @@
 package com.checkmarx.cxconsole.utils;
 
-import java.io.File;
-
-//import com.checkmarx.cxconsole.commands.ScanFolderCommand;
-//import com.checkmarx.cxconsole.commands.ScanProjectCommand;
 import org.apache.commons.cli.CommandLine;
-
+import java.io.File;
 import static com.checkmarx.cxconsole.commands.ScanCommand.*;
+
 
 /**
  * Parameter container for
@@ -54,10 +51,12 @@ public class ScanParams {
     private boolean hasUserParam = false;
     private boolean isPerforceWorkspaceMode = false;
     private boolean isOsaEnabled = false;
+    private String osaLocationPath;
     private String[] osaExcludedFolders = new String[]{};
     private String[] osaExcludedFiles = new String[]{};
     private boolean osaReportPDF = false;
     private boolean osaReportHTML = false;
+    private boolean osaJson = false;
 
     public ScanParams(CommandLine commandLine) {
         this.host = commandLine.getOptionValue(PARAM_HOST.getOpt());
@@ -174,11 +173,12 @@ public class ScanParams {
         }
 
         isOsaEnabled = commandLine.hasOption(PARAM_ENABLE_OSA.getOpt());
+        osaLocationPath = commandLine.getOptionValue(PARAM_OSA_LOCATION_PATH.getOpt());
         osaExcludedFiles = commandLine.getOptionValues(PARAM_OSA_EXCLUDE_FILES.getOpt());
         osaExcludedFolders = commandLine.getOptionValues(PARAM_OSA_EXCLUDE_FOLDERS.getOpt());
         osaReportHTML = commandLine.hasOption((PARAM_OSA_HTML_FILE.getOpt()));
         osaReportPDF = commandLine.hasOption(PARAM_OSA_PDF_FILE.getOpt());
-
+        osaJson = commandLine.hasOption(PARAM_OSA_JSON.getOpt());
     }
 
     public String getHost() {
@@ -417,6 +417,14 @@ public class ScanParams {
         isOsaEnabled = osaEnabled;
     }
 
+    public String getOsaLocationPath() {
+        return osaLocationPath;
+    }
+
+    public void setOsaLocationPath(String osaLocationPath) {
+        this.osaLocationPath = osaLocationPath;
+    }
+
     public String[] getOsaExcludedFolders() {
         return osaExcludedFolders;
     }
@@ -447,5 +455,13 @@ public class ScanParams {
 
     public void setOsaReportHTML(boolean osaReportHTML) {
         this.osaReportHTML = osaReportHTML;
+    }
+
+    public boolean isOsaJson() {
+        return osaJson;
+    }
+
+    public void setOsaJson(boolean osaJson) {
+        this.osaJson = osaJson;
     }
 }

@@ -4,7 +4,9 @@ package com.checkmarx.cxosa;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxosa.dto.*;
 import com.checkmarx.cxosa.exception.CxClientException;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,14 +26,11 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
+import java.util.List;
 
 /**
  * Created by: Dorg.
@@ -47,15 +46,24 @@ public class CxRestClient {
 
     private static final String OSA_SCAN_PROJECT_PATH = "projects/{projectId}/scans";
     private static final String OSA_SCAN_STATUS_PATH = "scans/{scanId}";
-    private static final String OSA_SCAN_SUMMARY_PATH = "projects/{projectId}/summaryresults";
-    private static final String OSA_SCAN_HTML_PATH = "projects/{projectId}/opensourceanalysis/htmlresults";
-    private static final String OSA_SCAN_PDF_PATH = "projects/{projectId}/opensourceanalysis/pdfresults";
+    private static final String OSA_SCAN_SUMMARY_PATH = "osa/reports";
+    private static final String CX_ORIGIN_HEADER = "cxOrigin";
+    private static final String CX_ORIGIN_VALUE = "CLI";
+    public static final String OSA_SCAN_LIBRARIES_PATH = "/osa/libraries";
+    public static final String OSA_SCAN_VULNERABILITIES_PATH = "/osa/vulnerabilities";
+    public static final String SCAN_ID_QUERY_PARAM = "?scanId=";
     private static final String AUTHENTICATION_PATH = "auth/login";
     private static final String OSA_ZIPPED_FILE_KEY_NAME = "OSAZippedSourceCode";
     private static final String ROOT_PATH = "CxRestAPI";
     private static final String CSRF_TOKEN_HEADER = "CXCSRFToken";
     private static final String OSA_REPORT_NAME = "CxOSAReport";
     private static final String CX_REPORT_LOCATION = File.separator + "Reports";
+    public static final String ITEM_PER_PAGE_QUERY_PARAM = "&itemsPerPage=";
+    public static final long MAX_ITEMS = 1000000;
+    public static final String OSA_SUMMARY_NAME = "CxOSASummary";
+    public static final String OSA_LIBRARIES_NAME = "CxOSALibraries";
+    public static final String OSA_VULNERABILITIES_NAME = "CxOSAVulnerabilities";
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     private HttpClient apacheClient;
     private CookieStore cookieStore;
@@ -115,13 +123,13 @@ public class CxRestClient {
         CxRestClient.log = log;
     }
 
-
     public void login() throws CxClientException, IOException {
         cookies = null;
         csrfToken = null;
         HttpResponse loginResponse = null;
         //create login request
         HttpPost loginPost = new HttpPost(hostName + "/" + ROOT_PATH + "/" + AUTHENTICATION_PATH);
+        loginPost.setHeader(CX_ORIGIN_HEADER, CX_ORIGIN_VALUE);
         StringEntity requestEntity = new StringEntity(mapper.writeValueAsString(new LoginRequest(username, password)), ContentType.APPLICATION_JSON);
         loginPost.setEntity(requestEntity);
         try {
@@ -138,9 +146,9 @@ public class CxRestClient {
     }
 
     public CreateOSAScanResponse createOSAScan(long projectId, File zipFile) throws IOException, CxClientException {
-        login();
         //create scan request
         HttpPost post = new HttpPost(hostName + "/" + ROOT_PATH + "/" + OSA_SCAN_PROJECT_PATH.replace("{projectId}", String.valueOf(projectId)));
+        post.setHeader(CX_ORIGIN_HEADER, CX_ORIGIN_VALUE);
         FileInputStream fileInputStream = new FileInputStream(zipFile);
         InputStreamBody streamBody = new InputStreamBody(fileInputStream, ContentType.APPLICATION_OCTET_STREAM, OSA_ZIPPED_FILE_KEY_NAME);
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
@@ -164,7 +172,6 @@ public class CxRestClient {
         }
     }
 
-
     private OSAScanStatus getOSAScanStatus(String scanId) throws CxClientException, IOException {
 
         String resolvedPath = hostName + "/" + ROOT_PATH + "/" + OSA_SCAN_STATUS_PATH.replace("{scanId}", String.valueOf(scanId));
@@ -173,7 +180,7 @@ public class CxRestClient {
 
         try {
             response = apacheClient.execute(getRequest);
-            validateResponse(response, 200, "fail get OSA scan status");
+            validateResponse(response, 200, "Failed to get OSA scan status");
 
             return convertToObject(response, OSAScanStatus.class);
         } finally {
@@ -182,10 +189,10 @@ public class CxRestClient {
         }
     }
 
-    public OSASummaryResults getOSAScanSummaryResults(long projectId) throws CxClientException, IOException {
+    public OSASummaryResults getOSAScanSummaryResults(String scanId) throws CxClientException, IOException {
 
-        String resolvedPath = hostName + "/" + ROOT_PATH + "/" + OSA_SCAN_SUMMARY_PATH.replace("{projectId}", String.valueOf(projectId));
-        HttpGet getRequest = new HttpGet(resolvedPath);
+        String relativePath =  OSA_SCAN_SUMMARY_PATH + SCAN_ID_QUERY_PARAM + scanId;
+        HttpGet getRequest = createHttpRequest(relativePath, "application/json");
         HttpResponse response = null;
 
         try {
@@ -199,14 +206,14 @@ public class CxRestClient {
         }
     }
 
-    private String getOSAScanHTMLResults(long projectId) throws CxClientException, IOException {
+    private String getOSAScanHTMLResults(String scanId) throws CxClientException, IOException {
 
-        String resolvedPath = hostName + "/" + ROOT_PATH + "/" + OSA_SCAN_HTML_PATH.replace("{projectId}", String.valueOf(projectId));
-        HttpGet getRequest = new HttpGet(resolvedPath);
+        String relativePath = OSA_SCAN_SUMMARY_PATH + SCAN_ID_QUERY_PARAM + scanId;;
+        HttpGet getRequest =  createHttpRequest(relativePath, "text/html");
         HttpResponse response = null;
         try {
             response = apacheClient.execute(getRequest);
-            validateResponse(response, 200, "fail get OSA scan html results");
+            validateResponse(response, 200, "Failed to get OSA scan html results");
 
             return IOUtils.toString(response.getEntity().getContent(), Charset.defaultCharset());
 
@@ -216,14 +223,14 @@ public class CxRestClient {
         }
     }
 
-    private byte[] getOSAScanPDFResults(long projectId) throws CxClientException, IOException {
-        String resolvedPath = hostName + "/" + ROOT_PATH + "/" + OSA_SCAN_PDF_PATH.replace("{projectId}", String.valueOf(projectId));
-        HttpGet getRequest = new HttpGet(resolvedPath);
+    private byte[] getOSAScanPDFResults(String scanId) throws CxClientException, IOException {
+        String relativePath =  OSA_SCAN_SUMMARY_PATH + SCAN_ID_QUERY_PARAM + scanId;
+        HttpGet getRequest = createHttpRequest(relativePath, "application/pdf");
         HttpResponse response = null;
 
         try {
             response = apacheClient.execute(getRequest);
-            validateResponse(response, 200, "fail get OSA scan pdf results");
+            validateResponse(response, 200, "Failed to get OSA scan pdf results");
             return IOUtils.toByteArray(response.getEntity().getContent());
         } finally {
             getRequest.releaseConnection();
@@ -231,13 +238,84 @@ public class CxRestClient {
         }
     }
 
+    public void createOsaHtmlReport(String scanId, String now, String workDirectory) throws IOException, CxClientException {
+        String osaHtml = getOSAScanHTMLResults(scanId);
+        String htmlFileName = OSA_REPORT_NAME + "_" + now + ".html" ;
+        FileUtils.writeStringToFile(new File(workDirectory + CX_REPORT_LOCATION, htmlFileName), osaHtml, Charset.defaultCharset());
+        log.info("OSA HTML report location: " + workDirectory + CX_REPORT_LOCATION + File.separator + htmlFileName);
+    }
+
+    public void createOsaPdfReport(String scanId, String now, String workDirectory) throws IOException, CxClientException {
+        byte[] osaPDF = getOSAScanPDFResults(scanId);
+        String pdfFileName = OSA_REPORT_NAME + "_" + now + ".pdf" ;
+        FileUtils.writeByteArrayToFile(new File(workDirectory + CX_REPORT_LOCATION, pdfFileName), osaPDF);
+        log.info("OSA PDF report location: " + workDirectory + CX_REPORT_LOCATION + File.separator + pdfFileName);
+
+}
+
+    public void createOsaJson(String scanId, String now, String workDirectory, OSASummaryResults osaSummaryResults) throws IOException, CxClientException {
+        String fileName = OSA_SUMMARY_NAME + "_" + now + ".json";
+        objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(workDirectory + CX_REPORT_LOCATION, fileName), osaSummaryResults);
+        log.info("OSA summary json location: " + workDirectory + CX_REPORT_LOCATION + File.separator + fileName);
+
+        List<Library> libraries = getOSALibraries(scanId);
+        fileName = OSA_LIBRARIES_NAME + "_" + now + ".json";
+        objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(workDirectory + CX_REPORT_LOCATION, fileName), libraries);
+        log.info("OSA libraries json location: " + workDirectory + CX_REPORT_LOCATION + File.separator + fileName);
+
+        List<CVE> osaVulnerabilities = getOSAVulnerabilities(scanId);
+        fileName = OSA_VULNERABILITIES_NAME + "_" + now + ".json";
+        objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(workDirectory + CX_REPORT_LOCATION, fileName), osaVulnerabilities);
+        log.info("OSA vulnerabilities json location: " + workDirectory + CX_REPORT_LOCATION + File.separator + fileName);
+
+    }
+
+    private List<Library> getOSALibraries(String scanId) throws CxClientException, IOException {
+
+        String relativePath = OSA_SCAN_LIBRARIES_PATH + SCAN_ID_QUERY_PARAM + scanId + ITEM_PER_PAGE_QUERY_PARAM + MAX_ITEMS;
+        HttpGet getRequest = createHttpRequest(relativePath, "application/json");
+        HttpResponse response = null;
+        try {
+            response = apacheClient.execute(getRequest);
+            validateResponse(response, 200, "Failed to get OSA libraries");
+            return convertToObject(response, TypeFactory.defaultInstance().constructCollectionType(List.class, Library.class));
+        } finally {
+            getRequest.releaseConnection();
+            HttpClientUtils.closeQuietly(response);
+        }
+    }
+
+    public List<CVE> getOSAVulnerabilities(String scanId) throws CxClientException, IOException {
+        String relativePath = OSA_SCAN_VULNERABILITIES_PATH + SCAN_ID_QUERY_PARAM + scanId + ITEM_PER_PAGE_QUERY_PARAM + MAX_ITEMS;
+        HttpGet getRequest = createHttpRequest(relativePath, "application/json");
+        HttpResponse response = null;
+        try {
+            response = apacheClient.execute(getRequest);
+            validateResponse(response, 200, "Failed to get OSA vulnerabilities");
+            return convertToObject(response, TypeFactory.defaultInstance().constructCollectionType(List.class, CVE.class));
+        } finally {
+            getRequest.releaseConnection();
+            HttpClientUtils.closeQuietly(response);
+        }
+    }
+
+    private HttpGet createHttpRequest(String relativePath, String mediaType) {
+        String resolvedPath = hostName + "/" + ROOT_PATH + "/" + relativePath;
+        HttpGet getRequest = new HttpGet(resolvedPath);
+        getRequest.setHeader("Accept", mediaType);
+        return getRequest;
+    }
+
     public void close() {
         HttpClientUtils.closeQuietly(apacheClient);
     }
 
     private void validateResponse(HttpResponse response, int status, String message) throws CxClientException {
+
+
         if (response.getStatusLine().getStatusCode() != status) {
-            throw new CxClientException(message + ": " + "status code: " + response.getStatusLine().getStatusCode() + ". reason phrase: " + response.getStatusLine().getReasonPhrase());
+            ErrorMessage errMsg= convertToObject(response, ErrorMessage.class);
+            throw new CxClientException(message + ": " + "status code: " + response.getStatusLine().getStatusCode() + ". reason phrase: " + errMsg.getMessageDetails());
         }
     }
 
@@ -249,6 +327,17 @@ public class CxRestClient {
         } catch (IOException e) {
             log.debug("fail to parse json response: [" + json + "]", e);
             throw new CxClientException("fail to parse json response: " + e.getMessage());
+        }
+    }
+
+    private <T> T convertToObject(HttpResponse response, JavaType javaType) throws CxClientException {
+        String json = "";
+        try {
+            json = IOUtils.toString(response.getEntity().getContent(), Charset.defaultCharset());
+            return mapper.readValue(json, javaType);
+        } catch (IOException e) {
+            log.debug("Failed to parse json response: [" + json + "]", e);
+            throw new CxClientException("Failed to parse json response: " + e.getMessage());
         }
     }
 
@@ -316,34 +405,6 @@ public class CxRestClient {
         return retry;
     }
 
-    public void createOsaHtmlReport(long projectId, String now, String workDirectory) throws IOException, CxClientException {
-        String osaHtml = getOSAScanHTMLResults(projectId);
-        String htmlFileName = OSA_REPORT_NAME + "_" + now + ".html" ;
-        FileUtils.writeStringToFile(new File(workDirectory + CX_REPORT_LOCATION, htmlFileName), osaHtml, Charset.defaultCharset());
-        log.info("OSA HTML report location: " + workDirectory + CX_REPORT_LOCATION + File.separator + htmlFileName);
-    }
-    public void createOsaPdfReport(long projectId, String now, String workDirectory) throws IOException, CxClientException {
-        byte[] osaPDF = getOSAScanPDFResults(projectId);
-        String pdfFileName = OSA_REPORT_NAME + "_" + now + ".pdf" ;
-        FileUtils.writeByteArrayToFile(new File(workDirectory + CX_REPORT_LOCATION, pdfFileName), osaPDF);
-        log.info("OSA PDF report location: " + workDirectory + CX_REPORT_LOCATION + File.separator + pdfFileName);
 
-}
-
-    public static TrustManager[] createFakeTrustManager() {
-        return new TrustManager[]{new X509TrustManager() {
-
-            public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-            }
-
-            public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-            }
-
-            public X509Certificate[] getAcceptedIssuers() {
-                return new X509Certificate[0];
-            }
-        }};
-
-    }
 }
 

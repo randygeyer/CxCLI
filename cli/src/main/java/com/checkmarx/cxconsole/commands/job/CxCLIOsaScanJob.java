@@ -42,13 +42,10 @@ public class CxCLIOsaScanJob extends CxScanJob {
     public Integer call() throws Exception {
         try {
             if (scanOsaOnly) {
-
                 log.info("Project name is \"" + params.getProjName() + "\"");
-
                 // Connect to Checkmarx service.
                 wsMgr = ConfigMgr.getWSMgr();
                 URL wsdlLocation = wsMgr.makeWsdlLocation(params.getHost());
-
                 // Logging into the Checkmarx service.
                 login(wsdlLocation);
             }
@@ -68,7 +65,11 @@ public class CxCLIOsaScanJob extends CxScanJob {
             }
 
             OsaUtils.setLogger(log);
-            File zipForOSA = OsaUtils.zipWorkspaceFolder(StringUtils.join(params.getOsaExcludedFiles(), ','), StringUtils.join(params.getOsaExcludedFolders(), ','), maxZipSize, params.getLocationPath(), log);
+            String osaLocationPath = params.getOsaLocationPath() != null ? params.getOsaLocationPath() : params.getLocationPath();
+            log.info("OSA path location: " + osaLocationPath);
+            log.info("Zipping dependencies");
+            File zipForOSA = OsaUtils.zipWorkspaceFolder(StringUtils.join(params.getOsaExcludedFiles(), ','), StringUtils.join(params.getOsaExcludedFolders(), ','), maxZipSize, osaLocationPath, log);
+            log.info("Sending OSA scan request");
             CreateOSAScanResponse osaScan = restClient.createOSAScan(projectId, zipForOSA);
             osaProjectSummaryLink = OsaUtils.composeProjectOSASummaryLink(params.getOriginHost(), projectId);
             log.info("OSA scan created successfully");
@@ -82,31 +83,37 @@ public class CxCLIOsaScanJob extends CxScanJob {
             OSAConsoleScanWaitHandler osaConsoleScanWaitHandler = new OSAConsoleScanWaitHandler();
             osaConsoleScanWaitHandler.setLogger(log);
             restClient.waitForOSAScanToFinish(osaScan.getScanId(), -1, osaConsoleScanWaitHandler);
-
             log.info("OSA scan finished successfully");
 
-
             //OSA scan results
-            OSASummaryResults osaSummaryResults = restClient.getOSAScanSummaryResults(projectId);
+            OSASummaryResults osaSummaryResults = restClient.getOSAScanSummaryResults(osaScan.getScanId());
             printOSAResultsToConsole(osaSummaryResults, osaProjectSummaryLink);
 
             //OSA reports
             boolean hasHtmlReport = params.isOsaReportHTML();
             boolean hasPdfReport = params.isOsaReportPDF();
-            if (hasHtmlReport || hasPdfReport) {
-                log.info("Creating CxOSA reports");
-                workDirectory = gerWorkDirectory();
-                SimpleDateFormat ft = new SimpleDateFormat("dd_MM_yyyy-HH_mm_ss");
-                String now = ft.format(new Date());
-
-                if (hasHtmlReport) {
-                    restClient.createOsaHtmlReport(projectId, now, workDirectory);
-
+            boolean hasJson = params.isOsaJson();
+            try {
+                if (hasHtmlReport || hasPdfReport || hasJson) {
+                    log.info("Creating CxOSA reports");
+                    workDirectory = gerWorkDirectory();
+                    SimpleDateFormat ft = new SimpleDateFormat("dd_MM_yyyy-HH_mm_ss");
+                    String now = ft.format(new Date());
+                    //OSA HTML report
+                    if (hasHtmlReport) {
+                        restClient.createOsaHtmlReport(osaScan.getScanId(), now, workDirectory);
+                    }
+                    //OSA PDF report
+                    if (hasPdfReport) {
+                        restClient.createOsaPdfReport(osaScan.getScanId(), now, workDirectory);
+                    }
+                    //OSA json reports
+                    if (hasJson) {
+                        restClient.createOsaJson(osaScan.getScanId(), now, workDirectory, osaSummaryResults);
+                    }
                 }
-
-                if (hasPdfReport) {
-                    restClient.createOsaPdfReport(projectId, now, workDirectory);
-                }
+            } catch (Exception e) {
+                log.error("Error occurred during CxOSA reports. Error message: " + e.getMessage());
             }
         } finally {
             OsaUtils.deleteTempFiles();
@@ -120,7 +127,7 @@ public class CxCLIOsaScanJob extends CxScanJob {
         GetProjectDataResult projectData = wsMgr.getProjectsDisplayData(sessionId);
         for (ProjectDisplayData data : projectData.getProjectData()) {
             String projectFullName = data.getGroup() + "\\" + data.getProjectName();
-            if (projectFullName.equals(params.getFullProjName())) {
+            if (projectFullName.equalsIgnoreCase(params.getFullProjName())) {
                 return data.getProjectID();
             }
         }
@@ -139,9 +146,9 @@ public class CxCLIOsaScanJob extends CxScanJob {
         log.info("------------------------");
         log.info("Vulnerabilities Summary:");
         log.info("------------------------");
-        log.info("OSA high severity results: " + osaSummaryResults.getHighVulnerabilities());
-        log.info("OSA medium severity results: " + osaSummaryResults.getMediumVulnerabilities());
-        log.info("OSA low severity results: " + osaSummaryResults.getLowVulnerabilities());
+        log.info("OSA high severity results: " + osaSummaryResults.getTotalHighVulnerabilities());
+        log.info("OSA medium severity results: " + osaSummaryResults.getTotalMediumVulnerabilities());
+        log.info("OSA low severity results: " + osaSummaryResults.getTotalLowVulnerabilities());
         log.info("Vulnerability score: " + osaSummaryResults.getVulnerabilityScore());
         log.info("");
         log.info("-----------------------");

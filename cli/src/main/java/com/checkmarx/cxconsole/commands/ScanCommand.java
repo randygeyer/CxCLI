@@ -69,6 +69,8 @@ public class ScanCommand extends GeneralScanCommand {
 
     public static final Option PARAM_ENABLE_OSA = OptionBuilder.withDescription("Enable Open Source Analysis (OSA). It requires the -LocationType to be folder/shared.  Optional.)").create("EnableOsa");
 
+    public static final Option PARAM_OSA_LOCATION_PATH = OptionBuilder.withArgName("path").hasArg().withDescription("Local or shared path to OSA sources or source repository branch.").create("OsaLocationPath");
+
     public static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
 
     public static String MSG_ERR_SSO_WINDOWS_SUPPORT = "SSO login method is available only on Windows";
@@ -99,6 +101,7 @@ public class ScanCommand extends GeneralScanCommand {
         this.commandLineOptions.addOption(PARAM_FORCE_SCAN);
         this.commandLineOptions.addOption(PARAM_WORKSPACE);
         this.commandLineOptions.addOption(PARAM_ENABLE_OSA);
+        this.commandLineOptions.addOption(PARAM_OSA_LOCATION_PATH);
     }
 
     @Override
@@ -168,7 +171,7 @@ public class ScanCommand extends GeneralScanCommand {
             }
         } catch (InterruptedException e) {
             if (log.isEnabledFor(Level.DEBUG)) {
-                log.debug(scanType +"Scan job was interrupted.", e);
+                log.debug(scanType + "Scan job was interrupted.", e);
             }
             errorCode = CODE_ERRROR;
         } catch (ExecutionException e) {
@@ -329,11 +332,10 @@ public class ScanCommand extends GeneralScanCommand {
             throw new CommandLineArgumentException(MSG_ERR_MISSING_USER_PASSWORD);
         }
 
-        if (scParams.isOsaEnabled() && scParams.getLocationType() != LocationType.folder && scParams.getLocationType() != LocationType.shared) {
-            throw new CommandLineArgumentException(PARAM_ENABLE_OSA.getOpt() + " should be specified only when " + PARAM_LOCATION_TYPE.getOpt() + " is folder/shared");
-
+        if (scParams.isOsaEnabled() && (scParams.getLocationPath() == null || (scParams.getLocationType() != LocationType.folder && scParams.getLocationType() != LocationType.shared))) {
+            throw new CommandLineArgumentException(PARAM_ENABLE_OSA.getOpt() + " should be specified only when " + PARAM_OSA_LOCATION_PATH.getOpt() + " is specified or when " +
+                    PARAM_LOCATION_TYPE.getOpt() + " is folder/shared"); //TODO Sigal
         }
-
     }
 
     @Override

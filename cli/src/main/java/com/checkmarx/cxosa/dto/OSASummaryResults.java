@@ -17,9 +17,9 @@ public class OSASummaryResults {
     private int vulnerableAndUpdated;
     private int vulnerableAndOutdated;
     private String vulnerabilityScore;
-    private int highVulnerabilities;
-    private int mediumVulnerabilities;
-    private int lowVulnerabilities;
+    private int totalHighVulnerabilities;
+    private int totalMediumVulnerabilities;
+    private int totalLowVulnerabilities;
     private String analyzeTime;
 
     public int getTotalLibraries() {
@@ -86,28 +86,28 @@ public class OSASummaryResults {
         this.vulnerabilityScore = vulnerabilityScore;
     }
 
-    public int getHighVulnerabilities() {
-        return highVulnerabilities;
+    public int getTotalHighVulnerabilities() {
+        return totalHighVulnerabilities;
     }
 
-    public void setHighVulnerabilities(int highVulnerabilities) {
-        this.highVulnerabilities = highVulnerabilities;
+    public void setTotalHighVulnerabilities(int totalHighVulnerabilities) {
+        this.totalHighVulnerabilities = totalHighVulnerabilities;
     }
 
-    public int getMediumVulnerabilities() {
-        return mediumVulnerabilities;
+    public int getTotalMediumVulnerabilities() {
+        return totalMediumVulnerabilities;
     }
 
-    public void setMediumVulnerabilities(int mediumVulnerabilities) {
-        this.mediumVulnerabilities = mediumVulnerabilities;
+    public void setTotalMediumVulnerabilities(int totalMediumVulnerabilities) {
+        this.totalMediumVulnerabilities = totalMediumVulnerabilities;
     }
 
-    public int getLowVulnerabilities() {
-        return lowVulnerabilities;
+    public int getTotalLowVulnerabilities() {
+        return totalLowVulnerabilities;
     }
 
-    public void setLowVulnerabilities(int lowVulnerabilities) {
-        this.lowVulnerabilities = lowVulnerabilities;
+    public void setTotalLowVulnerabilities(int totalLowVulnerabilities) {
+        this.totalLowVulnerabilities = totalLowVulnerabilities;
     }
 
     public String getAnalyzeTime() {

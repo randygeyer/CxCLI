@@ -21,10 +21,10 @@ public class OsaScanCommand extends ScanCommand {
 
     @Override
     public String getUsageExamples() {
-        return "\n\nrunCxConsole.cmd OsaScan -Projectname SP\\Cx\\Engine\\AST -CxServer http://localhost -cxuser admin -cxpassword admin -locationType folder -locationpath C:\\cx  -OsaFilesExclude *.class OsaPathExclude src,temp -verbose \n"
-                + "runCxConsole.cmd  OsaScan -projectname SP\\Cx\\Engine\\AST -cxserver http://localhost -cxuser admin -cxpassword admin -locationtype folder -locationurl http://vsts2003:8080 -locationuser dm\\matys -locationpassword XYZ  -OsaReportPDF -\n"
-                + "runCxConsole.cmd  OsaScan -projectname SP\\Cx\\Engine\\AST -cxserver http://localhost -cxuser admin -cxpassword admin -locationtype shared -locationpath '\\storage\\path1;\\storage\\path2' -locationuser dm\\matys -locationpassword XYZ  -OsaReportPDF -OsaReportHTML -verbose -log a.log\n \n"
-                + "runCxConsole.cmd  OsaScan -Projectname CxServer\\SP\\Company\\my project -CxServer http://localhost -cxuser admin -cxpassword admin -locationtype folder -locationpath C:\\Users\\some_project -OsaFilesExclude *.bat -OsaReportPDF -v";
+        return "\n\nrunCxConsole.cmd OsaScan -v -Projectname SP\\Cx\\Engine\\AST -CxServer http://localhost -cxuser admin -cxpassword admin -osaLocationPath C:\\cx  -OsaFilesExclude *.class OsaPathExclude src,temp  \n"
+                + "runCxConsole.cmd  OsaScan -v -projectname SP\\Cx\\Engine\\AST -cxserver http://localhost -cxuser admin -cxpassword admin -locationtype folder -locationurl http://vsts2003:8080 -locationuser dm\\matys -locationpassword XYZ  -OsaReportPDF -\n"
+                + "runCxConsole.cmd  OsaScan -v -projectname SP\\Cx\\Engine\\AST -cxserver http://localhost -cxuser admin -cxpassword admin -locationtype shared -locationpath '\\storage\\path1;\\storage\\path2' -locationuser dm\\matys -locationpassword XYZ  -OsaReportPDF -OsaReportHTML -log a.log\n \n"
+                + "runCxConsole.cmd  OsaScan -v -Projectname CxServer\\SP\\Company\\my project -CxServer http://localhost -cxuser admin -cxpassword admin -locationtype folder -locationpath C:\\Users\\some_project -OsaFilesExclude *.bat -OsaReportPDF";
     }
 
     @Override
@@ -41,8 +41,8 @@ public class OsaScanCommand extends ScanCommand {
     @Override
     public void checkParameters() throws CommandLineArgumentException {
         super.checkParameters();
-        if (scParams.getLocationType() != LocationType.folder && scParams.getLocationType() != LocationType.shared) {
-            throw new CommandLineArgumentException("When running " + getCommandName() + ", the " + PARAM_LOCATION_TYPE.getOpt() + " should be folder/shared and the " + PARAM_LOCATION_PATH.getOpt() + " should be specified as well");
+        if (scParams.getOsaLocationPath() == null || (scParams.getLocationType() != LocationType.folder && scParams.getLocationType() != LocationType.shared)) {
+            throw new CommandLineArgumentException("When running " + getCommandName() + ", " + PARAM_OSA_LOCATION_PATH.getOpt() + "should be specify. If not, the" + PARAM_LOCATION_TYPE.getOpt() + " should be folder/shared and the " + PARAM_LOCATION_PATH.getOpt() + " should be specified as well"); //TODO Sigal
         }
     }
 
@@ -52,6 +52,7 @@ public class OsaScanCommand extends ScanCommand {
         osaOnly.addOption(all.getOption(PARAM_USER.getOpt()));
         osaOnly.addOption(all.getOption(PARAM_PASSWORD.getOpt()));
         osaOnly.addOption(all.getOption(PARAM_PRJ_NAME.getOpt()));
+        osaOnly.addOption(all.getOption(PARAM_OSA_LOCATION_PATH.getOpt()));
         osaOnly.addOption(all.getOption(PARAM_LOCATION_TYPE.getOpt()));
         osaOnly.addOption(all.getOption(PARAM_LOCATION_PATH.getOpt()));
         osaOnly.addOption(all.getOption(PARAM_LOG_FILE.getOpt()));
@@ -59,6 +60,7 @@ public class OsaScanCommand extends ScanCommand {
         osaOnly.addOption(all.getOption(PARAM_OSA_EXCLUDE_FOLDERS.getOpt()));
         osaOnly.addOption(all.getOption(PARAM_OSA_HTML_FILE.getOpt()));
         osaOnly.addOption(all.getOption(PARAM_OSA_PDF_FILE.getOpt()));
+        osaOnly.addOption(all.getOption(PARAM_OSA_JSON.getOpt()));
         osaOnly.addOption(all.getOption(PARAM_USE_SSO.getOpt()));
         osaOnly.addOption(all.getOption(PARAM_VERBOSE.getOpt()));
 
