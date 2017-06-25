@@ -333,8 +333,7 @@ public class ScanCommand extends GeneralScanCommand {
         }
 
         if (scParams.isOsaEnabled() && (scParams.getLocationPath() == null || (scParams.getLocationType() != LocationType.folder && scParams.getLocationType() != LocationType.shared))) {
-            throw new CommandLineArgumentException(PARAM_ENABLE_OSA.getOpt() + " should be specified only when " + PARAM_OSA_LOCATION_PATH.getOpt() + " is specified or when " +
-                    PARAM_LOCATION_TYPE.getOpt() + " is folder/shared"); //TODO Sigal
+            throw new CommandLineArgumentException("For OSA Scan ("+PARAM_ENABLE_OSA.getOpt()+"), provide  "+PARAM_OSA_LOCATION_PATH.getOpt()+"  or "+ PARAM_LOCATION_TYPE.getOpt() +" ( values: folder/shared)");
         }
     }
 

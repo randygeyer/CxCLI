@@ -42,7 +42,7 @@ public class OsaScanCommand extends ScanCommand {
     public void checkParameters() throws CommandLineArgumentException {
         super.checkParameters();
         if (scParams.getOsaLocationPath() == null || (scParams.getLocationType() != LocationType.folder && scParams.getLocationType() != LocationType.shared)) {
-            throw new CommandLineArgumentException("When running " + getCommandName() + ", " + PARAM_OSA_LOCATION_PATH.getOpt() + "should be specify. If not, the" + PARAM_LOCATION_TYPE.getOpt() + " should be folder/shared and the " + PARAM_LOCATION_PATH.getOpt() + " should be specified as well"); //TODO Sigal
+            throw new CommandLineArgumentException("For OSA Scan ("+Commands.OSASCAN.value()+"), provide  "+PARAM_OSA_LOCATION_PATH.getOpt()+"  or "+ PARAM_LOCATION_TYPE.getOpt() +" ( values: folder/shared)");
         }
     }
 
