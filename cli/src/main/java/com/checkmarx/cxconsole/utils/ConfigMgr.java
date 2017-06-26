@@ -33,10 +33,6 @@ public class ConfigMgr {
 	public static String KEY_OSA_MAX_ZIP_SIZE 		=	"scan.osa.zip.max_size";
 	public static String KEY_DEF_LOG_NAME 			=	"scan.log.default.filename";
 	public static String KEY_DEF_PROJECT_NAME 		=	"scan.default.projectname";
-	public static String KEY_FILE_APP_PATTERN 		=	"scan.log.appender.file.pattern";
-	public static String KEY_FILE_APP_MAX_SIZE 		=	"scan.log.appender.file.max_size";
-	public static String KEY_FILE_APP_MAX_ROLLS 	=	"scan.log.appender.file.max_rolls";
-	public static String KEY_CLI_APP_PATTERN 		=	"scan.log.appender.console.pattern";
 	public static String KEY_VERSION 				=	"cxconsole.version";
 	public static String KEY_USE_KERBEROS_AUTH		=	"use_kerberos_authentication";
 	public static String KEY_KERBEROS_USERNAME		=	"kerberos.username";
@@ -84,10 +80,6 @@ public class ConfigMgr {
         applicationProperties.put(KEY_OSA_MAX_ZIP_SIZE, "2000");
 		applicationProperties.put(KEY_DEF_LOG_NAME, "cx_scan.log");
 		applicationProperties.put(KEY_DEF_PROJECT_NAME, "console.project");
-		applicationProperties.put(KEY_FILE_APP_PATTERN, "%d{ISO8601} [%t] (%F\\:%L) %-5p - %m%n");
-		applicationProperties.put(KEY_CLI_APP_PATTERN, "[%d{ISO8601} %-5p] %m%n");
-		applicationProperties.put(KEY_FILE_APP_MAX_SIZE, "10MB");
-		applicationProperties.put(KEY_FILE_APP_MAX_ROLLS, "10");
 		applicationProperties.put(KEY_VERSION, "7.1");
 		applicationProperties.put(KEY_USE_KERBEROS_AUTH, "false");
 		applicationProperties.put(KEY_KERBEROS_USERNAME, "");
