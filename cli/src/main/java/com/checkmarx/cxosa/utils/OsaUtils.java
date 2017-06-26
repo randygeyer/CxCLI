@@ -20,7 +20,7 @@ public abstract class OsaUtils {
     private static Logger log;
     private static final String TEMP_FILE_NAME_TO_ZIP = "CxZippedSource";
 
-    public static File zipWorkspaceFolder(String fileExcluded, String folderExclusions, long maxZipSizeInBytes, String path, Logger log)
+    public static File zipWorkspaceFolder(String fileExcluded, String folderExclusions, long maxZipSizeInBytes, String path, final Logger log)
             throws InterruptedException, IOException {
 
         String combinedFilterPattern = generatePattern(folderExclusions, fileExcluded + ", Checkmarx/Reports/*.*");
@@ -28,6 +28,7 @@ public abstract class OsaUtils {
         ZipListener zipListener = new ZipListener() {
             public void updateProgress(String fileName, long size) {
                 numOfZippedFiles++;
+                log.debug("Zipping (" + FileUtils.byteCountToDisplaySize(size) + "): " + fileName);
             }
         };
 
