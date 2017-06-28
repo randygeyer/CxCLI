@@ -214,7 +214,7 @@ public class CxScanJob implements Callable<Integer> {
 		return normalPathName;
 	}
 	
-	private String initFilePath(String fileName, String extention, String parentDirectoryPath) {
+	public String initFilePath(String fileName, String extention, String parentDirectoryPath) {
 		String resultFilePath = "";
 		
 		File resultFile = new File(fileName);

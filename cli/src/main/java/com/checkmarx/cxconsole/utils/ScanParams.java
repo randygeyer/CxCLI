@@ -54,9 +54,9 @@ public class ScanParams {
     private String osaLocationPath;
     private String[] osaExcludedFolders = new String[]{};
     private String[] osaExcludedFiles = new String[]{};
-    private boolean osaReportPDF = false;
-    private boolean osaReportHTML = false;
-    private boolean osaJson = false;
+    private String osaReportPDF;
+    private String osaReportHTML;
+    private String osaJson;
 
     public ScanParams(CommandLine commandLine) {
         this.host = commandLine.getOptionValue(PARAM_HOST.getOpt());
@@ -176,9 +176,17 @@ public class ScanParams {
         osaLocationPath = commandLine.getOptionValue(PARAM_OSA_LOCATION_PATH.getOpt());
         osaExcludedFiles = commandLine.getOptionValues(PARAM_OSA_EXCLUDE_FILES.getOpt());
         osaExcludedFolders = commandLine.getOptionValues(PARAM_OSA_EXCLUDE_FOLDERS.getOpt());
-        osaReportHTML = commandLine.hasOption((PARAM_OSA_HTML_FILE.getOpt()));
-        osaReportPDF = commandLine.hasOption(PARAM_OSA_PDF_FILE.getOpt());
-        osaJson = commandLine.hasOption(PARAM_OSA_JSON.getOpt());
+        osaReportHTML = getOptionalValue(commandLine, PARAM_OSA_HTML_FILE.getOpt());
+        osaReportPDF = getOptionalValue(commandLine, PARAM_OSA_PDF_FILE.getOpt());
+        osaJson = getOptionalValue(commandLine, PARAM_OSA_JSON.getOpt());
+    }
+
+    private String getOptionalValue(CommandLine commandLine, String opt) {
+        String ret = commandLine.getOptionValue(opt);
+        if (ret == null && commandLine.hasOption(opt)) {
+            ret = "";
+        }
+        return ret;
     }
 
     public String getHost() {
@@ -441,27 +449,27 @@ public class ScanParams {
         this.osaExcludedFiles = osaExcludedFiles;
     }
 
-    public boolean isOsaReportPDF() {
+    public String getOsaReportPDF() {
         return osaReportPDF;
     }
 
-    public void setOsaReportPDF(boolean osaReportPDF) {
+    public void setOsaReportPDF(String osaReportPDF) {
         this.osaReportPDF = osaReportPDF;
     }
 
-    public boolean isOsaReportHTML() {
+    public String getOsaReportHTML() {
         return osaReportHTML;
     }
 
-    public void setOsaReportHTML(boolean osaReportHTML) {
+    public void setOsaReportHTML(String osaReportHTML) {
         this.osaReportHTML = osaReportHTML;
     }
 
-    public boolean isOsaJson() {
+    public String getOsaJson() {
         return osaJson;
     }
 
-    public void setOsaJson(boolean osaJson) {
+    public void setOsaJson(String osaJson) {
         this.osaJson = osaJson;
     }
 }

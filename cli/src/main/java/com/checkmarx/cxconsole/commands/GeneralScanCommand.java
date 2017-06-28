@@ -25,9 +25,9 @@ public abstract class GeneralScanCommand extends VerboseCommand {
     public static final Option PARAM_EXCLUDE_FOLDERS = OptionBuilder.hasArgs().withArgName("folders list").withDescription("Comma separated list of folder path patterns to exclude from scan. Example: '-LocationPathExclude test*' excludes all folders which start with 'test' prefix. Optional.").withValueSeparator(',').create("LocationPathExclude");
     public static final Option PARAM_EXCLUDE_FILES = OptionBuilder.hasArgs().withArgName("files list").withDescription("Comma separated list of file name patterns to exclude from scan. Example: '-LocationFilesExclude *.class' excludes all files with '.class' extension. Optional.").withValueSeparator(',').create("LocationFilesExclude");
 
-	public static final Option PARAM_OSA_PDF_FILE = OptionBuilder.withDescription("Generate OSA PDF report . Optional.").create("OsaReportPDF");
-	public static final Option PARAM_OSA_HTML_FILE = OptionBuilder.withDescription("Generate OSA HTML report. Optional.").create("OsaReportHTML");
-	public static final Option PARAM_OSA_JSON = OptionBuilder.withDescription("Provides OSA scan results (libraries and vulnerabilities) in Json format. Optional.").create("OsaJson");
+	public static final Option PARAM_OSA_PDF_FILE = OptionBuilder.hasOptionalArg().withArgName("file").withDescription("Name or path to OSA PDF report . Optional.").create("OsaReportPDF");
+	public static final Option PARAM_OSA_HTML_FILE = OptionBuilder.hasOptionalArg().withArgName("file").withDescription("Name or path to OSA HTML report. Optional.").create("OsaReportHTML");
+	public static final Option PARAM_OSA_JSON = OptionBuilder.hasOptionalArg().withArgName("file").withDescription("Name or path to OSA scan results (libraries and vulnerabilities) in Json format. Optional.").create("OsaJson");
 
 	public static final Option PARAM_OSA_EXCLUDE_FILES = OptionBuilder.hasArgs().withArgName("files list").withDescription("Comma separated list of file name patterns to exclude from OSA scan. Example: '-OsaFilesExclude *.class' excludes all files with '.class' extension. Optional.").withValueSeparator(',').create("OsaFilesExclude");
 	public static final Option PARAM_OSA_EXCLUDE_FOLDERS = OptionBuilder.hasArgs().withArgName("folders list").withDescription("Comma separated list of folder path patterns to exclude from OSA scan. Example: '-OsaPathExclude test' excludes all folders which start with 'test' prefix. Optional.").withValueSeparator(',').create("OsaPathExclude");

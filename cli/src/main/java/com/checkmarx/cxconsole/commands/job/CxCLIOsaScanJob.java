@@ -66,7 +66,7 @@ public class CxCLIOsaScanJob extends CxScanJob {
 
             OsaUtils.setLogger(log);
             String osaLocationPath = params.getOsaLocationPath() != null ? params.getOsaLocationPath() : params.getLocationPath();
-            log.info("OSA path location: " + osaLocationPath);
+            log.info("OSA source location: " + osaLocationPath);
             log.info("Zipping dependencies");
             File zipForOSA = OsaUtils.zipWorkspaceFolder(StringUtils.join(params.getOsaExcludedFiles(), ','), StringUtils.join(params.getOsaExcludedFolders(), ','), maxZipSize, osaLocationPath, log);
             log.info("Sending OSA scan request");
@@ -90,26 +90,29 @@ public class CxCLIOsaScanJob extends CxScanJob {
             printOSAResultsToConsole(osaSummaryResults, osaProjectSummaryLink);
 
             //OSA reports
-            boolean hasHtmlReport = params.isOsaReportHTML();
-            boolean hasPdfReport = params.isOsaReportPDF();
-            boolean hasJson = params.isOsaJson();
+            String htmlFile = params.getOsaReportHTML();
+            String pdfFile = params.getOsaReportPDF();
+            String jsonFile = params.getOsaJson();
             try {
-                if (hasHtmlReport || hasPdfReport || hasJson) {
+                if (!StringUtils.isEmpty(htmlFile + pdfFile + jsonFile)) {
                     log.info("Creating CxOSA reports");
+                    log.info("-----------------------");
                     workDirectory = gerWorkDirectory();
-                    SimpleDateFormat ft = new SimpleDateFormat("dd_MM_yyyy-HH_mm_ss");
-                    String now = ft.format(new Date());
+
                     //OSA HTML report
-                    if (hasHtmlReport) {
-                        restClient.createOsaHtmlReport(osaScan.getScanId(), now, workDirectory);
+                    if (htmlFile != null) {
+                        String resultFilePath = initFilePath(htmlFile, ".html" , workDirectory);
+                        restClient.createOsaHtmlReport(osaScan.getScanId(), resultFilePath, workDirectory);
                     }
                     //OSA PDF report
-                    if (hasPdfReport) {
-                        restClient.createOsaPdfReport(osaScan.getScanId(), now, workDirectory);
+                    if (pdfFile != null) {
+                        String resultFilePath = initFilePath(pdfFile, ".pdf" , workDirectory);
+                        restClient.createOsaPdfReport(osaScan.getScanId(), resultFilePath, workDirectory);
                     }
                     //OSA json reports
-                    if (hasJson) {
-                        restClient.createOsaJson(osaScan.getScanId(), now, workDirectory, osaSummaryResults);
+                    if (jsonFile != null) {
+                        String resultFilePath = initFilePath(jsonFile, ".json" , workDirectory);
+                        restClient.createOsaJson(osaScan.getScanId(), resultFilePath, workDirectory, osaSummaryResults);
                     }
                 }
             } catch (Exception e) {

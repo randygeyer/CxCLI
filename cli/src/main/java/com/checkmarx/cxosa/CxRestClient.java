@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.*;
@@ -56,13 +57,14 @@ public class CxRestClient {
     private static final String OSA_ZIPPED_FILE_KEY_NAME = "OSAZippedSourceCode";
     private static final String ROOT_PATH = "CxRestAPI";
     private static final String CSRF_TOKEN_HEADER = "CXCSRFToken";
-    private static final String OSA_REPORT_NAME = "CxOSAReport";
-    private static final String CX_REPORT_LOCATION = File.separator + "Reports";
+    private static final String OSA_REPORT_NAME = File.separator + "CxOSAReport";
+    private static final String DEFAULT_REPORT_LOCATION = File.separator + "CxReports";
+
     public static final String ITEM_PER_PAGE_QUERY_PARAM = "&itemsPerPage=";
     public static final long MAX_ITEMS = 1000000;
-    public static final String OSA_SUMMARY_NAME = "CxOSASummary";
-    public static final String OSA_LIBRARIES_NAME = "CxOSALibraries";
-    public static final String OSA_VULNERABILITIES_NAME = "CxOSAVulnerabilities";
+    public static final String OSA_SUMMARY_NAME = File.separator + "CxOSASummary";
+    public static final String OSA_LIBRARIES_NAME = File.separator + "CxOSALibraries";
+    public static final String OSA_VULNERABILITIES_NAME = File.separator + "CxOSAVulnerabilities";
     private ObjectMapper objectMapper = new ObjectMapper();
 
     private HttpClient apacheClient;
@@ -191,7 +193,7 @@ public class CxRestClient {
 
     public OSASummaryResults getOSAScanSummaryResults(String scanId) throws CxClientException, IOException {
 
-        String relativePath =  OSA_SCAN_SUMMARY_PATH + SCAN_ID_QUERY_PARAM + scanId;
+        String relativePath = OSA_SCAN_SUMMARY_PATH + SCAN_ID_QUERY_PARAM + scanId;
         HttpGet getRequest = createHttpRequest(relativePath, "application/json");
         HttpResponse response = null;
 
@@ -209,7 +211,7 @@ public class CxRestClient {
     private String getOSAScanHTMLResults(String scanId) throws CxClientException, IOException {
 
         String relativePath = OSA_SCAN_SUMMARY_PATH + SCAN_ID_QUERY_PARAM + scanId;;
-        HttpGet getRequest =  createHttpRequest(relativePath, "text/html");
+        HttpGet getRequest = createHttpRequest(relativePath, "text/html");
         HttpResponse response = null;
         try {
             response = apacheClient.execute(getRequest);
@@ -224,7 +226,7 @@ public class CxRestClient {
     }
 
     private byte[] getOSAScanPDFResults(String scanId) throws CxClientException, IOException {
-        String relativePath =  OSA_SCAN_SUMMARY_PATH + SCAN_ID_QUERY_PARAM + scanId;
+        String relativePath = OSA_SCAN_SUMMARY_PATH + SCAN_ID_QUERY_PARAM + scanId;
         HttpGet getRequest = createHttpRequest(relativePath, "application/pdf");
         HttpResponse response = null;
 
@@ -238,36 +240,52 @@ public class CxRestClient {
         }
     }
 
-    public void createOsaHtmlReport(String scanId, String now, String workDirectory) throws IOException, CxClientException {
+    public void createOsaHtmlReport(String scanId, String filePath, String workDirectory) throws IOException, CxClientException {
         String osaHtml = getOSAScanHTMLResults(scanId);
-        String htmlFileName = OSA_REPORT_NAME + "_" + now + ".html" ;
-        FileUtils.writeStringToFile(new File(workDirectory + CX_REPORT_LOCATION, htmlFileName), osaHtml, Charset.defaultCharset());
-        log.info("OSA HTML report location: " + workDirectory + CX_REPORT_LOCATION + File.separator + htmlFileName);
+        writeReport(osaHtml, filePath, OSA_REPORT_NAME  + ".html", "HTML report", workDirectory);
     }
 
-    public void createOsaPdfReport(String scanId, String now, String workDirectory) throws IOException, CxClientException {
+
+    public void createOsaPdfReport(String scanId, String filePath, String workDirectory) throws IOException, CxClientException {
         byte[] osaPDF = getOSAScanPDFResults(scanId);
-        String pdfFileName = OSA_REPORT_NAME + "_" + now + ".pdf" ;
-        FileUtils.writeByteArrayToFile(new File(workDirectory + CX_REPORT_LOCATION, pdfFileName), osaPDF);
-        log.info("OSA PDF report location: " + workDirectory + CX_REPORT_LOCATION + File.separator + pdfFileName);
+        writeReport(osaPDF, filePath, OSA_REPORT_NAME + ".pdf", "PDF report", workDirectory);
+    }
 
-}
+    public void createOsaJson(String scanId, String filePath, String workDirectory, OSASummaryResults osaSummaryResults) throws IOException, CxClientException {
 
-    public void createOsaJson(String scanId, String now, String workDirectory, OSASummaryResults osaSummaryResults) throws IOException, CxClientException {
-        String fileName = OSA_SUMMARY_NAME + "_" + now + ".json";
-        objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(workDirectory + CX_REPORT_LOCATION, fileName), osaSummaryResults);
-        log.info("OSA summary json location: " + workDirectory + CX_REPORT_LOCATION + File.separator + fileName);
+        String specificFilePath = filePath.replace(".json", "_" + OSA_SUMMARY_NAME + ".json");
+        writeReport(osaSummaryResults, specificFilePath, OSA_SUMMARY_NAME  + ".json", "summary json", workDirectory);
 
         List<Library> libraries = getOSALibraries(scanId);
-        fileName = OSA_LIBRARIES_NAME + "_" + now + ".json";
-        objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(workDirectory + CX_REPORT_LOCATION, fileName), libraries);
-        log.info("OSA libraries json location: " + workDirectory + CX_REPORT_LOCATION + File.separator + fileName);
+        specificFilePath = filePath.replace(".json", "_" + OSA_LIBRARIES_NAME + ".json");
+        writeReport(libraries, specificFilePath, OSA_LIBRARIES_NAME  + ".json", "libraries json", workDirectory);
 
         List<CVE> osaVulnerabilities = getOSAVulnerabilities(scanId);
-        fileName = OSA_VULNERABILITIES_NAME + "_" + now + ".json";
-        objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(workDirectory + CX_REPORT_LOCATION, fileName), osaVulnerabilities);
-        log.info("OSA vulnerabilities json location: " + workDirectory + CX_REPORT_LOCATION + File.separator + fileName);
+        specificFilePath = filePath.replace(".json", "_" + OSA_VULNERABILITIES_NAME + ".json");
+        writeReport(osaVulnerabilities, specificFilePath, OSA_VULNERABILITIES_NAME + ".json", "vulnerabilities json", workDirectory);
+    }
 
+    private void writeReport(Object data, String filePath, String fileName, String toLog, String workDirectory) throws IOException {
+        File file;
+
+        file = new File(filePath);
+        if (!file.canExecute()) {
+            String defaultPath = workDirectory + DEFAULT_REPORT_LOCATION + fileName;
+            log.warn("The path you have specified for the " + toLog + " is invalid.");
+            file = new File(defaultPath);
+        }
+
+        switch (FilenameUtils.getExtension(fileName)) {
+            case ("html"):
+                FileUtils.writeStringToFile(file, (String) data, Charset.defaultCharset());
+                break;
+            case ("pdf"):
+                FileUtils.writeByteArrayToFile(file, (byte[]) data);
+                break;
+            case ("json"):
+                objectMapper.writerWithDefaultPrettyPrinter().writeValue(file, data);
+        }
+        log.info("OSA " + toLog + " location: " + file.getAbsolutePath());
     }
 
     private List<Library> getOSALibraries(String scanId) throws CxClientException, IOException {
@@ -314,7 +332,7 @@ public class CxRestClient {
 
 
         if (response.getStatusLine().getStatusCode() != status) {
-            ErrorMessage errMsg= convertToObject(response, ErrorMessage.class);
+            ErrorMessage errMsg = convertToObject(response, ErrorMessage.class);
             throw new CxClientException(message + ": " + "status code: " + response.getStatusLine().getStatusCode() + ". reason phrase: " + errMsg.getMessageDetails());
         }
     }
