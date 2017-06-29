@@ -94,7 +94,7 @@ public class CxCLIOsaScanJob extends CxScanJob {
             String pdfFile = params.getOsaReportPDF();
             String jsonFile = params.getOsaJson();
             try {
-                if (!StringUtils.isEmpty(htmlFile + pdfFile + jsonFile)) {
+                if (htmlFile!= null || pdfFile != null || jsonFile!= null) {
                     log.info("Creating CxOSA reports");
                     log.info("-----------------------");
                     workDirectory = gerWorkDirectory();
