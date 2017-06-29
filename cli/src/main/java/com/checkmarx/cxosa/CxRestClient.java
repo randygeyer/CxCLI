@@ -269,7 +269,7 @@ public class CxRestClient {
         File file;
 
         file = new File(filePath);
-        if (!file.canExecute()) {
+        if (!file.isFile()) {
             String defaultPath = workDirectory + DEFAULT_REPORT_LOCATION + fileName;
             log.warn("The path you have specified for the " + toLog + " is invalid.");
             file = new File(defaultPath);

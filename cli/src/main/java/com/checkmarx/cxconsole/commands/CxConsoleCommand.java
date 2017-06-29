@@ -60,7 +60,7 @@ public abstract class CxConsoleCommand {
 	}
 
 
-    public void parseArguments(String[] args) throws ParseException
+    public void parseArguments(String[] args, Logger log) throws ParseException
     {
         CommandLineParser parser = new BasicParser();
         commandLineArguments = parser.parse(commandLineOptions, args,true);
