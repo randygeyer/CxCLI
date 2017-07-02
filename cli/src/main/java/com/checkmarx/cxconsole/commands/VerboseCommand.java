@@ -31,7 +31,7 @@ public abstract class VerboseCommand extends CxConsoleCommand {
 	@Override
 	protected void initLogging() {
 		if (commandLineArguments.hasOption(PARAM_VERBOSE.getOpt())) {
-			log = CxConsoleLoggerFactory.getLoggerFactory().getLogger();
+			log = CxConsoleLoggerFactory.getLoggerFactory().getLogger(getLogFileLocation());
 		} else {
 			log = Logger.getLogger("com.checkmarx.cxconsole.commands");
 			log.setLevel(Level.ERROR);
@@ -43,6 +43,13 @@ public abstract class VerboseCommand extends CxConsoleCommand {
 		log.removeAllAppenders();
 		//LogManager.shutdown();
 	}
+
+	/**
+	 * Method defining log file location. All ancestors should implement.
+	 *
+	 * @return <code>String</code> - log file location
+	 */
+	protected abstract String getLogFileLocation();
 	
 
 }

@@ -269,7 +269,7 @@ public class CxRestClient {
         File file;
 
         file = new File(filePath);
-        if (!file.isFile()) {
+        if (!isFilenameValid(file) || file.isDirectory() || StringUtils.isEmpty(filePath)) {
             String defaultPath = workDirectory + DEFAULT_REPORT_LOCATION + fileName;
             log.warn("The path you have specified for the " + toLog + " is invalid.");
             file = new File(defaultPath);
@@ -286,6 +286,15 @@ public class CxRestClient {
                 objectMapper.writerWithDefaultPrettyPrinter().writeValue(file, data);
         }
         log.info("OSA " + toLog + " location: " + file.getAbsolutePath());
+    }
+
+    private boolean isFilenameValid(File f) {
+        try {
+            f.getCanonicalPath();
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     private List<Library> getOSALibraries(String scanId) throws CxClientException, IOException {

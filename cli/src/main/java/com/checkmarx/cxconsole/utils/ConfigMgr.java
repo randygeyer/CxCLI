@@ -33,10 +33,15 @@ public class ConfigMgr {
 	public static String KEY_OSA_MAX_ZIP_SIZE 		=	"scan.osa.zip.max_size";
 	public static String KEY_DEF_LOG_NAME 			=	"scan.log.default.filename";
 	public static String KEY_DEF_PROJECT_NAME 		=	"scan.default.projectname";
+	public static String KEY_FILE_APP_PATTERN 		=	"scan.log.appender.file.pattern";
+	public static String KEY_FILE_APP_MAX_SIZE 		=	"scan.log.appender.file.max_size";
+	public static String KEY_FILE_APP_MAX_ROLLS 	=	"scan.log.appender.file.max_rolls";
+	public static String KEY_CLI_APP_PATTERN 		=	"scan.log.appender.console.pattern";
 	public static String KEY_VERSION 				=	"cxconsole.version";
 	public static String KEY_USE_KERBEROS_AUTH		=	"use_kerberos_authentication";
 	public static String KEY_KERBEROS_USERNAME		=	"kerberos.username";
 	public static String KEY_KERBEROS_PASSWORD		=	"kerberos.password";
+
 
 	private String CONFIG_DIR_RELATIVE_PATH = "/config";
 	private String CONFIG_FILE = "/cx_console.properties";
