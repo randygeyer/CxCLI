@@ -23,7 +23,7 @@ public abstract class OsaUtils {
     public static File zipWorkspaceFolder(String fileExcluded, String folderExclusions, long maxZipSizeInBytes, String path, final Logger log)
             throws InterruptedException, IOException {
 
-        String combinedFilterPattern = generatePattern(folderExclusions, fileExcluded + ", CxReports/*.*");
+        String combinedFilterPattern = generatePattern(folderExclusions, fileExcluded);
 
         ZipListener zipListener = new ZipListener() {
             public void updateProgress(String fileName, long size) {

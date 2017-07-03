@@ -57,8 +57,6 @@ public class CxRestClient {
     private static final String OSA_ZIPPED_FILE_KEY_NAME = "OSAZippedSourceCode";
     private static final String ROOT_PATH = "CxRestAPI";
     private static final String CSRF_TOKEN_HEADER = "CXCSRFToken";
-    private static final String OSA_REPORT_NAME = "CxOSAReport";
-    private static final String DEFAULT_REPORT_LOCATION = File.separator + "CxReports";
 
     public static final String ITEM_PER_PAGE_QUERY_PARAM = "&itemsPerPage=";
     public static final long MAX_ITEMS = 1000000;
@@ -240,42 +238,35 @@ public class CxRestClient {
         }
     }
 
-    public void createOsaHtmlReport(String scanId, String filePath, String workDirectory) throws IOException, CxClientException {
+    public void createOsaHtmlReport(String scanId, String filePath) throws IOException, CxClientException {
         String osaHtml = getOSAScanHTMLResults(scanId);
-        writeReport(osaHtml, filePath, OSA_REPORT_NAME  + ".html", "HTML report", workDirectory);
+        writeReport(osaHtml, filePath, "HTML report");
     }
 
 
-    public void createOsaPdfReport(String scanId, String filePath, String workDirectory) throws IOException, CxClientException {
+    public void createOsaPdfReport(String scanId, String filePath) throws IOException, CxClientException {
         byte[] osaPDF = getOSAScanPDFResults(scanId);
-        writeReport(osaPDF, filePath, OSA_REPORT_NAME + ".pdf", "PDF report", workDirectory);
+        writeReport(osaPDF, filePath, "PDF report");
     }
 
-    public void createOsaJson(String scanId, String filePath, String workDirectory, OSASummaryResults osaSummaryResults) throws IOException, CxClientException {
+    public void createOsaJson(String scanId, String filePath, OSASummaryResults osaSummaryResults) throws IOException, CxClientException {
 
         String specificFilePath = filePath.replace(".json", "_" + OSA_SUMMARY_NAME + ".json");
-        writeReport(osaSummaryResults, specificFilePath, OSA_SUMMARY_NAME  + ".json", "summary json", workDirectory);
+        writeReport(osaSummaryResults, specificFilePath, "summary json");
 
         List<Library> libraries = getOSALibraries(scanId);
         specificFilePath = filePath.replace(".json", "_" + OSA_LIBRARIES_NAME + ".json");
-        writeReport(libraries, specificFilePath, OSA_LIBRARIES_NAME  + ".json", "libraries json", workDirectory);
+        writeReport(libraries, specificFilePath, "libraries json");
 
         List<CVE> osaVulnerabilities = getOSAVulnerabilities(scanId);
         specificFilePath = filePath.replace(".json", "_" + OSA_VULNERABILITIES_NAME + ".json");
-        writeReport(osaVulnerabilities, specificFilePath, File.separator + OSA_VULNERABILITIES_NAME + ".json", "vulnerabilities json", workDirectory);
+        writeReport(osaVulnerabilities, specificFilePath, "vulnerabilities json");
     }
 
-    private void writeReport(Object data, String filePath, String fileName, String toLog, String workDirectory) throws IOException {
-        File file;
+    private void writeReport(Object data, String filePath, String toLog) throws IOException {
+        File file = new File(filePath);
 
-        file = new File(filePath);
-        if (!isFilenameValid(file) || file.isDirectory() || StringUtils.isEmpty(filePath)) {
-            String defaultPath = workDirectory + DEFAULT_REPORT_LOCATION +File.separator + fileName;
-            log.warn("The path you have specified for the " + toLog + " is invalid.");
-            file = new File(defaultPath);
-        }
-
-        switch (FilenameUtils.getExtension(fileName)) {
+        switch (FilenameUtils.getExtension(filePath)) {
             case ("html"):
                 FileUtils.writeStringToFile(file, (String) data, Charset.defaultCharset());
                 break;
@@ -284,18 +275,15 @@ public class CxRestClient {
                 break;
             case ("json"):
                 objectMapper.writerWithDefaultPrettyPrinter().writeValue(file, data);
+                break;
+            default:
+                log.error("OSA " + toLog + " location is invalid" );
+                return;
         }
         log.info("OSA " + toLog + " location: " + file.getAbsolutePath());
     }
 
-    private boolean isFilenameValid(File f) {
-        try {
-            f.getCanonicalPath();
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
-    }
+
 
     private List<Library> getOSALibraries(String scanId) throws CxClientException, IOException {
 
@@ -339,10 +327,10 @@ public class CxRestClient {
 
     private void validateResponse(HttpResponse response, int status, String message) throws CxClientException {
 
-
         if (response.getStatusLine().getStatusCode() != status) {
-            ErrorMessage errMsg = convertToObject(response, ErrorMessage.class);
-            throw new CxClientException(message + ": " + "status code: " + response.getStatusLine().getStatusCode() + ". reason phrase: " + errMsg.getMessageDetails());
+            String responseBody = response.getEntity().toString();
+            responseBody = responseBody.replace("{", "").replace("}", "").replace(System.getProperty("line.separator"), " ").replace("  ", "");
+            throw new CxClientException(message + ": " + "status code: " + response.getStatusLine() + ". error:" + responseBody);
         }
     }
 
