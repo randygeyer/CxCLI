@@ -96,35 +96,23 @@ public class CxCLIOsaScanJob extends CxScanJob {
             String jsonFile = params.getOsaJson();
             try {
                 if (htmlFile != null || pdfFile != null || jsonFile != null) {
-                    log.info("Creating CxOSA reports");
+                    log.info("Creating CxOSA Reports");
                     log.info("-----------------------");
                     workDirectory = gerWorkDirectory();
 
                     //OSA HTML report
                     if (htmlFile != null) {
-                        if (!isFilenameValid(htmlFile)) {
-                            htmlFile = OSA_REPORT_NAME + ".html";
-                            log.warn("The path you specified for the HTML Report is invalid.");
-                        }
-                        String resultFilePath = initFilePath(htmlFile, ".html", workDirectory);
+                        String resultFilePath = resolveReportPath("HTML", htmlFile, OSA_REPORT_NAME + ".html");
                         restClient.createOsaHtmlReport(osaScan.getScanId(), resultFilePath);
                     }
                     //OSA PDF report
                     if (pdfFile != null) {
-                        if (!isFilenameValid(pdfFile)) {
-                        pdfFile =  OSA_REPORT_NAME + ".pdf";
-                            log.warn("The path you specified for the PDF Report is invalid.");
-                        }
-                        String resultFilePath = initFilePath(pdfFile, ".pdf", workDirectory);
+                        String resultFilePath = resolveReportPath("PDF", pdfFile, OSA_REPORT_NAME + ".pdf");
                         restClient.createOsaPdfReport(osaScan.getScanId(), resultFilePath);
                     }
                     //OSA json reports
                     if (jsonFile != null) {
-                        if (!isFilenameValid(jsonFile)) {
-                            jsonFile = "";
-                            log.warn("The path you specified for the Json Reports is invalid.");
-                        }
-                        String resultFilePath = initFilePath(jsonFile, ".json", workDirectory);
+                        String resultFilePath = resolveReportPath("JSON", jsonFile, "");
                         restClient.createOsaJson(osaScan.getScanId(), resultFilePath, osaSummaryResults);
                     }
                 }
@@ -137,6 +125,18 @@ public class CxCLIOsaScanJob extends CxScanJob {
         }
 
         return CxConsoleCommand.CODE_OK;
+    }
+
+    private String resolveReportPath(String ext, String file, String reportName) {
+        String toLog = "";
+        if (!isFilenameValid(file)) {
+            if (!StringUtils.isEmpty(file)) {
+                toLog = "The path you specified is invalid. ";
+            }
+            file = reportName;
+            log.warn(toLog + "Using default location for " + ext + " report.");
+        }
+        return initFilePath(file, "." + ext.toLowerCase(), workDirectory);
     }
 
     private boolean isFilenameValid(String filePath) {
