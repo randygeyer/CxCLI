@@ -1,11 +1,6 @@
 package com.checkmarx.cxconsole.commands;
 
-import org.apache.commons.cli.BasicParser;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 
 import com.checkmarx.cxconsole.utils.CommandLineArgumentException;
@@ -60,7 +55,7 @@ public abstract class CxConsoleCommand {
 	}
 
 
-    public void parseArguments(String[] args, Logger log) throws ParseException
+    public void parseArguments(String[] args) throws ParseException
     {
         CommandLineParser parser = new BasicParser();
         commandLineArguments = parser.parse(commandLineOptions, args,true);
@@ -78,6 +73,7 @@ public abstract class CxConsoleCommand {
 	
 	public int execute() throws Exception {
 		initLogging();
+		printCommandsDebug();
 		try {
 			executeCommand();
 			return getErrorCode();
@@ -102,6 +98,15 @@ public abstract class CxConsoleCommand {
 	 * @return true if current key is a flag
 	 */
 	protected abstract boolean isKeyFlag(String key);
+
+
+	private void printCommandsDebug() {
+		log.debug("----------------------------Configured Commands:-----------------------------");
+		for (Option opt : commandLineArguments.getOptions()) {
+			log.debug("Option: " + opt.getOpt() + " value: " + opt.getValue());
+		}
+		log.debug("-----------------------------------------------------------------------------");
+	}
 
     public void initKerberos()
     {

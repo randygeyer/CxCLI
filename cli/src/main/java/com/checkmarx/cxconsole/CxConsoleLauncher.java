@@ -68,7 +68,7 @@ public class CxConsoleLauncher {
             }
 
             try {
-                command.parseArguments(argumentsLessCommandName, log);
+                command.parseArguments(argumentsLessCommandName);
 
                 try {
                     command.initKerberos();

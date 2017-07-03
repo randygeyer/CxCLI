@@ -10,8 +10,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.ParseException;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+
 
 public abstract class GeneralScanCommand extends VerboseCommand {
 
@@ -52,10 +51,10 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 	}
 
     @Override
-    public void parseArguments(String[] args, Logger log) throws ParseException
+    public void parseArguments(String[] args) throws ParseException
     {
-        super.parseArguments(args, log);  //  parseArguments initializes commandLineArguments
-        scParams = new ScanParams(commandLineArguments, log);
+        super.parseArguments(args);  //  parseArguments initializes commandLineArguments
+        scParams = new ScanParams(commandLineArguments);
     }
 
     private void initCommandLineOptions()

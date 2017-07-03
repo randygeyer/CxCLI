@@ -1,8 +1,6 @@
 package com.checkmarx.cxconsole.utils;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
-import org.apache.log4j.Logger;
 
 import java.io.File;
 
@@ -62,7 +60,7 @@ public class ScanParams {
     private String osaReportHTML;
     private String osaJson;
 
-    public ScanParams(CommandLine commandLine, Logger log) {
+    public ScanParams(CommandLine commandLine) {
         this.host = commandLine.getOptionValue(PARAM_HOST.getOpt());
         this.originHost = commandLine.getOptionValue(PARAM_HOST.getOpt());
         this.user = commandLine.getOptionValue(PARAM_USER.getOpt());
@@ -184,16 +182,8 @@ public class ScanParams {
         osaReportPDF = getOptionalValue(commandLine, PARAM_OSA_PDF_FILE.getOpt());
         osaJson = getOptionalValue(commandLine, PARAM_OSA_JSON.getOpt());
 
-        printCommandsDebug(commandLine, log);
     }
 
-    private void printCommandsDebug(CommandLine commandLine, Logger log) {
-        log.debug("----------------------------Configured Commands:-----------------------------");
-        for (Option opt : commandLine.getOptions()) {
-            log.debug("Option: " + opt.getOpt() + " value: " + opt.getValue());
-        }
-        log.debug("-----------------------------------------------------------------------------");
-    }
 
     private String getOptionalValue(CommandLine commandLine, String opt) {
         String ret = commandLine.getOptionValue(opt);

@@ -57,14 +57,14 @@ public class CxRestClient {
     private static final String OSA_ZIPPED_FILE_KEY_NAME = "OSAZippedSourceCode";
     private static final String ROOT_PATH = "CxRestAPI";
     private static final String CSRF_TOKEN_HEADER = "CXCSRFToken";
-    private static final String OSA_REPORT_NAME = File.separator + "CxOSAReport";
+    private static final String OSA_REPORT_NAME = "CxOSAReport";
     private static final String DEFAULT_REPORT_LOCATION = File.separator + "CxReports";
 
     public static final String ITEM_PER_PAGE_QUERY_PARAM = "&itemsPerPage=";
     public static final long MAX_ITEMS = 1000000;
-    public static final String OSA_SUMMARY_NAME = File.separator + "CxOSASummary";
-    public static final String OSA_LIBRARIES_NAME = File.separator + "CxOSALibraries";
-    public static final String OSA_VULNERABILITIES_NAME = File.separator + "CxOSAVulnerabilities";
+    public static final String OSA_SUMMARY_NAME = "CxOSASummary";
+    public static final String OSA_LIBRARIES_NAME = "CxOSALibraries";
+    public static final String OSA_VULNERABILITIES_NAME =  "CxOSAVulnerabilities";
     private ObjectMapper objectMapper = new ObjectMapper();
 
     private HttpClient apacheClient;
@@ -262,7 +262,7 @@ public class CxRestClient {
 
         List<CVE> osaVulnerabilities = getOSAVulnerabilities(scanId);
         specificFilePath = filePath.replace(".json", "_" + OSA_VULNERABILITIES_NAME + ".json");
-        writeReport(osaVulnerabilities, specificFilePath, OSA_VULNERABILITIES_NAME + ".json", "vulnerabilities json", workDirectory);
+        writeReport(osaVulnerabilities, specificFilePath, File.separator + OSA_VULNERABILITIES_NAME + ".json", "vulnerabilities json", workDirectory);
     }
 
     private void writeReport(Object data, String filePath, String fileName, String toLog, String workDirectory) throws IOException {
@@ -270,7 +270,7 @@ public class CxRestClient {
 
         file = new File(filePath);
         if (!isFilenameValid(file) || file.isDirectory() || StringUtils.isEmpty(filePath)) {
-            String defaultPath = workDirectory + DEFAULT_REPORT_LOCATION + fileName;
+            String defaultPath = workDirectory + DEFAULT_REPORT_LOCATION +File.separator + fileName;
             log.warn("The path you have specified for the " + toLog + " is invalid.");
             file = new File(defaultPath);
         }

@@ -13,7 +13,7 @@ public class CxConsoleLoggerFactory {
         String log4jConfigFile = System.getProperty("user.dir")
                 + File.separator + "log4j.properties";
         String defaultLogLocation = System.getProperty("user.dir") + File.separator + "logs" + File.separator + "cx_console.log";
-        if (defaultLogLocation.equals(logFilePath)) {
+        if (!defaultLogLocation.equals(logFilePath)) {
             try {
                 RollingFileAppender appender = new RollingFileAppender(new PatternLayout(ConfigMgr
                         .getCfgMgr().getProperty(ConfigMgr.KEY_FILE_APP_PATTERN)),
@@ -30,13 +30,13 @@ public class CxConsoleLoggerFactory {
             } catch (IOException e) {
                 log.warn("The Log path is invalid. Default path for log: " + defaultLogLocation);
             }
+        }else {
+        /*    try {
+                PropertyConfigurator.configure(log4jConfigFile);
+            } catch (Exception e) {
+                log.warn(e.getMessage());
+            }*/
         }
-        try {
-            PropertyConfigurator.configure(log4jConfigFile);
-        } catch (Exception e) {
-            log.warn(e.getMessage());
-        }
-
     }
 
     public Logger getLogger(String logFilePath) {
