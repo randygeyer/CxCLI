@@ -325,10 +325,10 @@ public class CxRestClient {
         HttpClientUtils.closeQuietly(apacheClient);
     }
 
-    private void validateResponse(HttpResponse response, int status, String message) throws CxClientException {
+    private void validateResponse(HttpResponse response, int status, String message) throws CxClientException, IOException {
 
         if (response.getStatusLine().getStatusCode() != status) {
-            String responseBody = response.getEntity().toString();
+            String responseBody = IOUtils.toString(response.getEntity().getContent(), Charset.defaultCharset());
             responseBody = responseBody.replace("{", "").replace("}", "").replace(System.getProperty("line.separator"), " ").replace("  ", "");
             throw new CxClientException(message + ": " + "status code: " + response.getStatusLine() + ". error:" + responseBody);
         }
