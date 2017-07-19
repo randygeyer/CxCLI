@@ -11,9 +11,9 @@ import static com.checkmarx.cxconsole.commands.Commands.*;
 public class CommandsFactory {
 
     public static CxConsoleCommand getCommand(String commandName) {
-        if (Commands.SCAN.value().equals(commandName)) {
+        if (Commands.SCAN.value().equalsIgnoreCase(commandName)) {
             return new ScanCommand();
-        } else if (Commands.OSASCAN.value().equals(commandName)) {
+        } else if (Commands.OSASCAN.value().equalsIgnoreCase(commandName)) {
             return new OsaScanCommand();
         }
        return null;
