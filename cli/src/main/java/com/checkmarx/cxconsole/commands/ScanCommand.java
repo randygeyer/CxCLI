@@ -69,7 +69,8 @@ public class ScanCommand extends GeneralScanCommand {
 
     public static final Option PARAM_ENABLE_OSA = OptionBuilder.withDescription("Enable Open Source Analysis (OSA). It requires the -LocationType to be folder/shared.  Optional.)").create("EnableOsa");
 
-    public static final Option PARAM_OSA_LOCATION_PATH = OptionBuilder.withArgName("path").hasArg().withDescription("Local or shared path to OSA sources or source repository branch.").create("OsaLocationPath");
+    public static final Option PARAM_OSA_LOCATION_PATH = OptionBuilder.hasArgs().withArgName("folders list").withDescription("Comma separated list of folder path patterns(Local or shared path ) to OSA sources.").withValueSeparator(',').create("OsaLocationPath");
+
 
     public static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
 

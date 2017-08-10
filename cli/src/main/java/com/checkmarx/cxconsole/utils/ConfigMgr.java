@@ -29,6 +29,7 @@ public class ConfigMgr {
     public static String REPORT_TIMEOUT             =   "scan.job.report.timeout";
 	public static String KEY_EXCLUDED_FOLDERS       =	"scan.zip.ignored.folders";
 	public static String KEY_EXCLUDED_FILES 	    =   "scan.zip.ignored.files";
+    public static String KEY_OSA_INCLUDED_FILES     =   "scan.zip.osa.include.files";
 	public static String KEY_MAX_ZIP_SIZE 			=	"scan.zip.max_size";
 	public static String KEY_OSA_MAX_ZIP_SIZE 		=	"scan.osa.zip.max_size";
 	public static String KEY_DEF_LOG_NAME 			=	"scan.log.default.filename";
