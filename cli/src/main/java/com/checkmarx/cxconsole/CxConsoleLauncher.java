@@ -1,20 +1,21 @@
 package com.checkmarx.cxconsole;
 
+import com.checkmarx.cxconsole.commands.CommandsFactory;
+import com.checkmarx.cxconsole.commands.CxConsoleCommand;
 import com.checkmarx.cxconsole.utils.CommandLineArgumentException;
+import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxviewer.ws.SSLUtilities;
 import org.apache.commons.cli.ParseException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import com.checkmarx.cxconsole.commands.CommandsFactory;
-import com.checkmarx.cxconsole.commands.CxConsoleCommand;
-import com.checkmarx.cxconsole.utils.ConfigMgr;
+import java.io.File;
+import java.util.Objects;
 
-import static com.checkmarx.cxconsole.commands.CxConsoleCommand.*;
+import static com.checkmarx.cxconsole.commands.CxConsoleCommand.CODE_ERRROR;
 
 /**
  * @author Oleksiy Mysnyk
- *
  */
 public class CxConsoleLauncher {
 
@@ -27,23 +28,114 @@ public class CxConsoleLauncher {
     public static String COMM_CONNECT = "connect";
     public static String COMM_QUIT = "quit";
 
-
     /**
      * Entry point to CxScan Console
+     *
      * @param args
      */
 
     public static void main(String[] args) {
         log.setLevel(Level.TRACE);
+        initConfiguration(args[0], args[1]);
         runCli(args);
+    }
+
+    private static void initConfiguration(String firstArg, String secondArg) {
+        String fileName = null;
+        StringBuffer filePath = new StringBuffer();
+
+        if (Objects.equals(firstArg, "-cp")) {
+            String[] fileNameAndPath = secondArg.split("/");
+            fileName = fileNameAndPath[fileNameAndPath.length - 1];
+            for (int i = 0; i < fileNameAndPath.length - 1; i++) {
+                filePath.append(fileNameAndPath[i] + "/");
+            }
+        }
+        String path = getPropertiesFileLocation(filePath.toString(), fileName);
+        ConfigMgr.createCfgMgr(path);
+    }
+
+    private static String getPropertiesFileLocation(String path, String name) {
+        String propFileLocation = path;
+        if (name != null) {
+            name = name.replaceAll("/", "\\\\");
+            name = normalizePath(name);
+        }
+        if (propFileLocation != null) {
+            propFileLocation = propFileLocation.replaceAll("/", "\\\\");
+        }
+
+        String usrDir = System.getProperty("user.dir");
+
+        // String usrHomeDir = "";
+        if (propFileLocation == null) {
+            propFileLocation = usrDir + name;
+        } else {
+            File propPath = new File(propFileLocation);
+            if (propPath.isAbsolute()) {
+                // Path is absolute
+                if (propFileLocation.endsWith(File.separator)) {
+                    // Directory path
+                    propFileLocation = propFileLocation + name;
+                } else {
+                    // File path
+                    if (propFileLocation.contains(File.separator)) {
+                        String dirPath = propFileLocation.substring(0, propFileLocation.lastIndexOf(File.separator));
+                        File propDirs = new File(dirPath);
+                        if (!propDirs.exists()) {
+                            propDirs.mkdirs();
+                        }
+                    }
+                }
+            } else {
+                // Path is not absolute
+                if (propFileLocation.endsWith(File.separator)) {
+                    // Directory path
+                    propFileLocation = usrDir + propFileLocation + name;
+                } else {
+                    // File path
+                    if (propFileLocation.contains(File.separator)) {
+                        String dirPath = propFileLocation.substring(0, propFileLocation.lastIndexOf(File.separator));
+                        File propDirs = new File(usrDir + dirPath);
+                        if (!propDirs.exists()) {
+                            propDirs.mkdirs();
+                        }
+                    }
+
+                    propFileLocation = usrDir + propFileLocation;
+                }
+            }
+        }
+
+        return propFileLocation;
+    }
+
+    private static String normalizePath(String projectName) {
+        if (projectName == null || projectName.isEmpty()) {
+            return "";
+        }
+
+        String normalPathName = "";
+        normalPathName = projectName.replace("\\", "_");
+        normalPathName = normalPathName.replace("/", "\\");
+        normalPathName = normalPathName.replace(":", "_");
+        normalPathName = normalPathName.replace("?", "_");
+        normalPathName = normalPathName.replace("*", "_");
+        normalPathName = normalPathName.replace("\"", "_");
+        normalPathName = normalPathName.replace("<", "_");
+        normalPathName = normalPathName.replace(">", "_");
+        normalPathName = normalPathName.replace("|", "_");
+        normalPathName = normalPathName.replace(";", "");
+
+        return normalPathName;
     }
 
     /**
      * Entry point to CxScan Console that returns exitCode
      * This entry point is used by Jenkins plugin
+     *
      * @param args
      */
-
     public static int runCli(String[] args) {
         try {
 
@@ -58,8 +150,8 @@ public class CxConsoleLauncher {
             SSLUtilities.trustAllHostnames();
             SSLUtilities.trustAllHttpsCertificates();
 
-            String commandName = args[0];
-            String[] argumentsLessCommandName = java.util.Arrays.copyOfRange(args, 1, args.length);
+            String commandName = args[2];
+            String[] argumentsLessCommandName = java.util.Arrays.copyOfRange(args, 3, args.length);
             CxConsoleCommand command = CommandsFactory.getCommand(commandName);
             if (command == null) {
                 log.error("Command \"" + commandName + "\" was not found. Available commands:\n"

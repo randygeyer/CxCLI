@@ -334,87 +334,8 @@ public class ScanCommand extends GeneralScanCommand {
         }
 
         if (scParams.isOsaEnabled() && (scParams.getLocationPath() == null || (scParams.getLocationType() != LocationType.folder && scParams.getLocationType() != LocationType.shared))) {
-            throw new CommandLineArgumentException("For OSA Scan ("+PARAM_ENABLE_OSA.getOpt()+"), provide  "+PARAM_OSA_LOCATION_PATH.getOpt()+"  or "+ PARAM_LOCATION_TYPE.getOpt() +" ( values: folder/shared)");
+            throw new CommandLineArgumentException("For OSA Scan (" + PARAM_ENABLE_OSA.getOpt() + "), provide  " + PARAM_OSA_LOCATION_PATH.getOpt() + "  or " + PARAM_LOCATION_TYPE.getOpt() + " ( values: folder/shared)");
         }
-    }
-
-    @Override
-    protected String getLogFileLocation() {
-
-        String logFileLocation = commandLineArguments.getOptionValue(PARAM_LOG_FILE.getOpt());
-        String projectName = commandLineArguments.getOptionValue(PARAM_PRJ_NAME.getOpt());
-        if (projectName != null) {
-            projectName = projectName.replaceAll("/", "\\\\");
-        }
-        // String usrHomeDir = System.getProperty("user.home");
-        // CxLogger.getLogger().info("Log user dir: " +
-        // System.getProperty("user.dir"));
-
-        String[] parts = projectName.split("\\\\");
-        String usrDir = System.getProperty("user.dir") + File.separator + normalizeLogPath(parts[parts.length - 1]) + File.separator;
-
-        // String usrHomeDir = "";
-        if (logFileLocation == null) {
-            logFileLocation = usrDir + normalizeLogPath(parts[parts.length - 1]) + ".log";
-        } else {
-            File logpath = new File(logFileLocation);
-            if (logpath.isAbsolute()) {
-                // Path is absolute
-                if (logFileLocation.endsWith(File.separator)) {
-                    // Directory path
-                    logFileLocation = logFileLocation + parts[parts.length - 1] + ".log";
-                } else {
-                    // File path
-                    if (logFileLocation.contains(File.separator)) {
-                        String dirPath = logFileLocation.substring(0, logFileLocation.lastIndexOf(File.separator));
-                        File logDirs = new File(dirPath);
-                        if (!logDirs.exists()) {
-                            logDirs.mkdirs();
-                        }
-                    }
-                }
-            } else {
-                // Path is not absolute
-                if (logFileLocation.endsWith(File.separator)) {
-                    // Directory path
-                    logFileLocation = usrDir + logFileLocation + parts[parts.length - 1] + ".log";
-                } else {
-                    // File path
-                    if (logFileLocation.contains(File.separator)) {
-                        String dirPath = logFileLocation.substring(0, logFileLocation.lastIndexOf(File.separator));
-                        File logDirs = new File(usrDir + dirPath);
-                        if (!logDirs.exists()) {
-                            logDirs.mkdirs();
-                        }
-                    }
-
-                    logFileLocation = usrDir + logFileLocation;
-                }
-            }
-        }
-
-        return logFileLocation;
-    }
-
-
-
-
-     private String normalizeLogPath(String projectName) {
-        if (projectName == null || projectName.isEmpty()) {
-            return "cx_scan.log";
-        }
-
-        String normalPathName = "";
-        normalPathName = projectName.replace("\\", "_");
-        normalPathName = normalPathName.replace("/", "_");
-        normalPathName = normalPathName.replace(":", "_");
-        normalPathName = normalPathName.replace("?", "_");
-        normalPathName = normalPathName.replace("*", "_");
-        normalPathName = normalPathName.replace("\"", "_");
-        normalPathName = normalPathName.replace("<", "_");
-        normalPathName = normalPathName.replace(">", "_");
-        normalPathName = normalPathName.replace("|", "_");
-        return normalPathName;
     }
 
     public static boolean isWindows() {
@@ -422,13 +343,11 @@ public class ScanCommand extends GeneralScanCommand {
         return isWindows;
     }
 
-
     @Override
     public String getMandatoryParams() {
         return super.getMandatoryParams() + PARAM_PRJ_NAME
                 + " fullProjectName "/* + PARAM_LOCATION_TYPE + " ltype" */;
     }
-
 
     @Override
     public String getKeyDescriptions() {

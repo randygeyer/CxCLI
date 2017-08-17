@@ -11,3 +11,5 @@ cli/.settings/org.eclipse.m2e.core.prefs
 cli/.gradle/
 *.log
 cli/build/
+*.iml
+

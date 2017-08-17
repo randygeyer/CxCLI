@@ -1,11 +1,17 @@
 package com.checkmarx.cxconsole.commands;
 
-import org.apache.commons.cli.*;
-import org.apache.log4j.Logger;
-
+import com.checkmarx.cxconsole.logging.CxConsoleLoggerFactory;
 import com.checkmarx.cxconsole.utils.CommandLineArgumentException;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxviewer.utils.DynamicAuthSupplier;
+import org.apache.commons.cli.*;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
+import java.io.File;
+
+import static com.checkmarx.cxconsole.commands.GeneralScanCommand.PARAM_LOG_FILE;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_PRJ_NAME;
 
 /**
  * Base class for all CLI commands.<br>
@@ -54,7 +60,6 @@ public abstract class CxConsoleCommand {
         commandLineOptions = new Options();
     }
 
-
     public void parseArguments(String[] args) throws ParseException {
         CommandLineParser parser = new BasicParser();
         commandLineArguments = parser.parse(commandLineOptions, args, true);
@@ -89,6 +94,7 @@ public abstract class CxConsoleCommand {
     public abstract void checkParameters() throws CommandLineArgumentException;
 
     public abstract void resolveServerUrl() throws Exception;
+
     /**
      * Check whether provided key is flag - i.e. it doesn't have followed
      * value in CLI (like "-verbose" flag)
@@ -96,7 +102,6 @@ public abstract class CxConsoleCommand {
      * @return true if current key is a flag
      */
     protected abstract boolean isKeyFlag(String key);
-
 
     private void printCommandsDebug() {
         log.debug("----------------------------Configured Commands:-----------------------------");
@@ -148,8 +153,94 @@ public abstract class CxConsoleCommand {
         return errorCode;
     }
 
-    protected abstract void initLogging();
+    protected void initLogging() {
+        if (commandLineArguments.hasOption(PARAM_LOG_FILE.getOpt())) {
+            log = CxConsoleLoggerFactory.getLoggerFactory().getLogger(getLogFileLocation());
+        } else {
+            log = Logger.getLogger("com.checkmarx.cxconsole.commands");
+            log.setLevel(Level.ERROR);
+        }
+    }
 
     protected abstract void releaseLog();
+
+    /**
+     * Method defining log file location.
+     *
+     * @return <code>String</code> - log file location
+     */
+    protected String getLogFileLocation() {
+        String logFileLocation = commandLineArguments.getOptionValue(PARAM_LOG_FILE.getOpt());
+        String projectName = commandLineArguments.getOptionValue(PARAM_PRJ_NAME.getOpt());
+        if (projectName != null) {
+            projectName = projectName.replaceAll("/", "\\\\");
+        }
+        // String usrHomeDir = System.getProperty("user.home");
+        // CxLogger.getLogger().info("Log user dir: " +
+        // System.getProperty("user.dir"));
+
+        String[] parts = projectName.split("\\\\");
+        String usrDir = System.getProperty("user.dir") + File.separator + normalizeLogPath(parts[parts.length - 1]) + File.separator;
+
+        // String usrHomeDir = "";
+        if (logFileLocation == null) {
+            logFileLocation = usrDir + normalizeLogPath(parts[parts.length - 1]) + ".log";
+        } else {
+            File logpath = new File(logFileLocation);
+            if (logpath.isAbsolute()) {
+                // Path is absolute
+                if (logFileLocation.endsWith(File.separator)) {
+                    // Directory path
+                    logFileLocation = logFileLocation + parts[parts.length - 1] + ".log";
+                } else {
+                    // File path
+                    if (logFileLocation.contains(File.separator)) {
+                        String dirPath = logFileLocation.substring(0, logFileLocation.lastIndexOf(File.separator));
+                        File logDirs = new File(dirPath);
+                        if (!logDirs.exists()) {
+                            logDirs.mkdirs();
+                        }
+                    }
+                }
+            } else {
+                // Path is not absolute
+                if (logFileLocation.endsWith(File.separator)) {
+                    // Directory path
+                    logFileLocation = usrDir + logFileLocation + parts[parts.length - 1] + ".log";
+                } else {
+                    // File path
+                    if (logFileLocation.contains(File.separator)) {
+                        String dirPath = logFileLocation.substring(0, logFileLocation.lastIndexOf(File.separator));
+                        File logDirs = new File(usrDir + dirPath);
+                        if (!logDirs.exists()) {
+                            logDirs.mkdirs();
+                        }
+                    }
+
+                    logFileLocation = usrDir + logFileLocation;
+                }
+            }
+        }
+
+        return logFileLocation;
+    }
+
+    private String normalizeLogPath(String projectName) {
+        if (projectName == null || projectName.isEmpty()) {
+            return "cx_scan.log";
+        }
+
+        String normalPathName = "";
+        normalPathName = projectName.replace("\\", "_");
+        normalPathName = normalPathName.replace("/", "_");
+        normalPathName = normalPathName.replace(":", "_");
+        normalPathName = normalPathName.replace("?", "_");
+        normalPathName = normalPathName.replace("*", "_");
+        normalPathName = normalPathName.replace("\"", "_");
+        normalPathName = normalPathName.replace("<", "_");
+        normalPathName = normalPathName.replace(">", "_");
+        normalPathName = normalPathName.replace("|", "_");
+        return normalPathName;
+    }
 
 }
