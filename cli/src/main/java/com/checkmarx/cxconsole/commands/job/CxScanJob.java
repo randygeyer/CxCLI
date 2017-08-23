@@ -81,9 +81,6 @@ public class CxScanJob implements Callable<Integer> {
 					return;
 				}
 				
-				if (log.isEnabledFor(Level.INFO)) {
-					log.info("Check CLI version support: " + ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_VERSION));
-				}
 				/*GeneralResult result = wsMgr.checkVersion(CxClientType.CLI, ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_VERSION), Const.WS_API_DEFAULT_VER);
 				if (!result.isSuccesfullResponce()) {
 					error = result.getErrorMessage();

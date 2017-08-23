@@ -10,13 +10,25 @@ public class CxConsoleLoggerFactory {
 
     public static CxConsoleLoggerFactory logFactory;
 
-    public void initLogger(Logger log, String logFilePath) {
-        String log4jConfigFile = System.getProperty("user.dir")
-                + File.separator + "log4j.properties";
+    public void initLogger(Logger log, String logFilePath) throws IOException {
         try {
-            RollingFileAppender appender = new RollingFileAppender(new PatternLayout(ConfigMgr
+
+            RollingFileAppender appender= null;
+
+            try{
+            appender = new RollingFileAppender(new PatternLayout(ConfigMgr
                     .getCfgMgr().getProperty(ConfigMgr.KEY_FILE_APP_PATTERN)),
                     logFilePath, true);
+            }catch (IOException ex){
+                logFilePath = System.getProperty("user.dir") + File.separator + "log4j.properties";
+                appender = new RollingFileAppender(new PatternLayout(ConfigMgr
+                        .getCfgMgr().getProperty(ConfigMgr.KEY_FILE_APP_PATTERN)),
+                        logFilePath, true);
+                log.warn("The Log path is invalid. Default path for log: " + logFilePath + ". ");
+            }
+
+            Logger.getRootLogger().info("Log file location: " + logFilePath);
+
             appender.setName("RA");
             appender.setThreshold(Level.TRACE);
             appender.setMaxFileSize(ConfigMgr.getCfgMgr().getProperty(
@@ -26,16 +38,19 @@ public class CxConsoleLoggerFactory {
             appender.activateOptions();
             log.addAppender(appender);
 
-            PropertyConfigurator.configure(log4jConfigFile);
+          //    PropertyConfigurator.configure(logFilePath);
 
-        } catch (IOException e) {
-            log.warn("The Log path is invalid. Default path for log: " + logFilePath);
+        } catch (Exception e) {
+            log.warn("The Log path is invalid.");
+            throw e;
         }
+
+
 
 
     }
 
-    public Logger getLogger(String logFilePath) {
+    public Logger getLogger(String logFilePath) throws IOException {
         Logger log = Logger.getLogger("com.checkmarx.cxconsole.commands");
         initLogger(log, logFilePath);
 

@@ -1,55 +1,53 @@
 package com.checkmarx.cxconsole.commands;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import com.checkmarx.cxconsole.logging.CxConsoleLoggerFactory;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
-import com.checkmarx.cxconsole.logging.CxConsoleLoggerFactory;
+import java.io.IOException;
 
 /**
- * 
  * @author Oleksiy Mysnyk
  */
 public abstract class VerboseCommand extends CxConsoleCommand {
 
 
     public static final Option PARAM_VERBOSE = OptionBuilder.withDescription("Turns on verbose mode. All messages and events will be sent to the console/log file.  Optional.").withLongOpt("verbose").create("v");
+    public static final Option PARAM_LOG_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Log file. Optional.").create("Log");
 
-	public VerboseCommand() {
-		super();
+
+    public VerboseCommand() {
+        super();
         this.commandLineOptions.addOption(PARAM_VERBOSE);
-	}
+    }
 
 
-	/* (non-Javadoc)
-	 * @see com.checkmarx.cxconsole.commands.CxConsoleCommand#initLogging()
-	 */
-	@Override
-	protected void initLogging() {
-		if (commandLineArguments.hasOption(PARAM_VERBOSE.getOpt())) {
-			log = CxConsoleLoggerFactory.getLoggerFactory().getLogger(getLogFileLocation());
-		} else {
-			log = Logger.getLogger("com.checkmarx.cxconsole.commands");
-			log.setLevel(Level.ERROR);
-		}
-	}
-	
-	@Override
-	protected void releaseLog() {
-		log.removeAllAppenders();
-		//LogManager.shutdown();
-	}
+    /* (non-Javadoc)
+     * @see com.checkmarx.cxconsole.commands.CxConsoleCommand#initLogging()
+     */
+    @Override
+    protected void initLogging() throws IOException {
 
-	/**
-	 * Method defining log file location. All ancestors should implement.
-	 *
-	 * @return <code>String</code> - log file location
-	 */
-	protected abstract String getLogFileLocation();
-	
+        String logPath = "";
+        if (commandLineArguments.hasOption(PARAM_LOG_FILE.getOpt())) {
+            logPath = getLogFileLocation();
+        }
+
+        log = CxConsoleLoggerFactory.getLoggerFactory().getLogger(logPath);
+    }
+
+    @Override
+    protected void releaseLog() {
+        log.removeAllAppenders();
+        //LogManager.shutdown();
+    }
+
+    /**
+     * Method defining log file location. All ancestors should implement.
+     *
+     * @return <code>String</code> - log file location
+     */
+    protected abstract String getLogFileLocation();
+
 
 }

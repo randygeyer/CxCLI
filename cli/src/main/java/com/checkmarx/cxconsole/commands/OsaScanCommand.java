@@ -57,6 +57,7 @@ public class OsaScanCommand extends ScanCommand {
         osaOnly.addOption(all.getOption(PARAM_LOCATION_TYPE.getOpt()));
         osaOnly.addOption(all.getOption(PARAM_LOCATION_PATH.getOpt()));
         osaOnly.addOption(all.getOption(PARAM_LOG_FILE.getOpt()));
+        osaOnly.addOption(all.getOption(PARAM_CONFIG_FILE.getOpt()));
         osaOnly.addOption(all.getOption(PARAM_OSA_EXCLUDE_FILES.getOpt()));
         osaOnly.addOption(all.getOption(PARAM_OSA_EXCLUDE_FOLDERS.getOpt()));
         osaOnly.addOption(all.getOption(PARAM_OSA_HTML_FILE.getOpt()));

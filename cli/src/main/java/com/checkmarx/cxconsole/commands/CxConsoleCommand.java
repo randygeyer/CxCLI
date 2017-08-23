@@ -7,6 +7,8 @@ import com.checkmarx.cxconsole.utils.CommandLineArgumentException;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxviewer.utils.DynamicAuthSupplier;
 
+import java.io.IOException;
+
 /**
  * Base class for all CLI commands.<br>
  * Defines methods for
@@ -148,7 +150,7 @@ public abstract class CxConsoleCommand {
         return errorCode;
     }
 
-    protected abstract void initLogging();
+    protected abstract void initLogging() throws IOException;
 
     protected abstract void releaseLog();
 

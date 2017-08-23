@@ -17,8 +17,9 @@ public abstract class GeneralScanCommand extends VerboseCommand {
     public static final Option PARAM_HOST = OptionBuilder.isRequired().hasArg().withArgName("server").withDescription("IP address or resolvable name of CxSuite web server").create("CxServer");
     public static final Option PARAM_USER = OptionBuilder.hasArg().withArgName("username").withDescription("Login username. Mandatory, Unless SSO login is used on Windows ('-useSSO' flag)").create("CxUser");
     public static final Option PARAM_PASSWORD = OptionBuilder.hasArg().withArgName("password").withDescription("Login password. Mandatory, Unless SSO login is used on Windows ('-useSSO' flag)").create("CxPassword");
-    public static final Option PARAM_LOG_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Log file. Optional.").create("Log");
-    public static final Option PARAM_XML_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results XML file. Optional.").create("ReportXML");
+    public static final Option PARAM_CONFIG_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Config file. Optional.").create("Config");
+
+	public static final Option PARAM_XML_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results XML file. Optional.").create("ReportXML");
     public static final Option PARAM_PDF_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results PDF file. Optional.").create("ReportPDF");
     public static final Option PARAM_CSV_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results CSV file. Optional.").create("ReportCSV");
     public static final Option PARAM_RTF_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results RTF file. Optional.").create("ReportRTF");
@@ -63,6 +64,7 @@ public abstract class GeneralScanCommand extends VerboseCommand {
         this.commandLineOptions.addOption(PARAM_USER);
         this.commandLineOptions.addOption(PARAM_PASSWORD);
         this.commandLineOptions.addOption(PARAM_LOG_FILE);
+        this.commandLineOptions.addOption(PARAM_CONFIG_FILE);
 
         this.commandLineOptions.addOption(PARAM_XML_FILE);
         OptionGroup reportGroup = new OptionGroup();
@@ -174,6 +176,11 @@ public abstract class GeneralScanCommand extends VerboseCommand {
 		keys.append(KEY_DESCR_INTEND_SMALL);
 		keys.append(KEY_DESCR_INTEND_SINGLE);
 		keys.append("- Name or path to log file. Optional.\n");
+
+		keys.append(PARAM_CONFIG_FILE);
+		keys.append(KEY_DESCR_INTEND_SMALL);
+		keys.append(KEY_DESCR_INTEND_SINGLE);
+		keys.append("- Name or path to config file. Optional.\n");
 		
 		keys.append(leftSpacing);
 		keys.append(PARAM_XML_FILE);
@@ -233,6 +240,7 @@ keys.append(leftSpacing);
 			+ "[ " + PARAM_PDF_FILE + " results.pdf ] "
 			+ "[ " + PARAM_CSV_FILE + " results.csv ] "
 			+ "[ " + PARAM_LOG_FILE + " logFile.log ] "
+			+ "[ " + PARAM_CONFIG_FILE + " cx_console.properties ] "
 			+ "[ " + PARAM_EXCLUDE_FOLDERS + " \"DirName1,DirName2,DirName3\" ] "
             + "[ " + PARAM_EXCLUDE_FILES + " \"FileName1,FileName2,FileName3\" ] "
 			 /*+ super.getOptionalParams()*/;

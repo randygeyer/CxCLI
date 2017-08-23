@@ -1,20 +1,24 @@
 package com.checkmarx.cxconsole;
 
+import com.checkmarx.cxconsole.commands.CommandsFactory;
+import com.checkmarx.cxconsole.commands.CxConsoleCommand;
+import com.checkmarx.cxconsole.utils.BuildVersion;
 import com.checkmarx.cxconsole.utils.CommandLineArgumentException;
+import com.checkmarx.cxconsole.utils.ConfigMgr;
+import com.checkmarx.cxconsole.utils.CustomStringList;
 import com.checkmarx.cxviewer.ws.SSLUtilities;
 import org.apache.commons.cli.ParseException;
+import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import com.checkmarx.cxconsole.commands.CommandsFactory;
-import com.checkmarx.cxconsole.commands.CxConsoleCommand;
-import com.checkmarx.cxconsole.utils.ConfigMgr;
+import java.util.ArrayList;
+import java.util.Arrays;
 
-import static com.checkmarx.cxconsole.commands.CxConsoleCommand.*;
+import static com.checkmarx.cxconsole.commands.CxConsoleCommand.CODE_ERRROR;
 
 /**
  * @author Oleksiy Mysnyk
- *
  */
 public class CxConsoleLauncher {
 
@@ -30,6 +34,7 @@ public class CxConsoleLauncher {
 
     /**
      * Entry point to CxScan Console
+     *
      * @param args
      */
 
@@ -41,18 +46,36 @@ public class CxConsoleLauncher {
     /**
      * Entry point to CxScan Console that returns exitCode
      * This entry point is used by Jenkins plugin
+     *
      * @param args
      */
 
     public static int runCli(String[] args) {
         try {
-
-            log.info("CxConsole version " + ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_VERSION));
-            log.info("CxConsole scan session started");
             if (args == null || args.length == 0) {
                 log.fatal("Missing command name. Available commands: " + CommandsFactory.getCommandNames());
                 return CODE_ERRROR;
             }
+
+            log.info("CxConsole version " + BuildVersion.getBuildVersion());
+            log.info("CxConsole scan session started");
+            log.info("");
+
+
+            ArrayList<String> customArgs = new CustomStringList(Arrays.asList(args));
+
+            if (!customArgs.contains("-v".trim()) && !customArgs.contains("-verbose")) {
+                ((AppenderSkeleton) Logger.getRootLogger().getAppender("CA"))
+                        .setThreshold(Level.ERROR);
+            }
+
+
+            int configIndx = Arrays.asList(args).indexOf("-config");
+            String confPath = null;
+            if (configIndx != -1 && args[configIndx + 1] != null && !args[configIndx + 1].startsWith("-")) {
+                confPath = args[configIndx + 1];
+            }
+            ConfigMgr.initCfgMgr(confPath);
 
             // Temporary solution
             SSLUtilities.trustAllHostnames();
