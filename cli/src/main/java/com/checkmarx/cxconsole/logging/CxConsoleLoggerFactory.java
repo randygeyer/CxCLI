@@ -1,6 +1,7 @@
 package com.checkmarx.cxconsole.logging;
 
 import com.checkmarx.cxconsole.utils.ConfigMgr;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.*;
 
 import java.io.File;
@@ -11,41 +12,33 @@ public class CxConsoleLoggerFactory {
     public static CxConsoleLoggerFactory logFactory;
 
     public void initLogger(Logger log, String logFilePath) throws IOException {
-        try {
+        String defaultPath = System.getProperty("user.dir") + File.separator + "logs" + File.separator + "cx_console.log";
+        if (!StringUtils.isEmpty(logFilePath)) {
+            try {
 
-            RollingFileAppender appender= null;
+                RollingFileAppender appender = null;
 
-            try{
-            appender = new RollingFileAppender(new PatternLayout(ConfigMgr
-                    .getCfgMgr().getProperty(ConfigMgr.KEY_FILE_APP_PATTERN)),
-                    logFilePath, true);
-            }catch (IOException ex){
-                logFilePath = System.getProperty("user.dir") + File.separator + "log4j.properties";
                 appender = new RollingFileAppender(new PatternLayout(ConfigMgr
                         .getCfgMgr().getProperty(ConfigMgr.KEY_FILE_APP_PATTERN)),
                         logFilePath, true);
-                log.warn("The Log path is invalid. Default path for log: " + logFilePath + ". ");
+
+                Logger.getRootLogger().info("Log file location: " + logFilePath);
+
+                appender.setName("RA");
+                appender.setThreshold(Level.TRACE);
+                appender.setMaxFileSize(ConfigMgr.getCfgMgr().getProperty(
+                        ConfigMgr.KEY_FILE_APP_MAX_SIZE));
+                appender.setMaxBackupIndex(ConfigMgr.getCfgMgr().getIntProperty(
+                        ConfigMgr.KEY_FILE_APP_MAX_ROLLS));
+                appender.activateOptions();
+                log.addAppender(appender);
+
+            } catch (Exception e) {
+                log.warn("The Log path is invalid. Default path for log: " + defaultPath);
             }
-
-            Logger.getRootLogger().info("Log file location: " + logFilePath);
-
-            appender.setName("RA");
-            appender.setThreshold(Level.TRACE);
-            appender.setMaxFileSize(ConfigMgr.getCfgMgr().getProperty(
-                    ConfigMgr.KEY_FILE_APP_MAX_SIZE));
-            appender.setMaxBackupIndex(ConfigMgr.getCfgMgr().getIntProperty(
-                    ConfigMgr.KEY_FILE_APP_MAX_ROLLS));
-            appender.activateOptions();
-            log.addAppender(appender);
-
-          //    PropertyConfigurator.configure(logFilePath);
-
-        } catch (Exception e) {
-            log.warn("The Log path is invalid.");
-            throw e;
+        } else {
+            log.info("Default path for log: " + defaultPath);
         }
-
-
 
 
     }

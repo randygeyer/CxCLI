@@ -10,6 +10,7 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.log4j.Level;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.concurrent.*;
 
 public class ScanCommand extends GeneralScanCommand {
@@ -333,7 +334,7 @@ public class ScanCommand extends GeneralScanCommand {
         }
 
         if (scParams.isOsaEnabled() && (scParams.getLocationPath() == null || (scParams.getLocationType() != LocationType.folder && scParams.getLocationType() != LocationType.shared))) {
-            throw new CommandLineArgumentException("For OSA Scan ("+PARAM_ENABLE_OSA.getOpt()+"), provide  "+PARAM_OSA_LOCATION_PATH.getOpt()+"  or "+ PARAM_LOCATION_TYPE.getOpt() +" ( values: folder/shared)");
+            throw new CommandLineArgumentException("For OSA Scan (" + PARAM_ENABLE_OSA.getOpt() + "), provide  " + PARAM_OSA_LOCATION_PATH.getOpt() + "  or " + PARAM_LOCATION_TYPE.getOpt() + " ( values: folder/shared)");
         }
     }
 
@@ -356,7 +357,17 @@ public class ScanCommand extends GeneralScanCommand {
         if (logFileLocation == null) {
             logFileLocation = usrDir + normalizeLogPath(parts[parts.length - 1]) + ".log";
         } else {
+
+            String origPath = logFileLocation;
+
+            try {
+                logFileLocation = Paths.get(logFileLocation).toFile().getCanonicalPath();
+            } catch (IOException e) {
+                logFileLocation = origPath;
+            }
+
             File logpath = new File(logFileLocation);
+
             if (logpath.isAbsolute()) {
                 // Path is absolute
                 if (logFileLocation.endsWith(File.separator)) {
@@ -396,9 +407,7 @@ public class ScanCommand extends GeneralScanCommand {
     }
 
 
-
-
-     private String normalizeLogPath(String projectName) {
+    private String normalizeLogPath(String projectName) {
         if (projectName == null || projectName.isEmpty()) {
             return "cx_scan.log";
         }

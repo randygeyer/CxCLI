@@ -1,12 +1,12 @@
 package com.checkmarx.cxconsole.utils;
 
 import com.checkmarx.cxviewer.ws.WSMgr;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Paths;
 import java.util.Properties;
@@ -49,7 +49,6 @@ public class ConfigMgr {
     private String CONFIG_FILE = "cx_console.properties";
 
     private String defaultPath = userDir + separator + CONFIG_DIR_RELATIVE_PATH + separator + CONFIG_FILE;
-    private boolean invalidLocation = false;
     private Properties applicationProperties;
     protected static WSMgr wsMgr;
 
@@ -60,51 +59,56 @@ public class ConfigMgr {
         loadProperties(defConfig);
     }
 
+
     protected void loadProperties(String confPath) {
-
-        String  logMsg = "Config file location: ";
-        String  errMsg = "The Config file path is invalid. Default path for config: ";
-
-
-        if (confPath == null) {//use Default config location
-            confPath = defaultPath;
-        } else { //check if relative or absolute
-
-            File file = new File(confPath);
-            if (!file.isAbsolute()) {
-                try {
-                    confPath = Paths.get(confPath).toFile().getCanonicalPath();
-
-                } catch (IOException e) {
-                    confPath = defaultPath;
-                    invalidLocation = true;
-                }
+        try {
+            if (confPath != null && loadFromConfigParam(confPath)) {
+                Logger.getRootLogger().info("Config file location: " + confPath);
+                return;
             }
-        }
 
-
-
-        if (new File(confPath).exists()) {
-            try {
-                FileInputStream in = new FileInputStream(confPath);
-                applicationProperties.load(in);
-                in.close();
-            } catch (Exception e) {
-                Logger.getRootLogger().error("Error occurred during loading CxConsole "
-                        + "properties. Default configuration values will be loaded.", e);
+            if (!loadConfigFromFile(defaultPath) || applicationProperties.isEmpty()) {
+                Logger.getRootLogger().warn("Error occurred during loading configuration file. Default configuration values will be loaded.");
                 loadDefaults();
             }
-        }
-        if (applicationProperties.isEmpty()) {
-            loadDefaults();
-        }
 
-        if (invalidLocation){
-            confPath = defaultPath;
-            logMsg = errMsg;
+            Logger.getRootLogger().info("Default config file location: " + defaultPath);
+        } catch (Exception ex) {
+            Logger.getRootLogger().warn("Error occurred during loading configuration file.");
         }
-        Logger.getRootLogger().info(logMsg + confPath);
     }
+
+
+
+    private boolean loadFromConfigParam(String confPath) {
+        try {
+            confPath = Paths.get(confPath).toFile().getCanonicalPath();
+        } catch (Exception ex) {
+            Logger.getRootLogger().warn("Error occurred during loading configuration file. The Config path is invalid.");
+            return false;
+        }
+        return loadConfigFromFile(confPath);
+    }
+
+
+    private boolean loadConfigFromFile(String path) {
+        boolean ret = false;
+        FileInputStream in = null;
+        if (new File(path).exists()) {
+            try {
+                in = new FileInputStream(path);
+                applicationProperties.load(in);
+
+                ret = true;
+            } catch (Exception e) {
+                Logger.getRootLogger().error("Error occurred during loading CxConsole properties.");
+            } finally {
+                IOUtils.closeQuietly(in);
+            }
+        }
+        return ret;
+    }
+
 
     protected void loadDefaults() {
         applicationProperties.put(REPORT_TIMEOUT, "30");
@@ -127,31 +131,34 @@ public class ConfigMgr {
         applicationProperties.put(KEY_FILE_APP_MAX_SIZE, "10MB");
         applicationProperties.put(KEY_FILE_APP_MAX_ROLLS, "10");
 
-        invalidLocation = true;
+        try {
+            File propsFile = new File(defaultPath);
 
-        File propsFile = new File(defaultPath);
-        if (!propsFile.exists()) {
-            File configDir = new File(userDir + separator + CONFIG_DIR_RELATIVE_PATH);
-            if (!configDir.exists()) {
-                configDir.mkdir();
-            }
+            if (!propsFile.exists()) {
+                File configDir = new File(userDir + separator + CONFIG_DIR_RELATIVE_PATH);
+                if (!configDir.exists()) {
+                    configDir.mkdir();
+                }
 
 
-            FileOutputStream fOut = null;
-            try {
-                fOut = new FileOutputStream(propsFile);
-                applicationProperties.store(fOut, "");
-            } catch (Exception e) {
-                // ignore
-            } finally {
-                if (fOut != null) {
-                    try {
-                        fOut.close();
-                    } catch (Exception e) {
-                        // ignore
+                FileOutputStream fOut = null;
+                try {
+                    fOut = new FileOutputStream(propsFile);
+                    applicationProperties.store(fOut, "");
+                } catch (Exception e) {
+                    // ignore
+                } finally {
+                    if (fOut != null) {
+                        try {
+                            fOut.close();
+                        } catch (Exception e) {
+                            // ignore
+                        }
                     }
                 }
             }
+        } catch (Exception ex) {
+            Logger.getRootLogger().warn("Cannot create configuration file");
         }
     }
 
