@@ -72,7 +72,7 @@ public class CxConsoleLauncher {
 
             int configIndx = Arrays.asList(args).indexOf("-config");
             String confPath = null;
-            if (configIndx != -1 && args[configIndx + 1] != null && !args[configIndx + 1].startsWith("-")) {
+            if (configIndx != -1 && args.length > (configIndx + 1) && args[configIndx + 1] != null && !args[configIndx + 1].startsWith("-")) {
                 confPath = args[configIndx + 1];
             }
             ConfigMgr.initCfgMgr(confPath);
