@@ -72,12 +72,11 @@ public class ConfigMgr {
                 loadDefaults();
             }
 
-            Logger.getRootLogger().info("Default config file location: " + defaultPath);
+            Logger.getRootLogger().info("Default configuration file location: " + defaultPath);
         } catch (Exception ex) {
             Logger.getRootLogger().warn("Error occurred during loading configuration file.");
         }
     }
-
 
 
     private boolean loadFromConfigParam(String confPath) {
@@ -105,6 +104,8 @@ public class ConfigMgr {
             } finally {
                 IOUtils.closeQuietly(in);
             }
+        } else {
+            Logger.getRootLogger().error("The specified configuration path: [" + path + "] does not exist.");
         }
         return ret;
     }
