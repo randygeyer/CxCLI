@@ -6,6 +6,14 @@ import org.apache.log4j.Logger;
 import com.checkmarx.cxconsole.utils.CommandLineArgumentException;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxviewer.utils.DynamicAuthSupplier;
+import org.apache.commons.cli.*;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
+import java.io.File;
+
+import static com.checkmarx.cxconsole.commands.GeneralScanCommand.PARAM_LOG_FILE;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_PRJ_NAME;
 
 import java.io.IOException;
 

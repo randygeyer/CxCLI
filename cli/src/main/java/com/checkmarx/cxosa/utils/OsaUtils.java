@@ -2,7 +2,9 @@ package com.checkmarx.cxosa.utils;
 
 import com.checkmarx.components.zipper.ZipListener;
 import com.checkmarx.components.zipper.Zipper;
+import com.checkmarx.cxconsole.utils.ConfigMgr;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -11,6 +13,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Galn on 06/04/2017.
@@ -19,11 +23,13 @@ public abstract class OsaUtils {
     private static int numOfZippedFiles = 0;
     private static Logger log;
     private static final String TEMP_FILE_NAME_TO_ZIP = "CxZippedSource";
+    private static final String TEMP_COPIED_FOLDER = "CxTempSource";
 
-    public static File zipWorkspaceFolder(String fileExcluded, String folderExclusions, long maxZipSizeInBytes, String path, final Logger log)
+    public static File zipWorkspaceFolder(String[] fileExcluded, String[] folderExclusions, String[] fileIncluded, long maxZipSizeInBytes, String[] path, final Logger log)
             throws InterruptedException, IOException {
 
-        String combinedFilterPattern = generatePattern(folderExclusions, fileExcluded);
+        String[] combinedExcludePattern = generateExcludePattern(folderExclusions, fileExcluded);
+        String[] includeFilesPattern = processIncludedFiles(ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_OSA_INCLUDED_FILES), fileIncluded);
 
         ZipListener zipListener = new ZipListener() {
             public void updateProgress(String fileName, long size) {
@@ -32,12 +38,19 @@ public abstract class OsaUtils {
             }
         };
 
+
         File tempFile = File.createTempFile(TEMP_FILE_NAME_TO_ZIP, ".bin");
         OutputStream fileOutputStream = new FileOutputStream(tempFile);
 
-        File folder = new File(path);
+        File tmpFolder = createTempDirectory();
+        for (String dirPath : path) {
+            File dir = new File(dirPath);
+            if (dir.isDirectory()) {
+                FileUtils.copyDirectory(dir, tmpFolder);
+            }
+        }
         try {
-            new Zipper().zip(folder, combinedFilterPattern, fileOutputStream, maxZipSizeInBytes, zipListener);
+            new Zipper().zip(tmpFolder, combinedExcludePattern, includeFilesPattern, fileOutputStream, maxZipSizeInBytes, zipListener);
         } catch (Zipper.MaxZipSizeReached e) {
             tempFile.delete();
             throw new IOException("Reached maximum upload size limit of " + FileUtils.byteCountToDisplaySize(maxZipSizeInBytes));
@@ -50,6 +63,13 @@ public abstract class OsaUtils {
                     FileUtils.byteCountToDisplaySize(tempFile.length() / 8 * 6)); // We print here the size of compressed sources before encoding to base 64
             log.debug("Temporary file with zipped sources was created at: '" + tempFile.getAbsolutePath() + "'");
         }
+
+        try {
+            FileUtils.deleteDirectory(tmpFolder);
+        } catch (IOException e) {
+            log.warn("Warning: failed to delete temporary folder: " + tmpFolder.getAbsolutePath());
+        }
+
         return tempFile;
     }
 
@@ -58,69 +78,105 @@ public abstract class OsaUtils {
         return String.format(url + "/CxWebClient/portal#/projectState/%s/OSA", projectId);
     }
 
+    private static File createTempDirectory()
+            throws IOException {
+        final File temp;
 
-    private static String generatePattern(String folderExclusions, String filterPattern) throws IOException, InterruptedException {
+        temp = File.createTempFile(TEMP_COPIED_FOLDER, Long.toString(System.nanoTime()));
 
-        String excludeFoldersPattern = processExcludeFolders(folderExclusions);
-        String excludeFilesPattern = processExcludeFiles(filterPattern);
-
-        if (!StringUtils.isEmpty(excludeFilesPattern) && !StringUtils.isEmpty(excludeFoldersPattern)) {
-            return excludeFilesPattern + "," + excludeFoldersPattern;
-        } else {
-            return excludeFilesPattern + excludeFoldersPattern;
+        if (!(temp.delete())) {
+            throw new IOException("Could not delete temp file: " + temp.getAbsolutePath());
         }
+
+        if (!(temp.mkdir())) {
+            throw new IOException("Could not create temp directory: " + temp.getAbsolutePath());
+        }
+
+        return (temp);
     }
 
-    private static String processExcludeFolders(String folderExclusions) {
-        if (StringUtils.isEmpty(folderExclusions)) {
-            return "";
-        }
-        StringBuilder result = new StringBuilder();
-        folderExclusions = folderExclusions.replace(",,", ",");
-        String[] patterns = StringUtils.split(folderExclusions, ",\n");
+    private static String[] generateExcludePattern(String[] folderExclusions, String[] filterPattern) throws IOException, InterruptedException {
 
-        for (String p : patterns) {
+        String[] excludeFoldersPattern = processExcludeFolders(folderExclusions);
+        String[] excludeFilesPattern = processPatternFiles(filterPattern);
+
+        return ArrayUtils.addAll(excludeFilesPattern, excludeFoldersPattern);
+    }
+
+    private static String[] processExcludeFolders(String[] folderExclusions) {
+        if (folderExclusions == null) {
+            return folderExclusions;
+        }
+
+        List<String> result = new ArrayList<>();
+
+
+        for (String p : folderExclusions) {
             p = p.trim();
             if (p.length() > 0 && !p.equals("null")) {
-                result.append("!**/");
-                result.append(p);
-                result.append("/**/*, ");
+                result.add("!**/" + p + "/**/*, ");
             }
         }
-        log.debug("Exclude folders converted to: '" + result.toString() + "'");
-        return result.toString();
+        log.debug("Exclude folders converted to: '" + folderExclusions.toString() + "'");
+        return folderExclusions;
     }
 
-    private static String processExcludeFiles(String filesExclusions) {
-        if (StringUtils.isEmpty(filesExclusions)) {
-            return "";
+    private static String[] processPatternFiles(String[] filesExclusions) {
+
+        if (filesExclusions == null) {
+            return filesExclusions;
         }
-        filesExclusions.replace(",,", ",");
-        StringBuilder result = new StringBuilder();
-        filesExclusions = filesExclusions.replace(",,", ",");
-        String[] patterns = StringUtils.split(filesExclusions, ",\n");
-        for (String p : patterns) {
+        List<String> result = new ArrayList<>();
+
+
+        for (String p : filesExclusions) {
             p = p.trim();
             if (p.length() > 0 && !p.equals("null")) {
-                result.append("!**/");
-                result.append(p);
-                result.append(", ");
+                result.add("!**/" + p.replace('\\', '/'));
             }
         }
-        log.debug("Exclude files converted to: '" + result.toString() + "'");
-        return result.toString();
+
+        log.debug("Exclude files converted to: '" + filesExclusions.toString() + "'");
+        return result.toArray(new String[0]);
     }
+
+    private static String[] processIncludedFiles(String configIncluded, String[] fileIncluded) {
+        List<String> defIncludedFiles = new ArrayList<>();
+
+        if (configIncluded != null) {
+            for (String file : StringUtils.split(configIncluded, ",")) {
+                String trimmedPattern = file.trim();
+                if (trimmedPattern != "") {
+                    defIncludedFiles.add("**/" + trimmedPattern.replace('\\', '/'));
+                }
+            }
+        }
+
+        if (fileIncluded != null) {
+            for (String file : fileIncluded) {
+                String trimmedPattern = file.trim();
+                if (trimmedPattern != "") {
+                    defIncludedFiles.add("**/" + trimmedPattern.replace('\\', '/'));
+                }
+            }
+        }
+
+        return defIncludedFiles.toArray(new String[0]);
+    }
+
 
     public static void deleteTempFiles() {
 
         try {
             String tempDir = System.getProperty("java.io.tmpdir");
-            CxFileChecker.deleteFile(tempDir, TEMP_FILE_NAME_TO_ZIP, log);
+            CxFileUtils.deleteTempPath(tempDir, TEMP_FILE_NAME_TO_ZIP, log);
+            CxFileUtils.deleteTempPath(tempDir, TEMP_COPIED_FOLDER, log);
         } catch (Exception e) {
             log.error("Failed to delete temp files: " + e.getMessage());
         }
 
     }
+
     public static void setLogger(Logger log) {
         OsaUtils.log = log;
     }

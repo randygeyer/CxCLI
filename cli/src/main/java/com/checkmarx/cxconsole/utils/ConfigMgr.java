@@ -11,12 +11,18 @@ import java.nio.file.FileSystems;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
+import com.checkmarx.cxviewer.ws.WSMgr;
+import com.checkmarx.cxviewer.ws.resolver.CxClientType;
+
 /**
- * Class responsible for loading CxConsole properties from corresponding
+ * Class responsible for loading CxConsole properties from corresponding 
  * config folder <br>
  * Properties should be stored in file {user.dir}/config/cx_console.properties
- *
+ * 
  * @author Oleksiy Mysnyk
+ *
  */
 public class ConfigMgr {
 
@@ -29,6 +35,7 @@ public class ConfigMgr {
     public static String REPORT_TIMEOUT = "scan.job.report.timeout";
     public static String KEY_EXCLUDED_FOLDERS = "scan.zip.ignored.folders";
     public static String KEY_EXCLUDED_FILES = "scan.zip.ignored.files";
+    public static String KEY_OSA_INCLUDED_FILES = "scan.zip.osa.include.files";
     public static String KEY_MAX_ZIP_SIZE = "scan.zip.max_size";
     public static String KEY_OSA_MAX_ZIP_SIZE = "scan.osa.zip.max_size";
     public static String KEY_DEF_LOG_NAME = "scan.log.default.filename";

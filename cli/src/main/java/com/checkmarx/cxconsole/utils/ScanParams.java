@@ -53,9 +53,10 @@ public class ScanParams {
     private boolean hasUserParam = false;
     private boolean isPerforceWorkspaceMode = false;
     private boolean isOsaEnabled = false;
-    private String osaLocationPath;
+    private String[] osaLocationPath  = new String[]{};
     private String[] osaExcludedFolders = new String[]{};
     private String[] osaExcludedFiles = new String[]{};
+    private String[] osaIncludedFiles = new String[]{};
     private String osaReportPDF;
     private String osaReportHTML;
     private String osaJson;
@@ -175,9 +176,10 @@ public class ScanParams {
         }
 
         isOsaEnabled = commandLine.hasOption(PARAM_ENABLE_OSA.getOpt());
-        osaLocationPath = commandLine.getOptionValue(PARAM_OSA_LOCATION_PATH.getOpt());
-        osaExcludedFiles = commandLine.getOptionValues(PARAM_OSA_EXCLUDE_FILES.getOpt());
+        osaLocationPath = commandLine.getOptionValues(PARAM_OSA_LOCATION_PATH.getOpt());
         osaExcludedFolders = commandLine.getOptionValues(PARAM_OSA_EXCLUDE_FOLDERS.getOpt());
+        osaExcludedFiles = commandLine.getOptionValues(PARAM_OSA_EXCLUDE_FILES.getOpt());
+        osaIncludedFiles = commandLine.getOptionValues(PARAM_OSA_INCLUDE_FILES.getOpt());
         osaReportHTML = getOptionalValue(commandLine, PARAM_OSA_HTML_FILE.getOpt());
         osaReportPDF = getOptionalValue(commandLine, PARAM_OSA_PDF_FILE.getOpt());
         osaJson = getOptionalValue(commandLine, PARAM_OSA_JSON.getOpt());
@@ -429,11 +431,11 @@ public class ScanParams {
         isOsaEnabled = osaEnabled;
     }
 
-    public String getOsaLocationPath() {
+    public String[] getOsaLocationPath() {
         return osaLocationPath;
     }
 
-    public void setOsaLocationPath(String osaLocationPath) {
+    public void setOsaLocationPath(String[] osaLocationPath) {
         this.osaLocationPath = osaLocationPath;
     }
 
@@ -451,6 +453,14 @@ public class ScanParams {
 
     public void setOsaExcludedFiles(String[] osaExcludedFiles) {
         this.osaExcludedFiles = osaExcludedFiles;
+    }
+
+    public String[] getOsaIncludedFiles() {
+        return osaIncludedFiles;
+    }
+
+    public void setOsaIncludedFiles(String[] osaIncludedFiles) {
+        this.osaIncludedFiles = osaIncludedFiles;
     }
 
     public String getOsaReportPDF() {

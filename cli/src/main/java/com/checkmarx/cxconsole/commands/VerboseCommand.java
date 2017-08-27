@@ -7,6 +7,7 @@ import org.apache.commons.cli.OptionBuilder;
 import java.io.IOException;
 
 /**
+ * 
  * @author Oleksiy Mysnyk
  */
 public abstract class VerboseCommand extends CxConsoleCommand {

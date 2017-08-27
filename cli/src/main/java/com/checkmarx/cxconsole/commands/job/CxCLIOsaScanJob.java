@@ -66,10 +66,10 @@ public class CxCLIOsaScanJob extends CxScanJob {
             }
 
             OsaUtils.setLogger(log);
-            String osaLocationPath = params.getOsaLocationPath() != null ? params.getOsaLocationPath() : params.getLocationPath();
-            log.info("OSA source location: " + osaLocationPath);
+            String[] osaLocationPath = params.getOsaLocationPath() != null? params.getOsaLocationPath() :  new String[] {params.getLocationPath()};
+            log.info("OSA source location: " + StringUtils.join(osaLocationPath, ", "));
             log.info("Zipping dependencies");
-            File zipForOSA = OsaUtils.zipWorkspaceFolder(StringUtils.join(params.getOsaExcludedFiles(), ','), StringUtils.join(params.getOsaExcludedFolders(), ','), maxZipSize, osaLocationPath, log);
+            File zipForOSA = OsaUtils.zipWorkspaceFolder(params.getOsaExcludedFiles(), params.getOsaExcludedFolders(),params.getOsaIncludedFiles(), maxZipSize, osaLocationPath, log);
             log.info("Sending OSA scan request");
             CreateOSAScanResponse osaScan = restClient.createOSAScan(projectId, zipForOSA);
             osaProjectSummaryLink = OsaUtils.composeProjectOSASummaryLink(params.getOriginHost(), projectId);

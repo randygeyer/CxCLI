@@ -15,10 +15,11 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static com.checkmarx.cxconsole.commands.CxConsoleCommand.CODE_ERRROR;
+import static com.checkmarx.cxconsole.commands.CxConsoleCommand.*;
 
 /**
  * @author Oleksiy Mysnyk
+ *
  */
 public class CxConsoleLauncher {
 
@@ -34,7 +35,6 @@ public class CxConsoleLauncher {
 
     /**
      * Entry point to CxScan Console
-     *
      * @param args
      */
 
@@ -46,12 +46,14 @@ public class CxConsoleLauncher {
     /**
      * Entry point to CxScan Console that returns exitCode
      * This entry point is used by Jenkins plugin
-     *
      * @param args
      */
 
     public static int runCli(String[] args) {
         try {
+
+            log.info("CxConsole version " + ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_VERSION));
+            log.info("CxConsole scan session started");
             if (args == null || args.length == 0) {
                 log.fatal("Missing command name. Available commands: " + CommandsFactory.getCommandNames());
                 return CODE_ERRROR;
