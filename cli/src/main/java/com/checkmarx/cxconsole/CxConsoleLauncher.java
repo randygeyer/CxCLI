@@ -52,17 +52,14 @@ public class CxConsoleLauncher {
     public static int runCli(String[] args) {
         try {
 
-            log.info("CxConsole version " + ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_VERSION));
-            log.info("CxConsole scan session started");
-            if (args == null || args.length == 0) {
-                log.fatal("Missing command name. Available commands: " + CommandsFactory.getCommandNames());
-                return CODE_ERRROR;
-            }
-
             log.info("CxConsole version " + BuildVersion.getBuildVersion());
             log.info("CxConsole scan session started");
             log.info("");
 
+            if (args == null || args.length == 0) {
+                log.fatal("Missing command name. Available commands: " + CommandsFactory.getCommandNames());
+                return CODE_ERRROR;
+            }
 
             ArrayList<String> customArgs = new CustomStringList(Arrays.asList(args));
 
