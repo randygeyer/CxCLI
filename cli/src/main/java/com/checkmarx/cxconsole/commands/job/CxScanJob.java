@@ -110,8 +110,8 @@ public class CxScanJob implements Callable<Integer> {
 				if (r.getSessionId() != null && !r.getSessionId().isEmpty()) {
 					sessionId = r.getSessionId();
 				} else {
-					String message = "Unsuccessful login. ";
-					message += ((r.getErrorMessage() != null && !r.getErrorMessage().isEmpty()) ? " Error messge:" + r.getErrorMessage() : "Login or password might be incorrect.");
+					String message = "Unsuccessful login.";
+					message += ((r.getErrorMessage() != null && !r.getErrorMessage().isEmpty()) ? " Error message:" + r.getErrorMessage() : "Login or password might be incorrect.");
 					if (log.isEnabledFor(Level.TRACE)) {
 						log.trace(message);
 					}
@@ -344,7 +344,7 @@ public class CxScanJob implements Callable<Integer> {
 			request = (HttpURLConnection) connectUrl.openConnection();
 		} catch (IOException ex) {
 			if (log.isEnabledFor(Level.INFO)) {
-				log.info("Error retieving PDF results URL. Failed to open connection");
+				log.info("Error retrieving PDF results URL. Failed to open connection");
 			}
 			if (log.isEnabledFor(Level.TRACE)) {
 				log.trace("", ex);
@@ -442,7 +442,7 @@ public class CxScanJob implements Callable<Integer> {
 						log.trace("Error occurred during retiable operation", e);
 					}
 					if (log.isEnabledFor(Level.INFO)) {
-						log.info("Error occured during " + getOperationName() + ". Operation retry " + count);
+						log.info("Error occurred during " + getOperationName() + ". Operation retry " + count);
 					}
 				}
 			}

@@ -36,7 +36,7 @@ public abstract class CxConsoleCommand {
     /**
      * Error code indicating that error occurred during command execution
      */
-    public static final int CODE_ERRROR = 1;
+    public static final int CODE_ERROR = 1;
 
     /*
      * Error code indicating whether command execution was successful
