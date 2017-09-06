@@ -129,7 +129,7 @@ public class ScanCommand extends GeneralScanCommand {
                 if (log.isEnabledFor(Level.ERROR)) {
                     log.error("Private key file not found [ " + scParams.getLocationPrivateKey() + "]");
                 }
-                errorCode = CODE_ERRROR;
+                errorCode = CODE_ERROR;
                 return;
             } catch (IOException ex) {
                 if (log.isEnabledFor(Level.TRACE)) {
@@ -138,7 +138,7 @@ public class ScanCommand extends GeneralScanCommand {
                 if (log.isEnabledFor(Level.ERROR)) {
                     log.error("Error reading private key file. " + ex.getMessage());
                 }
-                errorCode = CODE_ERRROR;
+                errorCode = CODE_ERROR;
                 return;
             } finally {
                 if (in != null) {
@@ -159,7 +159,7 @@ public class ScanCommand extends GeneralScanCommand {
             job = new CxCLIScanJob(scParams);
         } else {
             log.error("Command was not found. Available commands:\n" + CommandsFactory.getCommandNames());
-            errorCode = CODE_ERRROR;
+            errorCode = CODE_ERROR;
             return;
         }
         job.setLog(log);
@@ -175,7 +175,7 @@ public class ScanCommand extends GeneralScanCommand {
             if (log.isEnabledFor(Level.DEBUG)) {
                 log.debug(scanType + "Scan job was interrupted.", e);
             }
-            errorCode = CODE_ERRROR;
+            errorCode = CODE_ERROR;
         } catch (ExecutionException e) {
             if (log.isEnabledFor(Level.ERROR)) {
                 if (e.getCause().getMessage() != null) {
@@ -189,7 +189,7 @@ public class ScanCommand extends GeneralScanCommand {
             if (log.isEnabledFor(Level.TRACE)) {
                 log.trace("Error during " + scanType + " scan job execution.", e);
             }
-            errorCode = CODE_ERRROR;
+            errorCode = CODE_ERROR;
         } catch (TimeoutException e) {
             if (log.isEnabledFor(Level.ERROR)) {
                 log.error(scanType + "Scan job failed due to timeout.");
@@ -197,7 +197,7 @@ public class ScanCommand extends GeneralScanCommand {
             if (log.isEnabledFor(Level.TRACE)) {
                 log.trace(scanType + "Scan job failed due to timeout.", e);
             }
-            errorCode = CODE_ERRROR;
+            errorCode = CODE_ERROR;
         } finally {
             if (executor != null) {
                 executor.shutdownNow();
