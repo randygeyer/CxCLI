@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import static com.checkmarx.cxconsole.commands.CxConsoleCommand.CODE_ERROR;
+import static com.checkmarx.errors.ErrorHandler.errorCodeResolver;
+import static com.checkmarx.errors.ErrorHandler.errorMsgResolver;
 
 /**
  * @author Oleksiy Mysnyk
@@ -34,28 +36,21 @@ public class CxConsoleLauncher {
     public static String COMM_CONNECT = "connect";
     public static String COMM_QUIT = "quit";
 
-
     /**
      * Entry point to CxScan Console
      *
      * @param args
      */
-
     public static void main(String[] args) {
         int exitCode = -1;
         log.setLevel(Level.TRACE);
-//        Runtime.getRuntime().addShutdownHook(new Thread() {
-//            @Override
-//            public void run() {
-//                log.error("Failure - batch job terminated - error code " + 130);
-//            }
-//        });
 
         exitCode = runCli(args);
         if (exitCode == SCAN_SUCCEEDED) {
             log.info("Scan completed successfully - exit code " + exitCode);
         } else {
-            log.error("Failure - {error description - to be added} - error code " + exitCode);
+
+            log.error("Failure - " + errorMsgResolver(exitCode) + " - error code " + exitCode);
         }
 
         System.exit(exitCode);
@@ -67,7 +62,6 @@ public class CxConsoleLauncher {
      *
      * @param args
      */
-
     public static int runCli(String[] args) {
         try {
 
@@ -118,7 +112,7 @@ public class CxConsoleLauncher {
                     log.trace("", e);
                     log.fatal(MSG_ERR_SRV_NAME_OR_NETWORK + " Error message: " + e.getMessage() + "\n");
                     command.printHelp();
-                    return CODE_ERROR;
+                    return errorCodeResolver(e.getMessage());
                 }
                 command.checkParameters();
             } catch (ParseException e) {

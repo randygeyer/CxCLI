@@ -13,6 +13,8 @@ import java.io.*;
 import java.nio.file.Paths;
 import java.util.concurrent.*;
 
+import static com.checkmarx.errors.ErrorHandler.errorCodeResolver;
+
 public class ScanCommand extends GeneralScanCommand {
 
     public static String COMMAND_SCAN = Commands.SCAN.value();
@@ -189,7 +191,7 @@ public class ScanCommand extends GeneralScanCommand {
             if (log.isEnabledFor(Level.TRACE)) {
                 log.trace("Error during " + scanType + " scan job execution.", e);
             }
-            errorCode = CODE_ERROR;
+            errorCode = errorCodeResolver(e.getCause().getMessage());
         } catch (TimeoutException e) {
             if (log.isEnabledFor(Level.ERROR)) {
                 log.error(scanType + "Scan job failed due to timeout.");
