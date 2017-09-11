@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static com.checkmarx.cxconsole.commands.CxConsoleCommand.CODE_ERROR;
+import static com.checkmarx.errors.Constants.ErrorCodes.GENERAL_ERROR_CODE;
 import static com.checkmarx.errors.ErrorHandler.errorCodeResolver;
 import static com.checkmarx.errors.ErrorHandler.errorMsgResolver;
 
@@ -71,7 +71,7 @@ public class CxConsoleLauncher {
 
             if (args == null || args.length == 0) {
                 log.fatal("Missing command name. Available commands: " + CommandsFactory.getCommandNames());
-                return CODE_ERROR;
+                return GENERAL_ERROR_CODE;
             }
 
             ArrayList<String> customArgs = new CustomStringList(Arrays.asList(args));
@@ -99,7 +99,7 @@ public class CxConsoleLauncher {
             if (command == null) {
                 log.error("Command \"" + commandName + "\" was not found. Available commands:\n"
                         + CommandsFactory.getCommandNames());
-                return CODE_ERROR;
+                return GENERAL_ERROR_CODE;
             }
 
             try {
@@ -118,15 +118,15 @@ public class CxConsoleLauncher {
             } catch (ParseException e) {
                 log.fatal(INVALID_COMMAND_PARAMETERS_MSG + e.getMessage() + "\n");
                 command.printHelp();
-                return CODE_ERROR;
+                return errorCodeResolver(e.getCause().getMessage());
             } catch (CommandLineArgumentException e) {
                 log.fatal(INVALID_COMMAND_PARAMETERS_MSG + e.getMessage() + "\n");
                 command.printHelp();
-                return CODE_ERROR;
+                return errorCodeResolver(e.getCause().getMessage());
             } catch (Exception e) {
                 log.fatal(INVALID_COMMAND_PARAMETERS_MSG + e.getMessage() + "\n");
                 command.printHelp();
-                return CODE_ERROR;
+                return errorCodeResolver(e.getCause().getMessage());
             }
 
 
@@ -136,11 +136,11 @@ public class CxConsoleLauncher {
 
         } catch (org.apache.commons.cli.ParseException e) {
             // Ignore, the exception is handled in above catch statement
-            return CODE_ERROR;
+            return errorCodeResolver(e.getCause().getMessage());
         } catch (Throwable e) {
             log.error("Unexpected error occurred during console session.Error message:\n" + e.getMessage());
             log.info("", e);
-            return CODE_ERROR;
+            return errorCodeResolver(e.getCause().getMessage());
         }
     }
 }

@@ -33,11 +33,6 @@ public abstract class CxConsoleCommand {
      */
     public static final int CODE_OK = 0;
 
-    /**
-     * Error code indicating that error occurred during command execution
-     */
-    public static final int CODE_ERROR = 1;
-
     /*
      * Error code indicating whether command execution was successful
      */
