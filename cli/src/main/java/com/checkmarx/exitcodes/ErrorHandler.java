@@ -19,6 +19,10 @@ public class ErrorHandler {
             isInitiated = true;
         }
 
+        if (errorMsg == null) {
+            return GENERAL_ERROR_CODE;
+        }
+
         Integer retVal = null;
         for (Map.Entry<String, Integer> entry : errorMsgToCodeMap.entrySet()) {
             if (errorMsg.toLowerCase().contains(entry.getKey().toLowerCase())) {

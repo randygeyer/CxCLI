@@ -75,11 +75,11 @@ public class ScanCommand extends GeneralScanCommand {
     public static final Option PARAM_OSA_LOCATION_PATH = OptionBuilder.hasArgs().withArgName("folders list").withDescription("Comma separated list of folder path patterns(Local or shared path ) to OSA sources.").withValueSeparator(',').create("OsaLocationPath");
 
 
-    public static final Option PARAM_SAST_LOW_THRESHOLD = OptionBuilder.hasArgs().withDescription("SAST low severity vulnerability threshold. If the number of low vulnerabilities exceeds the threshold, scan will end with an error").create("SASTLow");
+    public static final Option PARAM_SAST_LOW_THRESHOLD = OptionBuilder.hasArgs().withArgName("number of low SAST vulnerabilities").withDescription("SAST low severity vulnerability threshold. If the number of low vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").create("SASTLow");
 
-    public static final Option PARAM_SAST_MEDIUM_THRESHOLD = OptionBuilder.hasArgs().withDescription("SAST medium severity vulnerability threshold. If the number of medium vulnerabilities exceeds the threshold, scan will end with an error").create("SASTMedium");
+    public static final Option PARAM_SAST_MEDIUM_THRESHOLD = OptionBuilder.hasArgs().withArgName("number of medium SAST vulnerabilities").withDescription("SAST medium severity vulnerability threshold. If the number of medium vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").create("SASTMedium");
 
-    public static final Option PARAM_SAST_HIGH_THRESHOLD = OptionBuilder.hasArgs().withDescription("SAST high severity vulnerability threshold. If the number of high vulnerabilities exceeds the threshold, scan will end with an error").create("SASTHigh");
+    public static final Option PARAM_SAST_HIGH_THRESHOLD = OptionBuilder.hasArgs().withArgName("number of high SAST vulnerabilities").withDescription("SAST high severity vulnerability threshold. If the number of high vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").create("SASTHigh");
 
 
     public static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";

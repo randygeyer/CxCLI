@@ -100,13 +100,19 @@ public class ScanParams {
     private String osaReportHTML;
     private String osaJson;
     private boolean isSastThresholdEnabled = false;
-    private int sastLowThreshold = -1;
-    private int sastMediumThreshold = -1;
-    private int sastHighThreshold = -1;
+    private int sastLowThresholdValue = Integer.MAX_VALUE;
+    private int sastMediumThresholdValue = Integer.MAX_VALUE;
+    private int sastHighThresholdValue = Integer.MAX_VALUE;
+    private String sastLowThresholdStr;
+    private String sastMediumThresholdStr;
+    private String sastHighThresholdStr;
     private boolean isOsaThresholdEnabled = false;
-    private int osaLowThreshold = -1;
-    private int osaMediumThreshold = -1;
-    private int osaHighThreshold = -1;
+    private int osaLowThresholdValue = Integer.MAX_VALUE;
+    private int osaMediumThresholdValue = Integer.MAX_VALUE;
+    private int osaHighThresholdValue = Integer.MAX_VALUE;
+    private String osaLowThresholdStr;
+    private String osaMediumThresholdStr;
+    private String osaHighThresholdStr;
 
     public ScanParams(CommandLine commandLine) {
         this.host = commandLine.getOptionValue(PARAM_HOST.getOpt());
@@ -231,20 +237,40 @@ public class ScanParams {
         osaReportPDF = getOptionalValue(commandLine, PARAM_OSA_PDF_FILE.getOpt());
         osaJson = getOptionalValue(commandLine, PARAM_OSA_JSON.getOpt());
 
-        if (commandLine.hasOption(PARAM_SAST_LOW_THRESHOLD.getOpt()) || commandLine.hasOption(PARAM_SAST_MEDIUM_THRESHOLD.getOpt()) || commandLine.hasOption(PARAM_SAST_HIGH_THRESHOLD.getOpt())) {
+        sastLowThresholdStr = getOptionalValue(commandLine, PARAM_SAST_LOW_THRESHOLD.getOpt());
+        sastMediumThresholdStr = getOptionalValue(commandLine, PARAM_SAST_MEDIUM_THRESHOLD.getOpt());
+        sastHighThresholdStr = getOptionalValue(commandLine, PARAM_SAST_HIGH_THRESHOLD.getOpt());
+        if (sastLowThresholdStr != null  || sastMediumThresholdStr != null || sastHighThresholdStr != null) {
             isSastThresholdEnabled = true;
+            if (sastLowThresholdStr != null) {
+                sastLowThresholdValue = Integer.parseInt(sastLowThresholdStr);
+            }
 
-            sastLowThreshold = Integer.parseInt(getOptionalValue(commandLine, PARAM_SAST_LOW_THRESHOLD.getOpt()));
-            sastMediumThreshold = Integer.parseInt(getOptionalValue(commandLine, PARAM_SAST_MEDIUM_THRESHOLD.getOpt()));
-            sastHighThreshold = Integer.parseInt(getOptionalValue(commandLine, PARAM_SAST_HIGH_THRESHOLD.getOpt()));
+            if (sastMediumThresholdStr != null) {
+                sastMediumThresholdValue = Integer.parseInt(sastMediumThresholdStr);
+            }
+
+            if (sastHighThresholdStr != null) {
+                sastHighThresholdValue = Integer.parseInt(sastHighThresholdStr);
+            }
         }
 
-        if (commandLine.hasOption(PARAM_OSA_LOW_THRESHOLD.getOpt()) || commandLine.hasOption(PARAM_OSA_MEDIUM_THRESHOLD.getOpt()) || commandLine.hasOption(PARAM_OSA_HIGH_THRESHOLD.getOpt())) {
+        osaLowThresholdStr = getOptionalValue(commandLine, PARAM_OSA_LOW_THRESHOLD.getOpt());
+        osaMediumThresholdStr = getOptionalValue(commandLine, PARAM_OSA_MEDIUM_THRESHOLD.getOpt());
+        osaHighThresholdStr = getOptionalValue(commandLine, PARAM_OSA_HIGH_THRESHOLD.getOpt());
+        if (osaLowThresholdStr != null  || osaMediumThresholdStr != null || osaHighThresholdStr != null) {
             isOsaThresholdEnabled = true;
+            if (osaLowThresholdStr != null) {
+                osaLowThresholdValue = Integer.parseInt(osaLowThresholdStr);
+            }
 
-            osaLowThreshold = Integer.parseInt(getOptionalValue(commandLine, PARAM_OSA_LOW_THRESHOLD.getOpt()));
-            osaMediumThreshold = Integer.parseInt(getOptionalValue(commandLine, PARAM_OSA_MEDIUM_THRESHOLD.getOpt()));
-            osaHighThreshold = Integer.parseInt(getOptionalValue(commandLine, PARAM_OSA_HIGH_THRESHOLD.getOpt()));
+            if (osaMediumThresholdStr != null) {
+                osaMediumThresholdValue = Integer.parseInt(osaMediumThresholdStr);
+            }
+
+            if (osaHighThresholdStr != null) {
+                osaHighThresholdValue = Integer.parseInt(osaHighThresholdStr);
+            }
         }
     }
 
@@ -557,28 +583,28 @@ public class ScanParams {
         this.isSastThresholdEnabled = sastThresholdEnabled;
     }
 
-    public int getSastLowThreshold() {
-        return sastLowThreshold;
+    public int getSastLowThresholdValue() {
+        return sastLowThresholdValue;
     }
 
-    public void setSastLowThreshold(int sastLowThreshold) {
-        this.sastLowThreshold = sastLowThreshold;
+    public void setSastLowThresholdValue(int sastLowThresholdValue) {
+        this.sastLowThresholdValue = sastLowThresholdValue;
     }
 
-    public int getSastMediumThreshold() {
-        return sastMediumThreshold;
+    public int getSastMediumThresholdValue() {
+        return sastMediumThresholdValue;
     }
 
-    public void setSastMediumThreshold(int sastMediumThreshold) {
-        this.sastMediumThreshold = sastMediumThreshold;
+    public void setSastMediumThresholdValue(int sastMediumThresholdValue) {
+        this.sastMediumThresholdValue = sastMediumThresholdValue;
     }
 
-    public int getSastHighThreshold() {
-        return sastHighThreshold;
+    public int getSastHighThresholdValue() {
+        return sastHighThresholdValue;
     }
 
-    public void setSastHighThreshold(int sastHighThreshold) {
-        this.sastHighThreshold = sastHighThreshold;
+    public void setSastHighThresholdValue(int sastHighThresholdValue) {
+        this.sastHighThresholdValue = sastHighThresholdValue;
     }
 
     public boolean isOsaThresholdEnabled() {
@@ -589,27 +615,29 @@ public class ScanParams {
         this.isOsaThresholdEnabled = osaThresholdEnabled;
     }
 
-    public int getOsaLowThreshold() {
-        return osaLowThreshold;
+    public int getOsaLowThresholdValue() {
+        return osaLowThresholdValue;
     }
 
-    public void setOsaLowThreshold(int osaLowThreshold) {
-        this.osaLowThreshold = osaLowThreshold;
+    public void setOsaLowThresholdValue(int osaLowThresholdValue) {
+        this.osaLowThresholdValue = osaLowThresholdValue;
     }
 
-    public int getOsaMediumThreshold() {
-        return osaMediumThreshold;
+    public int getOsaMediumThresholdValue() {
+        return osaMediumThresholdValue;
     }
 
-    public void setOsaMediumThreshold(int osaMediumThreshold) {
-        this.osaMediumThreshold = osaMediumThreshold;
+    public void setOsaMediumThresholdValue(int osaMediumThresholdValue) {
+        this.osaMediumThresholdValue = osaMediumThresholdValue;
     }
 
-    public int getOsaHighThreshold() {
-        return osaHighThreshold;
+    public int getOsaHighThresholdValue() {
+        return osaHighThresholdValue;
     }
 
-    public void setOsaHighThreshold(int osaHighThreshold) {
-        this.osaHighThreshold = osaHighThreshold;
+    public void setOsaHighThresholdValue(int osaHighThresholdValue) {
+        this.osaHighThresholdValue = osaHighThresholdValue;
     }
+
+
 }

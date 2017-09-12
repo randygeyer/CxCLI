@@ -9,14 +9,7 @@ import org.apache.commons.cli.Options;
 
 public class OsaScanCommand extends ScanCommand {
 
-    public static final Option PARAM_OSA_LOW_THRESHOLD = OptionBuilder.hasArgs().withDescription("OSA low severity vulnerability threshold. If the number of low vulnerabilities exceeds the threshold, scan will end with an error").create("OSALow");
-
-    public static final Option PARAM_OSA_MEDIUM_THRESHOLD = OptionBuilder.hasArgs().withDescription("OSA medium severity vulnerability threshold. If the number of medium vulnerabilities exceeds the threshold, scan will end with an error").create("OSAMedium");
-
-    public static final Option PARAM_OSA_HIGH_THRESHOLD = OptionBuilder.hasArgs().withDescription("OSA high severity vulnerability threshold. If the number of high vulnerabilities exceeds the threshold, scan will end with an error").create("OSAHigh");
-
     public static String COMMAND_SCAN = Commands.OSASCAN.value();
-
 
     public OsaScanCommand() {
         super();

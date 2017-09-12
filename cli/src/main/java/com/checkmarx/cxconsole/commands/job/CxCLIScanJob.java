@@ -21,6 +21,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED;
+
 public class CxCLIScanJob extends CxScanJob {
 
     private byte[] zippedSourcesBytes;
@@ -31,7 +33,7 @@ public class CxCLIScanJob extends CxScanJob {
     private List<ConfigurationSet> configs;
     private ConfigurationSet selectedConfig;
     private GetProjectConfigResult projectConfig;
-    protected int osaErrorCode = CxConsoleCommand.CODE_OK;
+    protected int osaErrorCode = SCAN_SUCCEEDED;
 
     public CxCLIScanJob(ScanParams params) {
         super(params);
@@ -135,7 +137,7 @@ public class CxCLIScanJob extends CxScanJob {
 
         if (params.isIgnoreScanWithUnchangedSource() && scanId == -1 && waiterJob.getCurrentStatusEnum() == CurrentStatusEnum.FINISHED) {
             log.info("Scan finished with ScanId = (-1): finish Scan Job");
-            return CxConsoleCommand.CODE_OK;
+            return SCAN_SUCCEEDED;
         }
 
         //update scan comment
@@ -187,7 +189,7 @@ public class CxCLIScanJob extends CxScanJob {
             }
         }
 
-        return CxConsoleCommand.CODE_OK;
+        return SCAN_SUCCEEDED;
     }
 
     private LocationType getLocationType(SourceCodeSettings scSettings) {

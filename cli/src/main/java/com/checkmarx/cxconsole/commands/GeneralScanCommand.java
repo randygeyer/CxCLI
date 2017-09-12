@@ -34,6 +34,10 @@ public abstract class GeneralScanCommand extends VerboseCommand {
     public static final Option PARAM_OSA_INCLUDE_FILES = OptionBuilder.hasArgs().withArgName("folders list").withDescription("Comma separated list of files extension to include in OSA scan. Example: '-OsaFilesInclude *.bin' include only files with .bin extension. Optional.").withValueSeparator(',').create("OsaFilesInclude");
     public static final Option PARAM_OSA_EXCLUDE_FOLDERS = OptionBuilder.hasArgs().withArgName("folders list").withDescription("Comma separated list of folder path patterns to exclude from OSA scan. Example: '-OsaPathExclude test' excludes all folders which start with 'test' prefix. Optional.").withValueSeparator(',').create("OsaPathExclude");
 
+	public static final Option PARAM_OSA_LOW_THRESHOLD = OptionBuilder.hasArgs().withArgName("number of low OSA vulnerabilities").withDescription("OSA low severity vulnerability threshold. If the number of low vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").create("OSALow");
+	public static final Option PARAM_OSA_MEDIUM_THRESHOLD = OptionBuilder.hasArgs().withArgName("number of medium OSA vulnerabilities").withDescription("OSA medium severity vulnerability threshold. If the number of medium vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").create("OSAMedium");
+	public static final Option PARAM_OSA_HIGH_THRESHOLD = OptionBuilder.hasArgs().withArgName("number of high OSA vulnerabilities").withDescription("OSA high severity vulnerability threshold. If the number of high vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").create("OSAHigh");
+
 
 
     protected Integer timeout;
@@ -83,6 +87,10 @@ public abstract class GeneralScanCommand extends VerboseCommand {
         this.commandLineOptions.addOption(PARAM_OSA_EXCLUDE_FOLDERS);
         this.commandLineOptions.addOption(PARAM_OSA_EXCLUDE_FILES);
         this.commandLineOptions.addOption(PARAM_OSA_INCLUDE_FILES);
+
+		this.commandLineOptions.addOption(PARAM_OSA_LOW_THRESHOLD);
+		this.commandLineOptions.addOption(PARAM_OSA_MEDIUM_THRESHOLD);
+		this.commandLineOptions.addOption(PARAM_OSA_HIGH_THRESHOLD);
     }
 
 

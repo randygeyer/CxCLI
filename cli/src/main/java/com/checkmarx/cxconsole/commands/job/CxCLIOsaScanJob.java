@@ -1,6 +1,5 @@
 package com.checkmarx.cxconsole.commands.job;
 
-import com.checkmarx.cxconsole.commands.CxConsoleCommand;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxconsole.utils.ScanParams;
 import com.checkmarx.cxosa.CxRestClient;
@@ -139,17 +138,17 @@ public class CxCLIOsaScanJob extends CxScanJob {
         //Osa threshold verification
         if (params.isOsaThresholdEnabled()) {
             int thresholdCounter = NO_THRESHOLD_EXCEEDED;
-            if (osaSummaryResults.getHighVulnerabilityLibraries() > params.getOsaHighThreshold()) {
+            if (osaSummaryResults.getHighVulnerabilityLibraries() > params.getOsaHighThresholdValue()) {
                 log.info(OSA_HIGH_THRESHOLD_ERROR_MSG);
                 thresholdCounter += HIGH_THRESHOLD;
             }
 
-            if (osaSummaryResults.getMediumVulnerabilityLibraries() > params.getOsaMediumThreshold()) {
+            if (osaSummaryResults.getMediumVulnerabilityLibraries() > params.getOsaMediumThresholdValue()) {
                 log.info(OSA_MEDIUM_THRESHOLD_ERROR_MSG);
                 thresholdCounter += MEDIUM_THRESHOLD;
             }
 
-            if (osaSummaryResults.getLowVulnerabilityLibraries() > params.getOsaLowThreshold()) {
+            if (osaSummaryResults.getLowVulnerabilityLibraries() > params.getOsaLowThresholdValue()) {
                 log.info(OSA_LOW_THRESHOLD_ERROR_MSG);
                 thresholdCounter += LOW_THRESHOLD;
             }
