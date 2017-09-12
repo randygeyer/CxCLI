@@ -75,6 +75,13 @@ public class ScanCommand extends GeneralScanCommand {
     public static final Option PARAM_OSA_LOCATION_PATH = OptionBuilder.hasArgs().withArgName("folders list").withDescription("Comma separated list of folder path patterns(Local or shared path ) to OSA sources.").withValueSeparator(',').create("OsaLocationPath");
 
 
+    public static final Option PARAM_SAST_LOW_THRESHOLD = OptionBuilder.hasArgs().withDescription("SAST low severity vulnerability threshold. If the number of low vulnerabilities exceeds the threshold, scan will end with an error").create("SASTLow");
+
+    public static final Option PARAM_SAST_MEDIUM_THRESHOLD = OptionBuilder.hasArgs().withDescription("SAST medium severity vulnerability threshold. If the number of medium vulnerabilities exceeds the threshold, scan will end with an error").create("SASTMedium");
+
+    public static final Option PARAM_SAST_HIGH_THRESHOLD = OptionBuilder.hasArgs().withDescription("SAST high severity vulnerability threshold. If the number of high vulnerabilities exceeds the threshold, scan will end with an error").create("SASTHigh");
+
+
     public static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
 
     public static String MSG_ERR_SSO_WINDOWS_SUPPORT = "SSO login method is available only on Windows";
@@ -106,6 +113,9 @@ public class ScanCommand extends GeneralScanCommand {
         this.commandLineOptions.addOption(PARAM_WORKSPACE);
         this.commandLineOptions.addOption(PARAM_ENABLE_OSA);
         this.commandLineOptions.addOption(PARAM_OSA_LOCATION_PATH);
+        this.commandLineOptions.addOption(PARAM_SAST_LOW_THRESHOLD);
+        this.commandLineOptions.addOption(PARAM_SAST_MEDIUM_THRESHOLD);
+        this.commandLineOptions.addOption(PARAM_SAST_HIGH_THRESHOLD);
     }
 
     @Override

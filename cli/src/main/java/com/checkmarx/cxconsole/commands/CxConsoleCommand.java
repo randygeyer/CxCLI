@@ -27,7 +27,6 @@ public abstract class CxConsoleCommand {
 
     public static final String KEY_DESCR_INTEND_SINGLE = "\t";
     public static final String KEY_DESCR_INTEND_SMALL = "\t\t";
-    public static final String KEY_DESCR_INTEND = "\t\t\t";
     /**
      * Error code indicating command executed successfully
      */

@@ -4,7 +4,46 @@ import org.apache.commons.cli.CommandLine;
 
 import java.io.File;
 
-import static com.checkmarx.cxconsole.commands.ScanCommand.*;
+import static com.checkmarx.cxconsole.commands.OsaScanCommand.*;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_CONFIGURATION;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_CSV_FILE;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_ENABLE_OSA;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_EXCLUDE_FILES;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_EXCLUDE_FOLDERS;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_FORCE_SCAN;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_HOST;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_INCREMENTAL;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_LOCATION_BRANCH;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_LOCATION_PATH;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_LOCATION_PORT;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_LOCATION_PRIVATE_KEY;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_LOCATION_PWD;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_LOCATION_TYPE;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_LOCATION_URL;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_LOCATION_USER;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_LOG_FILE;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_OSA_EXCLUDE_FILES;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_OSA_EXCLUDE_FOLDERS;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_OSA_HTML_FILE;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_OSA_INCLUDE_FILES;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_OSA_JSON;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_OSA_LOCATION_PATH;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_OSA_PDF_FILE;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_PASSWORD;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_PDF_FILE;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_PRESET;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_PRIVATE;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_PRJ_NAME;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_RTF_FILE;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_SAST_HIGH_THRESHOLD;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_SAST_LOW_THRESHOLD;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_SAST_MEDIUM_THRESHOLD;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_SCAN_COMMENT;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_USER;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_USE_SSO;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_VERBOSE;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_WORKSPACE;
+import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_XML_FILE;
 
 
 /**
@@ -53,13 +92,21 @@ public class ScanParams {
     private boolean hasUserParam = false;
     private boolean isPerforceWorkspaceMode = false;
     private boolean isOsaEnabled = false;
-    private String[] osaLocationPath  = new String[]{};
+    private String[] osaLocationPath = new String[]{};
     private String[] osaExcludedFolders = new String[]{};
     private String[] osaExcludedFiles = new String[]{};
     private String[] osaIncludedFiles = new String[]{};
     private String osaReportPDF;
     private String osaReportHTML;
     private String osaJson;
+    private boolean isSastThresholdEnabled = false;
+    private int sastLowThreshold = -1;
+    private int sastMediumThreshold = -1;
+    private int sastHighThreshold = -1;
+    private boolean isOsaThresholdEnabled = false;
+    private int osaLowThreshold = -1;
+    private int osaMediumThreshold = -1;
+    private int osaHighThreshold = -1;
 
     public ScanParams(CommandLine commandLine) {
         this.host = commandLine.getOptionValue(PARAM_HOST.getOpt());
@@ -184,6 +231,21 @@ public class ScanParams {
         osaReportPDF = getOptionalValue(commandLine, PARAM_OSA_PDF_FILE.getOpt());
         osaJson = getOptionalValue(commandLine, PARAM_OSA_JSON.getOpt());
 
+        if (commandLine.hasOption(PARAM_SAST_LOW_THRESHOLD.getOpt()) || commandLine.hasOption(PARAM_SAST_MEDIUM_THRESHOLD.getOpt()) || commandLine.hasOption(PARAM_SAST_HIGH_THRESHOLD.getOpt())) {
+            isSastThresholdEnabled = true;
+
+            sastLowThreshold = Integer.parseInt(getOptionalValue(commandLine, PARAM_SAST_LOW_THRESHOLD.getOpt()));
+            sastMediumThreshold = Integer.parseInt(getOptionalValue(commandLine, PARAM_SAST_MEDIUM_THRESHOLD.getOpt()));
+            sastHighThreshold = Integer.parseInt(getOptionalValue(commandLine, PARAM_SAST_HIGH_THRESHOLD.getOpt()));
+        }
+
+        if (commandLine.hasOption(PARAM_OSA_LOW_THRESHOLD.getOpt()) || commandLine.hasOption(PARAM_OSA_MEDIUM_THRESHOLD.getOpt()) || commandLine.hasOption(PARAM_OSA_HIGH_THRESHOLD.getOpt())) {
+            isOsaThresholdEnabled = true;
+
+            osaLowThreshold = Integer.parseInt(getOptionalValue(commandLine, PARAM_OSA_LOW_THRESHOLD.getOpt()));
+            osaMediumThreshold = Integer.parseInt(getOptionalValue(commandLine, PARAM_OSA_MEDIUM_THRESHOLD.getOpt()));
+            osaHighThreshold = Integer.parseInt(getOptionalValue(commandLine, PARAM_OSA_HIGH_THRESHOLD.getOpt()));
+        }
     }
 
 
@@ -485,5 +547,69 @@ public class ScanParams {
 
     public void setOsaJson(String osaJson) {
         this.osaJson = osaJson;
+    }
+
+    public boolean isSastThresholdEnabled() {
+        return isSastThresholdEnabled;
+    }
+
+    public void setSastThresholdEnabled(boolean sastThresholdEnabled) {
+        this.isSastThresholdEnabled = sastThresholdEnabled;
+    }
+
+    public int getSastLowThreshold() {
+        return sastLowThreshold;
+    }
+
+    public void setSastLowThreshold(int sastLowThreshold) {
+        this.sastLowThreshold = sastLowThreshold;
+    }
+
+    public int getSastMediumThreshold() {
+        return sastMediumThreshold;
+    }
+
+    public void setSastMediumThreshold(int sastMediumThreshold) {
+        this.sastMediumThreshold = sastMediumThreshold;
+    }
+
+    public int getSastHighThreshold() {
+        return sastHighThreshold;
+    }
+
+    public void setSastHighThreshold(int sastHighThreshold) {
+        this.sastHighThreshold = sastHighThreshold;
+    }
+
+    public boolean isOsaThresholdEnabled() {
+        return isOsaThresholdEnabled;
+    }
+
+    public void setOsaThresholdEnabled(boolean osaThresholdEnabled) {
+        this.isOsaThresholdEnabled = osaThresholdEnabled;
+    }
+
+    public int getOsaLowThreshold() {
+        return osaLowThreshold;
+    }
+
+    public void setOsaLowThreshold(int osaLowThreshold) {
+        this.osaLowThreshold = osaLowThreshold;
+    }
+
+    public int getOsaMediumThreshold() {
+        return osaMediumThreshold;
+    }
+
+    public void setOsaMediumThreshold(int osaMediumThreshold) {
+        this.osaMediumThreshold = osaMediumThreshold;
+    }
+
+    public int getOsaHighThreshold() {
+        return osaHighThreshold;
+    }
+
+    public void setOsaHighThreshold(int osaHighThreshold) {
+        this.osaHighThreshold = osaHighThreshold;
     }
 }
