@@ -16,9 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import static com.checkmarx.exitcodes.Constants.ErrorMassages.OSA_HIGH_THRESHOLD_ERROR_MSG;
-import static com.checkmarx.exitcodes.Constants.ErrorMassages.OSA_LOW_THRESHOLD_ERROR_MSG;
-import static com.checkmarx.exitcodes.Constants.ErrorMassages.OSA_MEDIUM_THRESHOLD_ERROR_MSG;
+import static com.checkmarx.exitcodes.Constants.ErrorMassages.*;
 import static com.checkmarx.exitcodes.Constants.ExitCodes.*;
 
 public class CxCLIOsaScanJob extends CxScanJob {
@@ -140,17 +138,21 @@ public class CxCLIOsaScanJob extends CxScanJob {
             int thresholdCounter = NO_THRESHOLD_EXCEEDED;
             if (osaSummaryResults.getHighVulnerabilityLibraries() > params.getOsaHighThresholdValue()) {
                 log.info(OSA_HIGH_THRESHOLD_ERROR_MSG);
-                thresholdCounter += HIGH_THRESHOLD;
+                thresholdCounter = HIGH_THRESHOLD;
             }
 
             if (osaSummaryResults.getMediumVulnerabilityLibraries() > params.getOsaMediumThresholdValue()) {
                 log.info(OSA_MEDIUM_THRESHOLD_ERROR_MSG);
-                thresholdCounter += MEDIUM_THRESHOLD;
+                if (thresholdCounter == NO_THRESHOLD_EXCEEDED) {
+                    thresholdCounter = MEDIUM_THRESHOLD;
+                }
             }
 
             if (osaSummaryResults.getLowVulnerabilityLibraries() > params.getOsaLowThresholdValue()) {
                 log.info(OSA_LOW_THRESHOLD_ERROR_MSG);
-                thresholdCounter += LOW_THRESHOLD;
+                if (thresholdCounter == NO_THRESHOLD_EXCEEDED) {
+                    thresholdCounter = LOW_THRESHOLD;
+                }
             }
 
             switch (thresholdCounter) {
