@@ -17,6 +17,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
+import static com.checkmarx.exitcodes.Constants.ErrorMassages.OSA_HIGH_THRESHOLD_ERROR_MSG;
+import static com.checkmarx.exitcodes.Constants.ErrorMassages.OSA_LOW_THRESHOLD_ERROR_MSG;
+import static com.checkmarx.exitcodes.Constants.ErrorMassages.OSA_MEDIUM_THRESHOLD_ERROR_MSG;
+import static com.checkmarx.exitcodes.Constants.ExitCodes.*;
+
 public class CxCLIOsaScanJob extends CxScanJob {
 
     private String workDirectory = "";
@@ -24,6 +29,11 @@ public class CxCLIOsaScanJob extends CxScanJob {
     private boolean scanOsaOnly = false;
     private long projectId = -1;
     private static final String OSA_REPORT_NAME = "CxOSAReport";
+
+    private static final int LOW_THRESHOLD = 1;
+    private static final int MEDIUM_THRESHOLD = 2;
+    private static final int HIGH_THRESHOLD = 4;
+    private static final int NO_THRESHOLD_EXCEEDED = 0;
 
 
     public CxCLIOsaScanJob(ScanParams params, WSMgr wsMgr, String sessionId, long projectId) {
@@ -41,6 +51,8 @@ public class CxCLIOsaScanJob extends CxScanJob {
 
     @Override
     public Integer call() throws Exception {
+        OSASummaryResults osaSummaryResults;
+        int exitCode;
         try {
             if (scanOsaOnly) {
                 log.info("Project name is \"" + params.getProjName() + "\"");
@@ -66,10 +78,10 @@ public class CxCLIOsaScanJob extends CxScanJob {
             }
 
             OsaUtils.setLogger(log);
-            String[] osaLocationPath = params.getOsaLocationPath() != null? params.getOsaLocationPath() :  new String[] {params.getLocationPath()};
+            String[] osaLocationPath = params.getOsaLocationPath() != null ? params.getOsaLocationPath() : new String[]{params.getLocationPath()};
             log.info("OSA source location: " + StringUtils.join(osaLocationPath, ", "));
             log.info("Zipping dependencies");
-            File zipForOSA = OsaUtils.zipWorkspaceFolder(params.getOsaExcludedFiles(), params.getOsaExcludedFolders(),params.getOsaIncludedFiles(), maxZipSize, osaLocationPath, log);
+            File zipForOSA = OsaUtils.zipWorkspaceFolder(params.getOsaExcludedFiles(), params.getOsaExcludedFolders(), params.getOsaIncludedFiles(), maxZipSize, osaLocationPath, log);
             log.info("Sending OSA scan request");
             CreateOSAScanResponse osaScan = restClient.createOSAScan(projectId, zipForOSA);
             osaProjectSummaryLink = OsaUtils.composeProjectOSASummaryLink(params.getOriginHost(), projectId);
@@ -87,7 +99,7 @@ public class CxCLIOsaScanJob extends CxScanJob {
             log.info("OSA scan finished successfully");
 
             //OSA scan results
-            OSASummaryResults osaSummaryResults = restClient.getOSAScanSummaryResults(osaScan.getScanId());
+            osaSummaryResults = restClient.getOSAScanSummaryResults(osaScan.getScanId());
             printOSAResultsToConsole(osaSummaryResults, osaProjectSummaryLink);
 
             //OSA reports
@@ -124,7 +136,39 @@ public class CxCLIOsaScanJob extends CxScanJob {
             restClient.close();
         }
 
-        return CxConsoleCommand.CODE_OK;
+        //Osa threshold verification
+        if (params.isOsaThresholdEnabled()) {
+            int thresholdCounter = NO_THRESHOLD_EXCEEDED;
+            if (osaSummaryResults.getHighVulnerabilityLibraries() > params.getOsaHighThreshold()) {
+                log.info(OSA_HIGH_THRESHOLD_ERROR_MSG);
+                thresholdCounter += HIGH_THRESHOLD;
+            }
+
+            if (osaSummaryResults.getMediumVulnerabilityLibraries() > params.getOsaMediumThreshold()) {
+                log.info(OSA_MEDIUM_THRESHOLD_ERROR_MSG);
+                thresholdCounter += MEDIUM_THRESHOLD;
+            }
+
+            if (osaSummaryResults.getLowVulnerabilityLibraries() > params.getOsaLowThreshold()) {
+                log.info(OSA_LOW_THRESHOLD_ERROR_MSG);
+                thresholdCounter += LOW_THRESHOLD;
+            }
+
+            switch (thresholdCounter) {
+                case HIGH_THRESHOLD:
+                    return OSA_HIGH_THRESHOLD_ERROR_CODE;
+                case MEDIUM_THRESHOLD:
+                    return OSA_MEDIUM_THRESHOLD_ERROR_CODE;
+                case LOW_THRESHOLD:
+                    return OSA_LOW_THRESHOLD_ERROR_CODE;
+                case NO_THRESHOLD_EXCEEDED:
+                    return SCAN_SUCCEEDED;
+                default:
+                    return GENERIC_THRESHOLD_FAILURE_ERROR_CODE;
+            }
+        }
+
+        return SCAN_SUCCEEDED;
     }
 
     private String resolveReportPath(String ext, String file, String reportName) {

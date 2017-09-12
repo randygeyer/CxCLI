@@ -13,7 +13,7 @@ import java.io.*;
 import java.nio.file.Paths;
 import java.util.concurrent.*;
 
-import static com.checkmarx.errors.ErrorHandler.errorCodeResolver;
+import static com.checkmarx.exitcodes.ErrorHandler.errorCodeResolver;
 
 public class ScanCommand extends GeneralScanCommand {
 

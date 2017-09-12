@@ -15,9 +15,10 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static com.checkmarx.errors.Constants.ErrorCodes.GENERAL_ERROR_CODE;
-import static com.checkmarx.errors.ErrorHandler.errorCodeResolver;
-import static com.checkmarx.errors.ErrorHandler.errorMsgResolver;
+import static com.checkmarx.exitcodes.Constants.ExitCodes.GENERAL_ERROR_CODE;
+import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED;
+import static com.checkmarx.exitcodes.ErrorHandler.errorCodeResolver;
+import static com.checkmarx.exitcodes.ErrorHandler.errorMsgResolver;
 
 /**
  * @author Oleksiy Mysnyk
@@ -28,7 +29,6 @@ public class CxConsoleLauncher {
 
     private static final String MSG_ERR_SRV_NAME_OR_NETWORK = "Server Name is invalid or network is unavailable.";
     private static final String INVALID_COMMAND_PARAMETERS_MSG = "Command parameters are invalid: ";
-    private static final int SCAN_SUCCEEDED = 0;
 
     /**
      * CxConsole commands

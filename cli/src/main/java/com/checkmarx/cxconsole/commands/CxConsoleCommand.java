@@ -14,6 +14,7 @@ import java.io.File;
 
 import static com.checkmarx.cxconsole.commands.GeneralScanCommand.PARAM_LOG_FILE;
 import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_PRJ_NAME;
+import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED;
 
 import java.io.IOException;
 
@@ -27,15 +28,11 @@ public abstract class CxConsoleCommand {
 
     public static final String KEY_DESCR_INTEND_SINGLE = "\t";
     public static final String KEY_DESCR_INTEND_SMALL = "\t\t";
-    /**
-     * Error code indicating command executed successfully
-     */
-    public static final int CODE_OK = 0;
 
     /*
      * Error code indicating whether command execution was successful
      */
-    protected int errorCode = CODE_OK;
+    protected int errorCode = SCAN_SUCCEEDED;
 
     /**
      * Definition of command line parameters to be used by Apache CLI parser
