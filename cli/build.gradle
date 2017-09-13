@@ -56,7 +56,8 @@ dependencies {
             'org.apache.httpcomponents:httpmime:4.4.1',
             'javax.ws.rs:javax.ws.rs-api:2.0.1',
             'com.fasterxml.jackson.core:jackson-databind:2.8.7',
-            'commons-io:commons-io:2.5'
+            'commons-io:commons-io:2.5',
+            'com.cx.sdk:CX-SDK-API:1.0-SNAPSHOT'
 }
 
 wsdl2java {
