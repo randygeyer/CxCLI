@@ -112,7 +112,7 @@ public class CxCLIScanJob extends CxScanJob {
         // wait for scan completion
         log.info("Waiting for SAST scan to finish.");
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        WaitScanCompletionJob waiterJob = new WaitScanCompletionJob(wsMgr, sessionId, runId);
+        WaitScanCompletionJob waiterJob = new WaitScanCompletionJob(wsMgr, sessionId, runId, params.getHost());
         waiterJob.setLog(log);
         try {
             Future<Boolean> furute = executor.submit(waiterJob);
