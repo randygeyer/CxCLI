@@ -2,7 +2,6 @@ package com.checkmarx.cxconsole.commands.job;
 
 import com.checkmarx.components.zipper.ZipListener;
 import com.checkmarx.components.zipper.Zipper;
-import com.checkmarx.cxconsole.commands.CxConsoleCommand;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxconsole.utils.LocationType;
 import com.checkmarx.cxconsole.utils.ScanParams;
@@ -11,8 +10,16 @@ import com.checkmarx.cxviewer.ws.results.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.io.StringReader;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,9 +28,21 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED;
+import static com.checkmarx.exitcodes.Constants.ErrorMassages.SAST_HIGH_THRESHOLD_ERROR_MSG;
+import static com.checkmarx.exitcodes.Constants.ErrorMassages.SAST_LOW_THRESHOLD_ERROR_MSG;
+import static com.checkmarx.exitcodes.Constants.ErrorMassages.SAST_MEDIUM_THRESHOLD_ERROR_MSG;
+import static com.checkmarx.exitcodes.Constants.ExitCodes.*;
 
 public class CxCLIScanJob extends CxScanJob {
+
+    private static final int LOW_VULNERABILITY_RESULTS = 0;
+    private static final int MEDIUM_VULNERABILITY_RESULTS = 1;
+    private static final int HIGH_VULNERABILITY_RESULTS = 2;
+
+    private static final int LOW_THRESHOLD = 1;
+    private static final int MEDIUM_THRESHOLD = 2;
+    private static final int HIGH_THRESHOLD = 4;
+    private static final int NO_THRESHOLD_EXCEEDED = 0;
 
     private byte[] zippedSourcesBytes;
     private long projectId = -1;
@@ -33,7 +52,8 @@ public class CxCLIScanJob extends CxScanJob {
     private List<ConfigurationSet> configs;
     private ConfigurationSet selectedConfig;
     private GetProjectConfigResult projectConfig;
-    protected int osaErrorCode = SCAN_SUCCEEDED;
+    private int osaExitCode = SCAN_SUCCEEDED;
+    private int sastExitCode = SCAN_SUCCEEDED;
 
     public CxCLIScanJob(ScanParams params) {
         super(params);
@@ -112,7 +132,7 @@ public class CxCLIScanJob extends CxScanJob {
         // wait for scan completion
         log.info("Waiting for SAST scan to finish.");
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        WaitScanCompletionJob waiterJob = new WaitScanCompletionJob(wsMgr, sessionId, runId, params.getHost());
+        WaitScanCompletionJob waiterJob = new WaitScanCompletionJob(wsMgr, sessionId, runId);
         waiterJob.setLog(log);
         try {
             Future<Boolean> furute = executor.submit(waiterJob);
@@ -134,6 +154,10 @@ public class CxCLIScanJob extends CxScanJob {
         } finally {
             executor.shutdownNow();
         }
+
+        String scanSummary = wsMgr.getScanSummary(params.getOriginHost(), sessionId, scanId);
+        int[] scanResults = parseScanSummary(scanSummary);
+        printSASTResultsToConsole(scanResults);
 
         if (params.isIgnoreScanWithUnchangedSource() && scanId == -1 && waiterJob.getCurrentStatusEnum() == CurrentStatusEnum.FINISHED) {
             log.info("Scan finished with ScanId = (-1): finish Scan Job");
@@ -178,7 +202,7 @@ public class CxCLIScanJob extends CxScanJob {
                 CxScanJob job = new CxCLIOsaScanJob(params, wsMgr, sessionId, projectId);
                 job.setLog(log);
                 Future<Integer> future = osaExecutor.submit(job);
-                osaErrorCode = future.get();
+                osaExitCode = future.get();
             } catch (Exception e) {
                 throw new Exception("An error has occurred during OSA scan: " + e.getMessage(), e);
 
@@ -189,7 +213,103 @@ public class CxCLIScanJob extends CxScanJob {
             }
         }
 
-        return SCAN_SUCCEEDED;
+        //SAST threshold verification
+        if (params.isSastThresholdEnabled()) {
+            switch (calculateThresholdScore(scanResults)) {
+                case HIGH_THRESHOLD:
+                    sastExitCode = SAST_HIGH_THRESHOLD_ERROR_CODE;
+                    break;
+                case MEDIUM_THRESHOLD:
+                    sastExitCode = SAST_MEDIUM_THRESHOLD_ERROR_CODE;
+                    break;
+                case LOW_THRESHOLD:
+                    sastExitCode = SAST_LOW_THRESHOLD_ERROR_CODE;
+                    break;
+                case NO_THRESHOLD_EXCEEDED:
+                    sastExitCode = SCAN_SUCCEEDED;
+                    break;
+                default:
+                    sastExitCode = GENERIC_THRESHOLD_FAILURE_ERROR_CODE;
+                    break;
+            }
+        }
+
+        if (sastExitCode == SCAN_SUCCEEDED && osaExitCode != SCAN_SUCCEEDED) {
+            return osaExitCode;
+        }
+        else if (sastExitCode != SCAN_SUCCEEDED && osaExitCode == SCAN_SUCCEEDED) {
+            return sastExitCode;
+        }
+        else if (sastExitCode != SCAN_SUCCEEDED && osaExitCode != SCAN_SUCCEEDED) {
+            return GENERIC_THRESHOLD_FAILURE_ERROR_CODE;
+        }
+        else {
+            return SCAN_SUCCEEDED;
+        }
+    }
+
+    private int calculateThresholdScore(int[] scanResults) {
+        int thresholdScore = NO_THRESHOLD_EXCEEDED;
+        if (scanResults[HIGH_VULNERABILITY_RESULTS] > params.getSastHighThresholdValue()) {
+            log.info(SAST_HIGH_THRESHOLD_ERROR_MSG);
+            thresholdScore = HIGH_THRESHOLD;
+        }
+
+        if (scanResults[MEDIUM_VULNERABILITY_RESULTS] > params.getSastMediumThresholdValue()) {
+            log.info(SAST_MEDIUM_THRESHOLD_ERROR_MSG);
+            if (thresholdScore == NO_THRESHOLD_EXCEEDED) {
+                thresholdScore = MEDIUM_THRESHOLD;
+            }
+        }
+
+        if (scanResults[LOW_VULNERABILITY_RESULTS] > params.getSastLowThresholdValue()) {
+            log.info(SAST_LOW_THRESHOLD_ERROR_MSG);
+            if (thresholdScore == NO_THRESHOLD_EXCEEDED) {
+                thresholdScore = LOW_THRESHOLD;
+            }
+        }
+
+        return thresholdScore;
+    }
+
+    private int[] parseScanSummary(String scanSummary) throws Exception {
+        int[] scanResults = new int[3];
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        InputSource is = new InputSource(new StringReader(scanSummary));
+        Document xmlDoc = builder.parse(is);
+        xmlDoc.getDocumentElement().normalize();
+        NodeList nList = xmlDoc.getElementsByTagName("GetScanSummaryResult");
+        Node node = nList.item(0);
+        node.getNodeType();
+        Element eElement = (Element) node;
+        String highStr = eElement.getElementsByTagName("High").item(0).getTextContent();
+        if (highStr != null) {
+            scanResults[HIGH_VULNERABILITY_RESULTS] = Integer.parseInt(highStr);
+        }
+        String mediumStr = eElement.getElementsByTagName("Medium").item(0).getTextContent();
+        if (highStr != null) {
+            scanResults[MEDIUM_VULNERABILITY_RESULTS] = Integer.parseInt(mediumStr);
+        }
+        String lowStr = eElement.getElementsByTagName("Low").item(0).getTextContent();
+        if (lowStr != null) {
+            scanResults[LOW_VULNERABILITY_RESULTS] = Integer.parseInt(lowStr);
+        }
+
+        return scanResults;
+    }
+
+    private void printSASTResultsToConsole(int[] scanResults) {
+        log.info("----------------------------Checkmarx Scan Results(CxSAST):-------------------------------");
+        log.info("");
+        log.info("------------------------");
+        log.info("Vulnerabilities Summary:");
+        log.info("------------------------");
+        log.info("SAST high severity results: " + scanResults[HIGH_VULNERABILITY_RESULTS]);
+        log.info("SAST medium severity results: " + scanResults[MEDIUM_VULNERABILITY_RESULTS]);
+        log.info("SAST low severity results: " + scanResults[LOW_VULNERABILITY_RESULTS]);
+        log.info("");
+        log.info("-----------------------------------------------------------------------------------------");
     }
 
     private LocationType getLocationType(SourceCodeSettings scSettings) {

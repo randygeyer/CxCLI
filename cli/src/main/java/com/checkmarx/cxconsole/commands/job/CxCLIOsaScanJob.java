@@ -135,27 +135,7 @@ public class CxCLIOsaScanJob extends CxScanJob {
 
         //Osa threshold verification
         if (params.isOsaThresholdEnabled()) {
-            int thresholdCounter = NO_THRESHOLD_EXCEEDED;
-            if (osaSummaryResults.getHighVulnerabilityLibraries() > params.getOsaHighThresholdValue()) {
-                log.info(OSA_HIGH_THRESHOLD_ERROR_MSG);
-                thresholdCounter = HIGH_THRESHOLD;
-            }
-
-            if (osaSummaryResults.getMediumVulnerabilityLibraries() > params.getOsaMediumThresholdValue()) {
-                log.info(OSA_MEDIUM_THRESHOLD_ERROR_MSG);
-                if (thresholdCounter == NO_THRESHOLD_EXCEEDED) {
-                    thresholdCounter = MEDIUM_THRESHOLD;
-                }
-            }
-
-            if (osaSummaryResults.getLowVulnerabilityLibraries() > params.getOsaLowThresholdValue()) {
-                log.info(OSA_LOW_THRESHOLD_ERROR_MSG);
-                if (thresholdCounter == NO_THRESHOLD_EXCEEDED) {
-                    thresholdCounter = LOW_THRESHOLD;
-                }
-            }
-
-            switch (thresholdCounter) {
+            switch (calculateThresholdScore(osaSummaryResults)) {
                 case HIGH_THRESHOLD:
                     return OSA_HIGH_THRESHOLD_ERROR_CODE;
                 case MEDIUM_THRESHOLD:
@@ -170,6 +150,30 @@ public class CxCLIOsaScanJob extends CxScanJob {
         }
 
         return SCAN_SUCCEEDED;
+    }
+
+    private int calculateThresholdScore(OSASummaryResults osaSummaryResults) {
+        int thresholdScore = NO_THRESHOLD_EXCEEDED;
+        if (osaSummaryResults.getHighVulnerabilityLibraries() > params.getOsaHighThresholdValue()) {
+            log.info(OSA_HIGH_THRESHOLD_ERROR_MSG);
+            thresholdScore = HIGH_THRESHOLD;
+        }
+
+        if (osaSummaryResults.getMediumVulnerabilityLibraries() > params.getOsaMediumThresholdValue()) {
+            log.info(OSA_MEDIUM_THRESHOLD_ERROR_MSG);
+            if (thresholdScore == NO_THRESHOLD_EXCEEDED) {
+                thresholdScore = MEDIUM_THRESHOLD;
+            }
+        }
+
+        if (osaSummaryResults.getLowVulnerabilityLibraries() > params.getOsaLowThresholdValue()) {
+            log.info(OSA_LOW_THRESHOLD_ERROR_MSG);
+            if (thresholdScore == NO_THRESHOLD_EXCEEDED) {
+                thresholdScore = LOW_THRESHOLD;
+            }
+        }
+
+        return thresholdScore;
     }
 
     private String resolveReportPath(String ext, String file, String reportName) {

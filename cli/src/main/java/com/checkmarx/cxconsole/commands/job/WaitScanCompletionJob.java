@@ -20,16 +20,14 @@ public class WaitScanCompletionJob implements Callable<Boolean> {
     private CurrentStatusEnum currentStatusEnum;
     private long scanId;
     private long resultId;
-    private String host;
 
     private Logger log;
 
-    public WaitScanCompletionJob(WSMgr wsMgr, String sessionId, String scanId, String host) {
+    public WaitScanCompletionJob(WSMgr wsMgr, String sessionId, String scanId) {
         super();
         this.wsMgr = wsMgr;
         this.sessionId = sessionId;
         this.runId = scanId;
-        this.host = host;
     }
 
     @Override
@@ -94,7 +92,7 @@ public class WaitScanCompletionJob implements Callable<Boolean> {
                     }
 
 					/*if (statusOfScanResult.getStageMessage() != null 
-							&& statusOfScanResult.getStageMessage().contains("Source code has not changed since last scan")) {
+                            && statusOfScanResult.getStageMessage().contains("Source code has not changed since last scan")) {
 						log.error("Project scan was already performed earlier.");
 						//throw new Exception(errorMsg);
 						//scanComplete = true;
@@ -175,7 +173,6 @@ public class WaitScanCompletionJob implements Callable<Boolean> {
             log.trace(e);
         }
 
-        String res = wsMgr.getScanSummary(host, sessionId, scanId);
         return scanComplete;
     }
 
@@ -207,3 +204,4 @@ public class WaitScanCompletionJob implements Callable<Boolean> {
         return currentStatusEnum;
     }
 }
+
