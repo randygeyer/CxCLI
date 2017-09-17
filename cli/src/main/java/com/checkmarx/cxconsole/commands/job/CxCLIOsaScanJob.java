@@ -45,7 +45,19 @@ public class CxCLIOsaScanJob extends CxScanJob {
             if (scanOsaOnly) {
                 log.info("Project name is \"" + params.getProjName() + "\"");
                 // Connect to Checkmarx service.
+                String generatedHost = null;
                 wsMgr = ConfigMgr.getWSMgr();
+                try {
+                    generatedHost = wsMgr.resolveServiceLocation(params.getHost());
+                } catch (Exception e) {
+                    throw e;
+                }
+                if (generatedHost.contains("https://")) {
+                    params.setOriginHost("https://" + params.getOriginHost());
+                } else {
+                    params.setOriginHost("http://" + params.getOriginHost());
+                }
+                params.setHost(generatedHost);
                 URL wsdlLocation = wsMgr.makeWsdlLocation(params.getHost());
                 // Logging into the Checkmarx service.
                 login(wsdlLocation);
@@ -66,10 +78,10 @@ public class CxCLIOsaScanJob extends CxScanJob {
             }
 
             OsaUtils.setLogger(log);
-            String[] osaLocationPath = params.getOsaLocationPath() != null? params.getOsaLocationPath() :  new String[] {params.getLocationPath()};
+            String[] osaLocationPath = params.getOsaLocationPath() != null ? params.getOsaLocationPath() : new String[]{params.getLocationPath()};
             log.info("OSA source location: " + StringUtils.join(osaLocationPath, ", "));
             log.info("Zipping dependencies");
-            File zipForOSA = OsaUtils.zipWorkspaceFolder(params.getOsaExcludedFiles(), params.getOsaExcludedFolders(),params.getOsaIncludedFiles(), maxZipSize, osaLocationPath, log);
+            File zipForOSA = OsaUtils.zipWorkspaceFolder(params.getOsaExcludedFiles(), params.getOsaExcludedFolders(), params.getOsaIncludedFiles(), maxZipSize, osaLocationPath, log);
             log.info("Sending OSA scan request");
             CreateOSAScanResponse osaScan = restClient.createOSAScan(projectId, zipForOSA);
             osaProjectSummaryLink = OsaUtils.composeProjectOSASummaryLink(params.getOriginHost(), projectId);
