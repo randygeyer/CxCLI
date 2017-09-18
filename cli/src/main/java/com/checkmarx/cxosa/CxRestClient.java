@@ -24,6 +24,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
@@ -31,7 +32,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * Created by: Dorg.
@@ -62,11 +65,12 @@ public class CxRestClient {
     public static final long MAX_ITEMS = 1000000;
     public static final String OSA_SUMMARY_NAME = "CxOSASummary";
     public static final String OSA_LIBRARIES_NAME = "CxOSALibraries";
-    public static final String OSA_VULNERABILITIES_NAME =  "CxOSAVulnerabilities";
+    public static final String OSA_VULNERABILITIES_NAME = "CxOSAVulnerabilities";
     private ObjectMapper objectMapper = new ObjectMapper();
 
     private HttpClient apacheClient;
     private CookieStore cookieStore;
+    private Header CXCSRFTokenHeader;
     private String cookies;
     private String csrfToken;
 
@@ -78,10 +82,7 @@ public class CxRestClient {
         public void process(HttpRequest httpRequest, HttpContext httpContext) throws HttpException, IOException {
             if (csrfToken != null) {
                 httpRequest.addHeader(CSRF_TOKEN_HEADER, csrfToken);
-            }
-
-            if (cookies != null) {
-                httpRequest.addHeader("cookie", cookies);
+                CXCSRFTokenHeader = new BasicHeader(CSRF_TOKEN_HEADER, csrfToken);
             }
         }
     };
@@ -115,8 +116,9 @@ public class CxRestClient {
 
         //create httpclient
         cookieStore = new BasicCookieStore();
-
-        apacheClient = HttpClientBuilder.create().addInterceptorFirst(requestFilter).addInterceptorLast(responseFilter).setDefaultCookieStore(cookieStore).build();
+        List<Header> headers = new ArrayList<Header>();
+        headers.add(CXCSRFTokenHeader);
+        apacheClient = HttpClientBuilder.create().addInterceptorFirst(requestFilter).addInterceptorLast(responseFilter).setDefaultHeaders(headers).setDefaultCookieStore(cookieStore).build();
     }
 
     public void setLogger(Logger log) {
@@ -208,7 +210,8 @@ public class CxRestClient {
 
     private String getOSAScanHTMLResults(String scanId) throws CxClientException, IOException {
 
-        String relativePath = OSA_SCAN_SUMMARY_PATH + SCAN_ID_QUERY_PARAM + scanId;;
+        String relativePath = OSA_SCAN_SUMMARY_PATH + SCAN_ID_QUERY_PARAM + scanId;
+        ;
         HttpGet getRequest = createHttpRequest(relativePath, "text/html");
         HttpResponse response = null;
         try {
@@ -277,12 +280,11 @@ public class CxRestClient {
                 objectMapper.writerWithDefaultPrettyPrinter().writeValue(file, data);
                 break;
             default:
-                log.error("OSA " + toLog + " location is invalid" );
+                log.error("OSA " + toLog + " location is invalid");
                 return;
         }
         log.info("OSA " + toLog + " location: " + file.getAbsolutePath());
     }
-
 
 
     private List<Library> getOSALibraries(String scanId) throws CxClientException, IOException {
