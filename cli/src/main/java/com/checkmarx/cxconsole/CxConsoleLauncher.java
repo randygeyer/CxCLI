@@ -27,7 +27,6 @@ public class CxConsoleLauncher {
 
     public static Logger log = Logger.getLogger("com.checkmarx.cxconsole.CxConsoleLauncher");
 
-    private static final String MSG_ERR_SRV_NAME_OR_NETWORK = "Server Name is invalid or network is unavailable.";
     private static final String INVALID_COMMAND_PARAMETERS_MSG = "Command parameters are invalid: ";
 
     /**
@@ -110,8 +109,7 @@ public class CxConsoleLauncher {
                     command.resolveServerUrl();
                 } catch (Exception e) {
                     log.trace("", e);
-                    log.fatal(MSG_ERR_SRV_NAME_OR_NETWORK + " Error message: " + e.getMessage() + "\n");
-                    command.printHelp();
+                    log.fatal(e.getMessage() + "\n");
                     return errorCodeResolver(e.getMessage());
                 }
                 command.checkParameters();

@@ -169,6 +169,7 @@ public class ScanCommand extends GeneralScanCommand {
             scanType = "OSA";
         } else if (this instanceof ScanCommand) {
             job = new CxCLIScanJob(scParams);
+            scanType = "SAST";
         } else {
             log.error("Command was not found. Available commands:\n" + CommandsFactory.getCommandNames());
             errorCode = errorCodeResolver("Command was not found. Available commands:\n" + CommandsFactory.getCommandNames());

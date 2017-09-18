@@ -10,14 +10,15 @@ import com.checkmarx.cxosa.utils.OsaUtils;
 import com.checkmarx.cxviewer.ws.WSMgr;
 import com.checkmarx.cxviewer.ws.generated.ProjectDisplayData;
 import com.checkmarx.cxviewer.ws.results.GetProjectDataResult;
+import com.checkmarx.thresholds.dto.ThresholdDto;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import static com.checkmarx.exitcodes.Constants.ErrorMassages.*;
-import static com.checkmarx.exitcodes.Constants.ExitCodes.*;
+import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED;
+import static com.checkmarx.thresholds.ThresholdResolver.resolveThresholdExitCode;
 
 public class CxCLIOsaScanJob extends CxScanJob {
 
@@ -49,7 +50,7 @@ public class CxCLIOsaScanJob extends CxScanJob {
     @Override
     public Integer call() throws Exception {
         OSASummaryResults osaSummaryResults;
-        int exitCode;
+        int exitCode = SCAN_SUCCEEDED;
         try {
             if (scanOsaOnly) {
                 log.info("Project name is \"" + params.getProjName() + "\"");
@@ -133,47 +134,15 @@ public class CxCLIOsaScanJob extends CxScanJob {
             restClient.close();
         }
 
-        //Osa threshold verification
+        //Osa threshold calculation
         if (params.isOsaThresholdEnabled()) {
-            switch (calculateThresholdScore(osaSummaryResults)) {
-                case HIGH_THRESHOLD:
-                    return OSA_HIGH_THRESHOLD_ERROR_CODE;
-                case MEDIUM_THRESHOLD:
-                    return OSA_MEDIUM_THRESHOLD_ERROR_CODE;
-                case LOW_THRESHOLD:
-                    return OSA_LOW_THRESHOLD_ERROR_CODE;
-                case NO_THRESHOLD_EXCEEDED:
-                    return SCAN_SUCCEEDED;
-                default:
-                    return GENERIC_THRESHOLD_FAILURE_ERROR_CODE;
-            }
+            ThresholdDto thresholdDto = new ThresholdDto(ThresholdDto.ScanType.OSA_SCAN, params.getOsaHighThresholdValue(), params.getOsaMediumThresholdValue(),
+                    params.getOsaLowThresholdValue(), osaSummaryResults.getTotalHighVulnerabilities(),
+                    osaSummaryResults.getTotalMediumVulnerabilities(), osaSummaryResults.getTotalLowVulnerabilities());
+            exitCode = resolveThresholdExitCode(thresholdDto, log);
         }
 
-        return SCAN_SUCCEEDED;
-    }
-
-    private int calculateThresholdScore(OSASummaryResults osaSummaryResults) {
-        int thresholdScore = NO_THRESHOLD_EXCEEDED;
-        if (osaSummaryResults.getHighVulnerabilityLibraries() > params.getOsaHighThresholdValue()) {
-            log.info(OSA_HIGH_THRESHOLD_ERROR_MSG);
-            thresholdScore = HIGH_THRESHOLD;
-        }
-
-        if (osaSummaryResults.getMediumVulnerabilityLibraries() > params.getOsaMediumThresholdValue()) {
-            log.info(OSA_MEDIUM_THRESHOLD_ERROR_MSG);
-            if (thresholdScore == NO_THRESHOLD_EXCEEDED) {
-                thresholdScore = MEDIUM_THRESHOLD;
-            }
-        }
-
-        if (osaSummaryResults.getLowVulnerabilityLibraries() > params.getOsaLowThresholdValue()) {
-            log.info(OSA_LOW_THRESHOLD_ERROR_MSG);
-            if (thresholdScore == NO_THRESHOLD_EXCEEDED) {
-                thresholdScore = LOW_THRESHOLD;
-            }
-        }
-
-        return thresholdScore;
+        return exitCode;
     }
 
     private String resolveReportPath(String ext, String file, String reportName) {
@@ -223,7 +192,7 @@ public class CxCLIOsaScanJob extends CxScanJob {
         log.info("----------------------------Checkmarx Scan Results(CxOSA):-------------------------------");
         log.info("");
         log.info("------------------------");
-        log.info("Vulnerabilities Summary:");
+        log.info("OSA vulnerabilities Summary:");
         log.info("------------------------");
         log.info("OSA high severity results: " + osaSummaryResults.getTotalHighVulnerabilities());
         log.info("OSA medium severity results: " + osaSummaryResults.getTotalMediumVulnerabilities());
@@ -237,6 +206,7 @@ public class CxCLIOsaScanJob extends CxScanJob {
         log.info("Vulnerable and outdated: " + osaSummaryResults.getVulnerableAndOutdated());
         log.info("Vulnerable and updated: " + osaSummaryResults.getVulnerableAndUpdated());
         log.info("Non-vulnerable libraries: " + osaSummaryResults.getNonVulnerableLibraries());
+        log.info("");
         log.info("");
         log.info("OSA scan results location: " + osaProjectSummaryLink);
         log.info("-----------------------------------------------------------------------------------------");
