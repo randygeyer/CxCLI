@@ -17,7 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED;
+import static com.checkmarx.exitcodes.Constants.ExitCodes.GENERAL_ERROR_CODE;
+import static com.checkmarx.exitcodes.ErrorHandler.errorCodeResolver;
 import static com.checkmarx.thresholds.ThresholdResolver.resolveThresholdExitCode;
 
 public class CxCLIOsaScanJob extends CxScanJob {
@@ -50,7 +51,7 @@ public class CxCLIOsaScanJob extends CxScanJob {
     @Override
     public Integer call() throws Exception {
         OSASummaryResults osaSummaryResults;
-        int exitCode = SCAN_SUCCEEDED;
+        int exitCode = GENERAL_ERROR_CODE;
         try {
             if (scanOsaOnly) {
                 log.info("Project name is \"" + params.getProjName() + "\"");
@@ -140,6 +141,7 @@ public class CxCLIOsaScanJob extends CxScanJob {
                 }
             } catch (Exception e) {
                 log.error("Error occurred during CxOSA reports. Error message: " + e.getMessage());
+                exitCode = errorCodeResolver(e.getMessage());
             }
         } finally {
             OsaUtils.deleteTempFiles();

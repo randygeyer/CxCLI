@@ -274,7 +274,6 @@ public class ScanParams {
         }
     }
 
-
     private String getOptionalValue(CommandLine commandLine, String opt) {
         String ret = commandLine.getOptionValue(opt);
         if (ret == null && commandLine.hasOption(opt)) {
