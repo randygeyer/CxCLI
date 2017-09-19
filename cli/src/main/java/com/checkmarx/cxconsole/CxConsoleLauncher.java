@@ -15,8 +15,8 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static com.checkmarx.exitcodes.Constants.ExitCodes.GENERAL_ERROR_CODE;
-import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED;
+import static com.checkmarx.exitcodes.Constants.ExitCodes.GENERAL_ERROR_EXIT_CODE;
+import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED_EXIT_CODE;
 import static com.checkmarx.exitcodes.ErrorHandler.errorCodeResolver;
 import static com.checkmarx.exitcodes.ErrorHandler.errorMsgResolver;
 
@@ -45,10 +45,9 @@ public class CxConsoleLauncher {
         log.setLevel(Level.TRACE);
 
         exitCode = runCli(args);
-        if (exitCode == SCAN_SUCCEEDED) {
+        if (exitCode == SCAN_SUCCEEDED_EXIT_CODE) {
             log.info("Scan completed successfully - exit code " + exitCode);
         } else {
-
             log.error("Failure - " + errorMsgResolver(exitCode) + " - error code " + exitCode);
         }
 
@@ -70,7 +69,7 @@ public class CxConsoleLauncher {
 
             if (args == null || args.length == 0) {
                 log.fatal("Missing command name. Available commands: " + CommandsFactory.getCommandNames());
-                return GENERAL_ERROR_CODE;
+                return GENERAL_ERROR_EXIT_CODE;
             }
 
             ArrayList<String> customArgs = new CustomStringList(Arrays.asList(args));
@@ -98,7 +97,7 @@ public class CxConsoleLauncher {
             if (command == null) {
                 log.error("Command \"" + commandName + "\" was not found. Available commands:\n"
                         + CommandsFactory.getCommandNames());
-                return GENERAL_ERROR_CODE;
+                return GENERAL_ERROR_EXIT_CODE;
             }
 
             try {

@@ -16,10 +16,10 @@ public class ThresholdResolver {
         if (thresholdDto.getHighSeverityScanResult() > thresholdDto.getHighSeverityThreshold()) {
             if (thresholdDto.getScanType() == ThresholdDto.ScanType.SAST_SCAN) {
                 logger.info(SAST_HIGH_THRESHOLD_ERROR_MSG);
-                thresholdScore = SAST_HIGH_THRESHOLD_ERROR_CODE;
+                thresholdScore = SAST_HIGH_THRESHOLD_ERROR_EXIT_CODE;
             } else {
                 logger.info(OSA_HIGH_THRESHOLD_ERROR_MSG);
-                thresholdScore = OSA_HIGH_THRESHOLD_ERROR_CODE;
+                thresholdScore = OSA_HIGH_THRESHOLD_ERROR_EXIT_CODE;
             }
         }
 
@@ -27,12 +27,12 @@ public class ThresholdResolver {
             if (thresholdDto.getScanType() == ThresholdDto.ScanType.SAST_SCAN) {
                 logger.info(SAST_MEDIUM_THRESHOLD_ERROR_MSG);
                 if (thresholdScore == NO_THRESHOLD_EXCEEDED) {
-                    thresholdScore = SAST_MEDIUM_THRESHOLD_ERROR_CODE;
+                    thresholdScore = SAST_MEDIUM_THRESHOLD_ERROR_EXIT_CODE;
                 }
             } else {
                 logger.info(OSA_MEDIUM_THRESHOLD_ERROR_MSG);
                 if (thresholdScore == NO_THRESHOLD_EXCEEDED) {
-                    thresholdScore = OSA_MEDIUM_THRESHOLD_ERROR_CODE;
+                    thresholdScore = OSA_MEDIUM_THRESHOLD_ERROR_EXIT_CODE;
                 }
             }
         }
@@ -41,12 +41,12 @@ public class ThresholdResolver {
             if (thresholdDto.getScanType() == ThresholdDto.ScanType.SAST_SCAN) {
                 logger.info(SAST_LOW_THRESHOLD_ERROR_MSG);
                 if (thresholdScore == NO_THRESHOLD_EXCEEDED) {
-                    thresholdScore = SAST_LOW_THRESHOLD_ERROR_CODE;
+                    thresholdScore = SAST_LOW_THRESHOLD_ERROR_EXIT_CODE;
                 }
             } else {
                 logger.info(OSA_LOW_THRESHOLD_ERROR_MSG);
                 if (thresholdScore == NO_THRESHOLD_EXCEEDED) {
-                    thresholdScore = OSA_LOW_THRESHOLD_ERROR_CODE;
+                    thresholdScore = OSA_LOW_THRESHOLD_ERROR_EXIT_CODE;
                 }
             }
         }

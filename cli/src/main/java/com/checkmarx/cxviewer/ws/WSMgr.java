@@ -27,6 +27,7 @@ public class WSMgr extends WSMgrBase {
     protected static final String WS_NAME = "CxCLIWebServiceV1";
     protected CxCLIWebServiceV1Soap wService;
     private static final String SOAP_ACTION_URL = "http://Checkmarx.com/v7/GetScanSummary";
+    private static final String SDK_URL = "/Cxwebinterface/sdk/cxsdkwebservice.asmx";
 
 
     @Override
@@ -342,7 +343,7 @@ public class WSMgr extends WSMgrBase {
     }
 
     public String getScanSummary(String serverName, String sessionId, long scanId) throws Exception {
-        URL wsURL = new URL(serverName + "/Cxwebinterface/sdk/cxsdkwebservice.asmx");
+        URL wsURL = new URL(serverName + SDK_URL);
         URLConnection connection = wsURL.openConnection();
         HttpURLConnection httpConn = (HttpURLConnection) connection;
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
@@ -358,9 +359,7 @@ public class WSMgr extends WSMgrBase {
                         "   </soap:Body>\n" +
                         "</soap:Envelope>\n";
 
-        byte[] buffer = new byte[xmlInput.length()];
-        buffer = xmlInput.getBytes();
-        bout.write(buffer);
+        bout.write(xmlInput.getBytes());
         byte[] b = bout.toByteArray();
         httpConn.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
         httpConn.setRequestProperty("SOAPAction", SOAP_ACTION_URL);
@@ -371,7 +370,6 @@ public class WSMgr extends WSMgrBase {
         //Write the content of the request to the outputstream of the HTTP Connection.
         out.write(b);
         out.close();
-        //Ready with sending the request.
 
         //Read the response.
         InputStreamReader isr =
@@ -381,9 +379,11 @@ public class WSMgr extends WSMgrBase {
         //Write the SOAP message response to a String.
         String outputString = "";
         String responseString = "";
+        StringBuilder sb = new StringBuilder();
         while ((responseString = in.readLine()) != null) {
-            outputString = outputString + responseString;
+            sb.append(responseString);
         }
+        outputString = sb.toString();
 
         return outputString;
     }

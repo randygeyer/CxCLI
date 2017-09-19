@@ -4,20 +4,20 @@ public class Constants {
 
     public class ExitCodes {
 
-        public static final int SCAN_SUCCEEDED = 0;
-        public static final int GENERAL_ERROR_CODE = 1;
-        public static final int SDLC_ERROR_CODE = 2;
-        public static final int NO_OSA_LICENSE_ERROR_CODE = 3;
-        public static final int LOGIN_FAILED_ERROR_CODE = 4;
-        public static final int NO_PROJECT_PRIOR_TO_OSA_SCAN_ERROR_CODE = 5;
+        public static final int SCAN_SUCCEEDED_EXIT_CODE = 0;
+        public static final int GENERAL_ERROR_EXIT_CODE = 1;
+        public static final int SDLC_ERROR_EXIT_CODE = 2;
+        public static final int NO_OSA_LICENSE_ERROR_EXIT_CODE = 3;
+        public static final int LOGIN_FAILED_ERROR_EXIT_CODE = 4;
+        public static final int NO_PROJECT_PRIOR_TO_OSA_SCAN_ERROR_EXIT_CODE = 5;
 
-        public static final int SAST_HIGH_THRESHOLD_ERROR_CODE = 10;
-        public static final int SAST_MEDIUM_THRESHOLD_ERROR_CODE = 11;
-        public static final int SAST_LOW_THRESHOLD_ERROR_CODE = 12;
-        public static final int OSA_HIGH_THRESHOLD_ERROR_CODE = 13;
-        public static final int OSA_MEDIUM_THRESHOLD_ERROR_CODE = 14;
-        public static final int OSA_LOW_THRESHOLD_ERROR_CODE = 15;
-        public static final int GENERIC_THRESHOLD_FAILURE_ERROR_CODE = 19;
+        public static final int SAST_HIGH_THRESHOLD_ERROR_EXIT_CODE = 10;
+        public static final int SAST_MEDIUM_THRESHOLD_ERROR_EXIT_CODE = 11;
+        public static final int SAST_LOW_THRESHOLD_ERROR_EXIT_CODE = 12;
+        public static final int OSA_HIGH_THRESHOLD_ERROR_EXIT_CODE = 13;
+        public static final int OSA_MEDIUM_THRESHOLD_ERROR_EXIT_CODE = 14;
+        public static final int OSA_LOW_THRESHOLD_ERROR_EXIT_CODE = 15;
+        public static final int GENERIC_THRESHOLD_FAILURE_ERROR_EXIT_CODE = 19;
     }
 
     public class ErrorMassages {

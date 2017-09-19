@@ -17,7 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import static com.checkmarx.exitcodes.Constants.ExitCodes.GENERAL_ERROR_CODE;
+import static com.checkmarx.exitcodes.Constants.ExitCodes.GENERAL_ERROR_EXIT_CODE;
 import static com.checkmarx.exitcodes.ErrorHandler.errorCodeResolver;
 import static com.checkmarx.thresholds.ThresholdResolver.resolveThresholdExitCode;
 
@@ -51,7 +51,7 @@ public class CxCLIOsaScanJob extends CxScanJob {
     @Override
     public Integer call() throws Exception {
         OSASummaryResults osaSummaryResults;
-        int exitCode = GENERAL_ERROR_CODE;
+        int exitCode = GENERAL_ERROR_EXIT_CODE;
         try {
             if (scanOsaOnly) {
                 log.info("Project name is \"" + params.getProjName() + "\"");

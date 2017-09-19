@@ -29,8 +29,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import static com.checkmarx.exitcodes.Constants.ExitCodes.GENERIC_THRESHOLD_FAILURE_ERROR_CODE;
-import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED;
+import static com.checkmarx.exitcodes.Constants.ExitCodes.GENERIC_THRESHOLD_FAILURE_ERROR_EXIT_CODE;
+import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED_EXIT_CODE;
 import static com.checkmarx.thresholds.ThresholdResolver.resolveThresholdExitCode;
 
 public class CxCLIScanJob extends CxScanJob {
@@ -47,8 +47,8 @@ public class CxCLIScanJob extends CxScanJob {
     private List<ConfigurationSet> configs;
     private ConfigurationSet selectedConfig;
     private GetProjectConfigResult projectConfig;
-    private int osaExitCode = SCAN_SUCCEEDED;
-    private int sastExitCode = SCAN_SUCCEEDED;
+    private int osaExitCode = SCAN_SUCCEEDED_EXIT_CODE;
+    private int sastExitCode = SCAN_SUCCEEDED_EXIT_CODE;
 
     public CxCLIScanJob(ScanParams params) {
         super(params);
@@ -156,7 +156,7 @@ public class CxCLIScanJob extends CxScanJob {
 
         if (params.isIgnoreScanWithUnchangedSource() && scanId == -1 && waiterJob.getCurrentStatusEnum() == CurrentStatusEnum.FINISHED) {
             log.info("Scan finished with ScanId = (-1): finish Scan Job");
-            return SCAN_SUCCEEDED;
+            return SCAN_SUCCEEDED_EXIT_CODE;
         }
 
         //update scan comment
@@ -215,14 +215,14 @@ public class CxCLIScanJob extends CxScanJob {
             sastExitCode = resolveThresholdExitCode(thresholdDto, log);
         }
 
-        if (sastExitCode == SCAN_SUCCEEDED && osaExitCode != SCAN_SUCCEEDED) {
+        if (sastExitCode == SCAN_SUCCEEDED_EXIT_CODE && osaExitCode != SCAN_SUCCEEDED_EXIT_CODE) {
             return osaExitCode;
-        } else if (sastExitCode != SCAN_SUCCEEDED && osaExitCode == SCAN_SUCCEEDED) {
+        } else if (sastExitCode != SCAN_SUCCEEDED_EXIT_CODE && osaExitCode == SCAN_SUCCEEDED_EXIT_CODE) {
             return sastExitCode;
-        } else if (sastExitCode != SCAN_SUCCEEDED && osaExitCode != SCAN_SUCCEEDED) {
-            return GENERIC_THRESHOLD_FAILURE_ERROR_CODE;
+        } else if (sastExitCode != SCAN_SUCCEEDED_EXIT_CODE) {
+            return GENERIC_THRESHOLD_FAILURE_ERROR_EXIT_CODE;
         } else {
-            return SCAN_SUCCEEDED;
+            return SCAN_SUCCEEDED_EXIT_CODE;
         }
     }
 

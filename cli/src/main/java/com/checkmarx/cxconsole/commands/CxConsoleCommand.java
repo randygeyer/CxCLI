@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED;
+import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED_EXIT_CODE;
 
 /**
  * Base class for all CLI commands.<br>
@@ -24,7 +24,7 @@ public abstract class CxConsoleCommand {
     /*
      * Error code indicating whether command execution was successful
      */
-    protected int errorCode = SCAN_SUCCEEDED;
+    protected int errorCode = SCAN_SUCCEEDED_EXIT_CODE;
 
     /**
      * Definition of command line parameters to be used by Apache CLI parser
