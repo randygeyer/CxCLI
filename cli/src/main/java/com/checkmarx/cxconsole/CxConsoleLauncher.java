@@ -126,7 +126,6 @@ public class CxConsoleLauncher {
                 return errorCodeResolver(e.getCause().getMessage());
             }
 
-
             int exitCode = command.execute();
             log.info("CxConsole scan session finished");
             return exitCode;

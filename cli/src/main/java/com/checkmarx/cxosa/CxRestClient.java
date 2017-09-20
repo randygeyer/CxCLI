@@ -70,7 +70,7 @@ public class CxRestClient {
 
     private HttpClient apacheClient;
     private CookieStore cookieStore;
-    private Header CXCSRFTokenHeader;
+    private Header cxcsrfTokenHeader;
     private String cookies;
     private String csrfToken;
 
@@ -82,7 +82,7 @@ public class CxRestClient {
         public void process(HttpRequest httpRequest, HttpContext httpContext) throws HttpException, IOException {
             if (csrfToken != null) {
                 httpRequest.addHeader(CSRF_TOKEN_HEADER, csrfToken);
-                CXCSRFTokenHeader = new BasicHeader(CSRF_TOKEN_HEADER, csrfToken);
+                cxcsrfTokenHeader = new BasicHeader(CSRF_TOKEN_HEADER, csrfToken);
             }
         }
     };
@@ -117,7 +117,7 @@ public class CxRestClient {
         //create httpclient
         cookieStore = new BasicCookieStore();
         List<Header> headers = new ArrayList<Header>();
-        headers.add(CXCSRFTokenHeader);
+        headers.add(cxcsrfTokenHeader);
         apacheClient = HttpClientBuilder.create().addInterceptorFirst(requestFilter).addInterceptorLast(responseFilter).setDefaultHeaders(headers).setDefaultCookieStore(cookieStore).build();
     }
 
@@ -358,7 +358,7 @@ public class CxRestClient {
         }
     }
 
-    public OSAScanStatus waitForOSAScanToFinish(String scanId, long scanTimeoutInMin, ScanWaitHandler<OSAScanStatus> waitHandler) throws CxClientException, IOException {
+    public OSAScanStatus waitForOSAScanToFinish(String scanId, long scanTimeoutInMin, ScanWaitHandler<OSAScanStatus> waitHandler, boolean isAsyncOsaScan) throws CxClientException, IOException {
         //re login in case of session timed out
         login();
         long timeToStop = (System.currentTimeMillis() / 60000) + scanTimeoutInMin;
@@ -373,12 +373,13 @@ public class CxRestClient {
 
         while (scanTimeoutInMin <= 0 || (System.currentTimeMillis() / 60000) <= timeToStop) {
 
-            try {
-                Thread.sleep(10000); //Get status every 10 sec
-            } catch (InterruptedException e) {
-                // log.debug("caught exception during sleep", e);
+            if (!isAsyncOsaScan) {
+                try {
+                    Thread.sleep(10000); //Get status every 10 sec
+                } catch (InterruptedException e) {
+                    // log.debug("caught exception during sleep", e);
+                }
             }
-
 
             try {
                 scanStatus = getOSAScanStatus(scanId);
@@ -396,6 +397,10 @@ public class CxRestClient {
                 throw new CxClientException("OSA scan cannot be completed. status: [" + status.uiValue() + "]. message: [" + StringUtils.defaultString(scanStatus.getMessage()) + "]");
             }
 
+            if (isAsyncOsaScan && (OSAScanStatusEnum.QUEUED.equals(status) || OSAScanStatusEnum.IN_PROGRESS.equals(status))) {
+                waitHandler.onQueued(scanStatus);
+                return scanStatus;
+            }
 
             if (OSAScanStatusEnum.FINISHED.equals(status)) {
                 waitHandler.onSuccess(scanStatus);

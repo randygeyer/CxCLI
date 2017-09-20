@@ -5,15 +5,17 @@ package com.checkmarx.cxconsole.commands;
  */
 public enum Commands {
     SCAN("Scan"),
-    OSASCAN("OsaScan");
+    ASYNC_SCAN("AsyncScan"),
+    OSASCAN("OsaScan"),
+    ASYNC_OSA_SCAN("AsyncOsaScan");
 
     private String value;
 
-    public String value(){
+    public String value() {
         return value;
     }
 
-    Commands(String value){
+    Commands(String value) {
         this.value = value;
     }
 }

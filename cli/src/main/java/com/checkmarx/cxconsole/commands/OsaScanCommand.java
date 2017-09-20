@@ -3,21 +3,24 @@ package com.checkmarx.cxconsole.commands;
 import com.checkmarx.cxconsole.utils.CommandLineArgumentException;
 import com.checkmarx.cxconsole.utils.LocationType;
 import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 
 public class OsaScanCommand extends ScanCommand {
 
-    public static String COMMAND_SCAN = Commands.OSASCAN.value();
+    public static String osaCommand;
 
-    public OsaScanCommand() {
-        super();
+    public OsaScanCommand(boolean isAsyncOsaScan) {
+        super(false);
+        if (isAsyncOsaScan) {
+            osaCommand = Commands.ASYNC_OSA_SCAN.value();
+        } else {
+            osaCommand = Commands.OSASCAN.value();
+        }
     }
 
     @Override
     public String getCommandName() {
-        return COMMAND_SCAN;
+        return osaCommand;
     }
 
     @Override

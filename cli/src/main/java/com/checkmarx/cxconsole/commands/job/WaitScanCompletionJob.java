@@ -7,6 +7,7 @@ import com.checkmarx.cxviewer.ws.results.GetStatusOfScanResult;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 public class WaitScanCompletionJob implements Callable<Boolean> {
@@ -20,14 +21,16 @@ public class WaitScanCompletionJob implements Callable<Boolean> {
     private CurrentStatusEnum currentStatusEnum;
     private long scanId;
     private long resultId;
+    private boolean isAsyncScan = false;
 
     private Logger log;
 
-    public WaitScanCompletionJob(WSMgr wsMgr, String sessionId, String scanId) {
+    public WaitScanCompletionJob(WSMgr wsMgr, String sessionId, String scanId, boolean isAsyncScan) {
         super();
         this.wsMgr = wsMgr;
         this.sessionId = sessionId;
         this.runId = scanId;
+        this.isAsyncScan = isAsyncScan;
     }
 
     @Override
@@ -91,19 +94,15 @@ public class WaitScanCompletionJob implements Callable<Boolean> {
                         throw new Exception(errorMsg);
                     }
 
-					/*if (statusOfScanResult.getStageMessage() != null 
-                            && statusOfScanResult.getStageMessage().contains("Source code has not changed since last scan")) {
-						log.error("Project scan was already performed earlier.");
-						//throw new Exception(errorMsg);
-						//scanComplete = true;
-						//return true;
-					}*/
                     String stageName = statusOfScanResult.getStageName();
                     stageName = stageName.isEmpty() ? "" : " \"" + stageName + "\"";
                     if (!stageName.isEmpty() && !statusOfScanResult.getStageMessage().isEmpty()) {
                         log.info("Current stage: " + stageName + " - " + statusOfScanResult.getStageMessage());
                     } else if (!stageName.isEmpty()) {
                         log.info("Current stage: " + stageName);
+                        if (isAsyncScan && Objects.equals(statusOfScanResult.getStageName(), "Queued")) {
+                            return true;
+                        }
                     } else if (!statusOfScanResult.getStageMessage().isEmpty()) {
                         log.info("Current stage: " + statusOfScanResult.getStageMessage());
                     } else {

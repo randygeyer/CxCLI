@@ -11,13 +11,14 @@ import org.apache.log4j.Level;
 
 import java.io.*;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.concurrent.*;
 
 import static com.checkmarx.exitcodes.ErrorHandler.errorCodeResolver;
 
 public class ScanCommand extends GeneralScanCommand {
 
-    public static String COMMAND_SCAN = Commands.SCAN.value();
+    public static String command;
 
     public static final Option PARAM_PRJ_NAME = OptionBuilder.withArgName("project name").hasArg().isRequired().withDescription("A full absolute name of a project. " +
             "The full Project name includes the whole path to the project, including Server, service provider, company, and team. " +
@@ -88,8 +89,13 @@ public class ScanCommand extends GeneralScanCommand {
 
     public static String MSG_ERR_MISSING_USER_PASSWORD = "Missing username/password parameters";
 
-    public ScanCommand() {
+    public ScanCommand(boolean isAsyncScan) {
         super();
+        if (isAsyncScan) {
+            command = Commands.ASYNC_SCAN.value();
+        } else {
+            command = Commands.SCAN.value();
+        }
         initCommandLineOptions();
     }
 
@@ -163,13 +169,23 @@ public class ScanCommand extends GeneralScanCommand {
             }
         }
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        CxScanJob job;
+        CxScanJob job = null;
         if (this instanceof OsaScanCommand) {
-            job = new CxCLIOsaScanJob(scParams);
-            scanType = "OSA";
+            if (Objects.equals(this.getCommandName(), Commands.OSASCAN.value())) {
+                job = new CxCLIOsaScanJob(scParams, false);
+                scanType = "OSA";
+            } else if (Objects.equals(this.getCommandName(), Commands.ASYNC_OSA_SCAN.value())) {
+                job = new CxCLIOsaScanJob(scParams, true);
+                scanType = "Async OSA";
+            }
         } else if (this instanceof ScanCommand) {
-            job = new CxCLIScanJob(scParams);
-            scanType = "SAST";
+            if (Objects.equals(this.getCommandName(), Commands.SCAN.value())) {
+                job = new CxCLIScanJob(scParams, false);
+                scanType = "SAST";
+            } else if (Objects.equals(this.getCommandName(), Commands.ASYNC_SCAN.value())) {
+                job = new CxCLIScanJob(scParams, true);
+                scanType = "Async SAST";
+            }
         } else {
             log.error("Command was not found. Available commands:\n" + CommandsFactory.getCommandNames());
             errorCode = errorCodeResolver("Command was not found. Available commands:\n" + CommandsFactory.getCommandNames());
@@ -178,18 +194,26 @@ public class ScanCommand extends GeneralScanCommand {
         job.setLog(log);
 
         Future<Integer> future = executor.submit(job);
-        try {
+        try
+
+        {
             if (timeout != null) {
                 errorCode = future.get(timeout, TimeUnit.SECONDS);
             } else {
                 errorCode = future.get();
             }
-        } catch (InterruptedException e) {
+        } catch (
+                InterruptedException e)
+
+        {
             if (log.isEnabledFor(Level.DEBUG)) {
                 log.debug(scanType + "Scan job was interrupted.", e);
             }
             errorCode = errorCodeResolver(e.getCause().getMessage());
-        } catch (ExecutionException e) {
+        } catch (
+                ExecutionException e)
+
+        {
             if (log.isEnabledFor(Level.ERROR)) {
                 if (e.getCause().getMessage() != null) {
                     log.error("Error during " + scanType + " scan job execution: "
@@ -203,7 +227,10 @@ public class ScanCommand extends GeneralScanCommand {
                 log.trace("Error during " + scanType + " scan job execution.", e);
             }
             errorCode = errorCodeResolver(e.getCause().getMessage());
-        } catch (TimeoutException e) {
+        } catch (
+                TimeoutException e)
+
+        {
             if (log.isEnabledFor(Level.ERROR)) {
                 log.error(scanType + "Scan job failed due to timeout.");
             }
@@ -211,16 +238,19 @@ public class ScanCommand extends GeneralScanCommand {
                 log.trace(scanType + "Scan job failed due to timeout.", e);
             }
             errorCode = errorCodeResolver(e.getCause().getMessage());
-        } finally {
+        } finally
+
+        {
             if (executor != null) {
                 executor.shutdownNow();
             }
         }
+
     }
 
     @Override
     public String getCommandName() {
-        return COMMAND_SCAN;
+        return command;
     }
 
     @Override
@@ -229,7 +259,6 @@ public class ScanCommand extends GeneralScanCommand {
                 + "CxConsole Scan -projectname SP\\Cx\\Engine\\AST -cxserver http://localhost -cxuser admin@cx -cxpassword admin -locationtype tfs -locationurl http://vsts2003:8080 -locationuser dm\\matys -locationpassword XYZ -preset default -reportxml a.xml -reportpdf b.pdf -incremental -forcescan\n"
                 + "CxConsole Scan -projectname SP\\Cx\\Engine\\AST -cxserver http://localhost -cxuser admin@cx -cxpassword admin -locationtype share -locationpath '\\\\storage\\path1;\\\\storage\\path2' -locationuser dm\\matys -locationpassword XYZ -preset \"Sans 25\" -reportxls a.xls -reportpdf b.pdf -private -verbose -log a.log\n -LocationPathExclude test*, *log* -LocationFilesExclude web.config , *.class\n";
     }
-
 
     @Override
     protected boolean isKeyFlag(String key) {
@@ -354,7 +383,6 @@ public class ScanCommand extends GeneralScanCommand {
 
     @Override
     protected String getLogFileLocation() {
-
         String logFileLocation = commandLineArguments.getOptionValue(PARAM_LOG_FILE.getOpt());
         String projectName = commandLineArguments.getOptionValue(PARAM_PRJ_NAME.getOpt());
         if (projectName != null) {
@@ -420,7 +448,6 @@ public class ScanCommand extends GeneralScanCommand {
         return logFileLocation;
     }
 
-
     private String normalizeLogPath(String projectName) {
         if (projectName == null || projectName.isEmpty()) {
             return "cx_scan.log";
@@ -451,7 +478,6 @@ public class ScanCommand extends GeneralScanCommand {
                 + " fullProjectName "/* + PARAM_LOCATION_TYPE + " ltype" */;
     }
 
-
     @Override
     public String getKeyDescriptions() {
         String leftSpacing = "  ";
@@ -474,5 +500,4 @@ public class ScanCommand extends GeneralScanCommand {
 
         return keys.toString();
     }
-
 }

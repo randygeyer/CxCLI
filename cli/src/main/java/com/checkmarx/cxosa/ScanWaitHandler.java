@@ -16,6 +16,8 @@ public interface ScanWaitHandler<T> {
 
     void onSuccess(T scanStatus);
 
+    void onQueued(T scanStatus);
+
     void onFail(T scanStatus) throws CxClientException;
 
     void onTimeout(T scanStatus) throws CxClientException;

@@ -7,6 +7,8 @@ import com.checkmarx.cxosa.exception.CxClientException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import static com.checkmarx.cxosa.dto.OSAScanStatusEnum.QUEUED;
+
 
 /**
  * Created by: Dorg.
@@ -14,20 +16,19 @@ import org.apache.log4j.Logger;
  */
 public class OSAConsoleScanWaitHandler implements ScanWaitHandler<OSAScanStatus> {
 
-    private static Logger log ;
+    private static Logger log;
     private long startTime;
     private long scanTimeoutInMin;
 
     public void onTimeout(OSAScanStatus scanStatus) throws CxClientException {
 
-        String status =  scanStatus.getStatus() == null ? OSAScanStatusEnum.NONE.uiValue() : scanStatus.getStatus().uiValue();
-        throw new CxClientException("OSA scan has reached the time limit ("+scanTimeoutInMin+" minutes). status: ["+ status +"]");
+        String status = scanStatus.getStatus() == null ? OSAScanStatusEnum.NONE.uiValue() : scanStatus.getStatus().uiValue();
+        throw new CxClientException("OSA scan has reached the time limit (" + scanTimeoutInMin + " minutes). status: [" + status + "]");
 
     }
 
-
     public void onFail(OSAScanStatus scanStatus) throws CxClientException {
-        throw new CxClientException("OSA scan cannot be completed. status ["+scanStatus.getStatus().uiValue()+"]. message: ["+StringUtils.defaultString(scanStatus.getMessage())+"]" );
+        throw new CxClientException("OSA scan cannot be completed. status [" + scanStatus.getStatus().uiValue() + "]. message: [" + StringUtils.defaultString(scanStatus.getMessage()) + "]");
 
     }
 
@@ -37,9 +38,9 @@ public class OSAConsoleScanWaitHandler implements ScanWaitHandler<OSAScanStatus>
         long minutes = ((System.currentTimeMillis() - startTime) % 3600000) / 60000;
         long seconds = ((System.currentTimeMillis() - startTime) % 60000) / 1000;
 
-        String hoursStr = (hours < 10)?("0" + Long.toString(hours)):(Long.toString(hours));
-        String minutesStr = (minutes < 10)?("0" + Long.toString(minutes)):(Long.toString(minutes));
-        String secondsStr = (seconds < 10)?("0" + Long.toString(seconds)):(Long.toString(seconds));
+        String hoursStr = (hours < 10) ? ("0" + Long.toString(hours)) : (Long.toString(hours));
+        String minutesStr = (minutes < 10) ? ("0" + Long.toString(minutes)) : (Long.toString(minutes));
+        String secondsStr = (seconds < 10) ? ("0" + Long.toString(seconds)) : (Long.toString(seconds));
 
         log.info("Waiting for OSA Scan Results. " +
                 "Time Elapsed: " + hoursStr + ":" + minutesStr + ":" + secondsStr + ". " +
@@ -49,6 +50,13 @@ public class OSAConsoleScanWaitHandler implements ScanWaitHandler<OSAScanStatus>
 
     public void onSuccess(OSAScanStatus scanStatus) {
         log.debug("OSA Scan Finished.");
+    }
+
+    public void onQueued(OSAScanStatus scanStatus) {
+        log.debug("OSA Scan Queued.");
+        scanStatus.setStatus(QUEUED);
+        scanStatus.setLink(null);
+        scanStatus.setMessage("Osa scan queued");
     }
 
     public void onStart(long startTime, long scanTimeoutInMin) {

@@ -49,9 +49,11 @@ public class CxCLIScanJob extends CxScanJob {
     private GetProjectConfigResult projectConfig;
     private int osaExitCode = SCAN_SUCCEEDED_EXIT_CODE;
     private int sastExitCode = SCAN_SUCCEEDED_EXIT_CODE;
+    private boolean isAsyncScan = true;
 
-    public CxCLIScanJob(ScanParams params) {
+    public CxCLIScanJob(ScanParams params, boolean isAsyncScan) {
         super(params);
+        this.isAsyncScan = isAsyncScan;
     }
 
     @Override
@@ -125,9 +127,13 @@ public class CxCLIScanJob extends CxScanJob {
 
 
         // wait for scan completion
-        log.info("Waiting for SAST scan to finish.");
+        if (isAsyncScan) {
+            log.info("Waiting for SAST scan to queue.");
+        } else {
+            log.info("Waiting for SAST scan to finish.");
+        }
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        WaitScanCompletionJob waiterJob = new WaitScanCompletionJob(wsMgr, sessionId, runId);
+        WaitScanCompletionJob waiterJob = new WaitScanCompletionJob(wsMgr, sessionId, runId, isAsyncScan);
         waiterJob.setLog(log);
         try {
             Future<Boolean> furute = executor.submit(waiterJob);
@@ -135,7 +141,11 @@ public class CxCLIScanJob extends CxScanJob {
             furute.get();
 
             scanId = waiterJob.getScanId();
-            log.info("SAST scan finished. Retrieving scan results");
+            if (isAsyncScan) {
+                log.info("SAST scan queued. Job finished");
+            } else {
+                log.info("SAST scan finished. Retrieving scan results");
+            }
 
         } catch (ExecutionException e) {
             if (log.isEnabledFor(Level.TRACE)) {
@@ -150,9 +160,18 @@ public class CxCLIScanJob extends CxScanJob {
             executor.shutdownNow();
         }
 
-        String scanSummary = wsMgr.getScanSummary(params.getOriginHost(), sessionId, scanId);
-        int[] scanResults = parseScanSummary(scanSummary);
-        printSASTResultsToConsole(scanResults);
+        if (!isAsyncScan) {
+            String scanSummary = wsMgr.getScanSummary(params.getOriginHost(), sessionId, scanId);
+            int[] scanResults = parseScanSummary(scanSummary);
+            printSASTResultsToConsole(scanResults);
+
+            //SAST threshold calculation
+            if (params.isSastThresholdEnabled()) {
+                ThresholdDto thresholdDto = new ThresholdDto(ThresholdDto.ScanType.SAST_SCAN, params.getSastHighThresholdValue(), params.getSastMediumThresholdValue(),
+                        params.getSastLowThresholdValue(), scanResults[HIGH_VULNERABILITY_RESULTS], scanResults[MEDIUM_VULNERABILITY_RESULTS], scanResults[LOW_VULNERABILITY_RESULTS]);
+                sastExitCode = resolveThresholdExitCode(thresholdDto, log);
+            }
+        }
 
         if (params.isIgnoreScanWithUnchangedSource() && scanId == -1 && waiterJob.getCurrentStatusEnum() == CurrentStatusEnum.FINISHED) {
             log.info("Scan finished with ScanId = (-1): finish Scan Job");
@@ -185,16 +204,16 @@ public class CxCLIScanJob extends CxScanJob {
             resultsFileName = normalizePathString(params.getProjName()) + ".xml";
         }
 
-        //Document doc = getResultsXML();
-        storeXMLResults(resultsFileName, wsMgr.getScanReport(sessionId, scanId, "XML"));
-
+        if (!isAsyncScan) {
+            storeXMLResults(resultsFileName, wsMgr.getScanReport(sessionId, scanId, "XML"));
+        }
 
         //Osa Scan
         ExecutorService osaExecutor = null;
         if (params.isOsaEnabled()) {
             try {
                 osaExecutor = Executors.newSingleThreadExecutor();
-                CxScanJob job = new CxCLIOsaScanJob(params, wsMgr, sessionId, projectId);
+                CxScanJob job = new CxCLIOsaScanJob(params, wsMgr, sessionId, projectId, isAsyncScan);
                 job.setLog(log);
                 Future<Integer> future = osaExecutor.submit(job);
                 osaExitCode = future.get();
@@ -206,13 +225,6 @@ public class CxCLIScanJob extends CxScanJob {
                     osaExecutor.shutdownNow();
                 }
             }
-        }
-
-        //SAST threshold calculation
-        if (params.isSastThresholdEnabled()) {
-            ThresholdDto thresholdDto = new ThresholdDto(ThresholdDto.ScanType.SAST_SCAN, params.getSastHighThresholdValue(), params.getSastMediumThresholdValue(),
-                    params.getSastLowThresholdValue(), scanResults[HIGH_VULNERABILITY_RESULTS], scanResults[MEDIUM_VULNERABILITY_RESULTS], scanResults[LOW_VULNERABILITY_RESULTS]);
-            sastExitCode = resolveThresholdExitCode(thresholdDto, log);
         }
 
         if (sastExitCode == SCAN_SUCCEEDED_EXIT_CODE && osaExitCode != SCAN_SUCCEEDED_EXIT_CODE) {

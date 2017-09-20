@@ -5,6 +5,7 @@ import com.checkmarx.cxconsole.utils.ScanParams;
 import com.checkmarx.cxosa.CxRestClient;
 import com.checkmarx.cxosa.OSAConsoleScanWaitHandler;
 import com.checkmarx.cxosa.dto.CreateOSAScanResponse;
+import com.checkmarx.cxosa.dto.OSAScanStatus;
 import com.checkmarx.cxosa.dto.OSASummaryResults;
 import com.checkmarx.cxosa.utils.OsaUtils;
 import com.checkmarx.cxviewer.ws.WSMgr;
@@ -17,7 +18,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
+import static com.checkmarx.cxosa.dto.OSAScanStatusEnum.QUEUED;
 import static com.checkmarx.exitcodes.Constants.ExitCodes.GENERAL_ERROR_EXIT_CODE;
+import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED_EXIT_CODE;
 import static com.checkmarx.exitcodes.ErrorHandler.errorCodeResolver;
 import static com.checkmarx.thresholds.ThresholdResolver.resolveThresholdExitCode;
 
@@ -28,24 +31,21 @@ public class CxCLIOsaScanJob extends CxScanJob {
     private boolean scanOsaOnly = false;
     private long projectId = -1;
     private static final String OSA_REPORT_NAME = "CxOSAReport";
+    private boolean isAsyncOsaScan = false;
 
-    private static final int LOW_THRESHOLD = 1;
-    private static final int MEDIUM_THRESHOLD = 2;
-    private static final int HIGH_THRESHOLD = 4;
-    private static final int NO_THRESHOLD_EXCEEDED = 0;
-
-
-    public CxCLIOsaScanJob(ScanParams params, WSMgr wsMgr, String sessionId, long projectId) {
+    public CxCLIOsaScanJob(ScanParams params, WSMgr wsMgr, String sessionId, long projectId, boolean isAsnycOsaScan) {
         super(params);
         this.wsMgr = wsMgr;
         this.sessionId = sessionId;
         this.projectId = projectId;
         this.scanOsaOnly = false;
+        this.isAsyncOsaScan = isAsnycOsaScan;
     }
 
-    public CxCLIOsaScanJob(ScanParams params) {
+    public CxCLIOsaScanJob(ScanParams params, boolean isAsyncOsaScan) {
         super(params);
         this.scanOsaOnly = true;
+        this.isAsyncOsaScan = isAsyncOsaScan;
     }
 
     @Override
@@ -63,10 +63,12 @@ public class CxCLIOsaScanJob extends CxScanJob {
                 } catch (Exception e) {
                     throw e;
                 }
-                if (generatedHost.contains("https://")) {
-                    params.setOriginHost("https://" + params.getOriginHost());
-                } else {
-                    params.setOriginHost("http://" + params.getOriginHost());
+                if (!params.getOriginHost().contains("http")) {
+                    if (generatedHost.contains("https://")) {
+                        params.setOriginHost("https://" + params.getOriginHost());
+                    } else {
+                        params.setOriginHost("http://" + params.getOriginHost());
+                    }
                 }
                 params.setHost(generatedHost);
                 URL wsdlLocation = wsMgr.makeWsdlLocation(params.getHost());
@@ -102,58 +104,69 @@ public class CxCLIOsaScanJob extends CxScanJob {
                 log.warn("Warning: failed to delete temporary zip file: " + zipForOSA.getAbsolutePath());
             }
 
+            if (isAsyncOsaScan) {
+                log.info("Waiting for OSA scan to queue");
+            } else {
+                log.info("Waiting for OSA scan to finish");
+            }
             //wait for OSA scan to finish
-            log.info("Waiting for OSA scan to finish");
             OSAConsoleScanWaitHandler osaConsoleScanWaitHandler = new OSAConsoleScanWaitHandler();
             osaConsoleScanWaitHandler.setLogger(log);
-            restClient.waitForOSAScanToFinish(osaScan.getScanId(), -1, osaConsoleScanWaitHandler);
-            log.info("OSA scan finished successfully");
+            OSAScanStatus returnStatus = restClient.waitForOSAScanToFinish(osaScan.getScanId(), -1, osaConsoleScanWaitHandler, isAsyncOsaScan);
+            if (isAsyncOsaScan && returnStatus.getStatus() == QUEUED) {
+                exitCode = SCAN_SUCCEEDED_EXIT_CODE;
+            }
+            if (!isAsyncOsaScan) {
+                log.info("OSA scan finished successfully");
 
-            //OSA scan results
-            osaSummaryResults = restClient.getOSAScanSummaryResults(osaScan.getScanId());
-            printOSAResultsToConsole(osaSummaryResults, osaProjectSummaryLink);
+                //OSA scan results
+                osaSummaryResults = restClient.getOSAScanSummaryResults(osaScan.getScanId());
+                printOSAResultsToConsole(osaSummaryResults, osaProjectSummaryLink);
 
-            //OSA reports
-            String htmlFile = params.getOsaReportHTML();
-            String pdfFile = params.getOsaReportPDF();
-            String jsonFile = params.getOsaJson();
-            try {
-                if (htmlFile != null || pdfFile != null || jsonFile != null) {
-                    log.info("Creating CxOSA Reports");
-                    log.info("-----------------------");
-                    workDirectory = gerWorkDirectory();
-
-                    //OSA HTML report
-                    if (htmlFile != null) {
-                        String resultFilePath = resolveReportPath("HTML", htmlFile, OSA_REPORT_NAME + ".html");
-                        restClient.createOsaHtmlReport(osaScan.getScanId(), resultFilePath);
-                    }
-                    //OSA PDF report
-                    if (pdfFile != null) {
-                        String resultFilePath = resolveReportPath("PDF", pdfFile, OSA_REPORT_NAME + ".pdf");
-                        restClient.createOsaPdfReport(osaScan.getScanId(), resultFilePath);
-                    }
-                    //OSA json reports
-                    if (jsonFile != null) {
-                        String resultFilePath = resolveReportPath("JSON", jsonFile, "");
-                        restClient.createOsaJson(osaScan.getScanId(), resultFilePath, osaSummaryResults);
-                    }
+                //Osa threshold calculation
+                if (params.isOsaThresholdEnabled()) {
+                    ThresholdDto thresholdDto = new ThresholdDto(ThresholdDto.ScanType.OSA_SCAN, params.getOsaHighThresholdValue(), params.getOsaMediumThresholdValue(),
+                            params.getOsaLowThresholdValue(), osaSummaryResults.getTotalHighVulnerabilities(),
+                            osaSummaryResults.getTotalMediumVulnerabilities(), osaSummaryResults.getTotalLowVulnerabilities());
+                    exitCode = resolveThresholdExitCode(thresholdDto, log);
                 }
-            } catch (Exception e) {
-                log.error("Error occurred during CxOSA reports. Error message: " + e.getMessage());
-                exitCode = errorCodeResolver(e.getMessage());
+
+                //OSA reports
+                String htmlFile = params.getOsaReportHTML();
+                String pdfFile = params.getOsaReportPDF();
+                String jsonFile = params.getOsaJson();
+                try {
+                    if (htmlFile != null || pdfFile != null || jsonFile != null) {
+                        log.info("Creating CxOSA Reports");
+                        log.info("-----------------------");
+                        workDirectory = gerWorkDirectory();
+
+                        //OSA HTML report
+                        if (htmlFile != null) {
+                            String resultFilePath = resolveReportPath("HTML", htmlFile, OSA_REPORT_NAME + ".html");
+                            restClient.createOsaHtmlReport(osaScan.getScanId(), resultFilePath);
+                        }
+                        //OSA PDF report
+                        if (pdfFile != null) {
+                            String resultFilePath = resolveReportPath("PDF", pdfFile, OSA_REPORT_NAME + ".pdf");
+                            restClient.createOsaPdfReport(osaScan.getScanId(), resultFilePath);
+                        }
+                        //OSA json reports
+                        if (jsonFile != null) {
+                            String resultFilePath = resolveReportPath("JSON", jsonFile, "");
+                            restClient.createOsaJson(osaScan.getScanId(), resultFilePath, osaSummaryResults);
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("Error occurred during CxOSA reports. Error message: " + e.getMessage());
+                    exitCode = errorCodeResolver(e.getMessage());
+                }
+            } else {
+                log.info("OSA scan queued successfully. Job finished");
             }
         } finally {
             OsaUtils.deleteTempFiles();
             restClient.close();
-        }
-
-        //Osa threshold calculation
-        if (params.isOsaThresholdEnabled()) {
-            ThresholdDto thresholdDto = new ThresholdDto(ThresholdDto.ScanType.OSA_SCAN, params.getOsaHighThresholdValue(), params.getOsaMediumThresholdValue(),
-                    params.getOsaLowThresholdValue(), osaSummaryResults.getTotalHighVulnerabilities(),
-                    osaSummaryResults.getTotalMediumVulnerabilities(), osaSummaryResults.getTotalLowVulnerabilities());
-            exitCode = resolveThresholdExitCode(thresholdDto, log);
         }
 
         return exitCode;
