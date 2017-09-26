@@ -7,9 +7,9 @@ import org.apache.commons.cli.Options;
 
 public class OsaScanCommand extends ScanCommand {
 
-    public static String osaCommand;
+    private String osaCommand;
 
-    public OsaScanCommand(boolean isAsyncOsaScan) {
+    OsaScanCommand(boolean isAsyncOsaScan) {
         super(false);
         if (isAsyncOsaScan) {
             osaCommand = Commands.ASYNC_OSA_SCAN.value();

@@ -28,6 +28,7 @@ public class WSMgr extends WSMgrBase {
     protected CxCLIWebServiceV1Soap wService;
     private static final String SOAP_ACTION_URL = "http://Checkmarx.com/v7/GetScanSummary";
     private static final String SDK_URL = "/Cxwebinterface/sdk/cxsdkwebservice.asmx";
+    private static final String CLI_URL = "/cxwebinterface/CLI/CxCLIWebServiceV1.asmx";
 
 
     @Override
@@ -342,8 +343,9 @@ public class WSMgr extends WSMgrBase {
         return repoResp.getScanResults();
     }
 
-    public String getScanSummary(String serverName, String sessionId, long scanId) throws Exception {
-        URL wsURL = new URL(serverName + SDK_URL);
+    public String getScanSummary(String cliServer, String sessionId, long scanId) throws Exception {
+        String sdkServer = cliServer.replace(CLI_URL, SDK_URL);
+        URL wsURL = new URL(sdkServer);
         URLConnection connection = wsURL.openConnection();
         HttpURLConnection httpConn = (HttpURLConnection) connection;
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
