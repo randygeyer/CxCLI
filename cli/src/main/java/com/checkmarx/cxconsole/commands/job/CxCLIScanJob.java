@@ -161,7 +161,7 @@ public class CxCLIScanJob extends CxScanJob {
         }
 
         if (!isAsyncScan) {
-            String scanSummary = wsMgr.getScanSummary(params.getOriginHost(), sessionId, scanId);
+            String scanSummary = wsMgr.getScanSummary(params.getHost(), sessionId, scanId);
             int[] scanResults = parseScanSummary(scanSummary);
             printSASTResultsToConsole(scanResults);
 
