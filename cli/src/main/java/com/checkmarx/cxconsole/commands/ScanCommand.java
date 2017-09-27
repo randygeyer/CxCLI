@@ -194,26 +194,18 @@ public class ScanCommand extends GeneralScanCommand {
         job.setLog(log);
 
         Future<Integer> future = executor.submit(job);
-        try
-
-        {
+        try {
             if (timeout != null) {
                 errorCode = future.get(timeout, TimeUnit.SECONDS);
             } else {
                 errorCode = future.get();
             }
-        } catch (
-                InterruptedException e)
-
-        {
+        } catch (InterruptedException e) {
             if (log.isEnabledFor(Level.DEBUG)) {
                 log.debug(scanType + "Scan job was interrupted.", e);
             }
             errorCode = errorCodeResolver(e.getCause().getMessage());
-        } catch (
-                ExecutionException e)
-
-        {
+        } catch (ExecutionException e) {
             if (log.isEnabledFor(Level.ERROR)) {
                 if (e.getCause().getMessage() != null) {
                     log.error("Error during " + scanType + " scan job execution: "
@@ -227,10 +219,7 @@ public class ScanCommand extends GeneralScanCommand {
                 log.trace("Error during " + scanType + " scan job execution.", e);
             }
             errorCode = errorCodeResolver(e.getCause().getMessage());
-        } catch (
-                TimeoutException e)
-
-        {
+        } catch (TimeoutException e) {
             if (log.isEnabledFor(Level.ERROR)) {
                 log.error(scanType + "Scan job failed due to timeout.");
             }
@@ -238,9 +227,17 @@ public class ScanCommand extends GeneralScanCommand {
                 log.trace(scanType + "Scan job failed due to timeout.", e);
             }
             errorCode = errorCodeResolver(e.getCause().getMessage());
-        } finally
-
-        {
+        } catch (Exception e) {
+            if (log.isEnabledFor(Level.ERROR)) {
+                if (e.getCause().getMessage() != null) {
+                    log.error("Error during " + scanType + " scan job execution: "
+                            + e.getCause().getMessage());
+                } else {
+                    log.error("Error during " + scanType + " scan job execution: "
+                            + e.getCause());
+                }
+            }
+        } finally {
             if (executor != null) {
                 executor.shutdownNow();
             }

@@ -46,6 +46,8 @@ public class CxScanJob implements Callable<Integer> {
     // Current result Id
     protected long resultId;
 
+    private static String errorMsg;
+
 
     // Utility fields for accessing and saving results from anonymous  classes
     protected GetPresetsListResult presetsListResult;
@@ -133,6 +135,7 @@ public class CxScanJob implements Callable<Integer> {
         login.run();
         String error = login.getError();
         if (error != null) {
+            errorMsg = error;
             throw new Exception(error);
         }
     }
@@ -461,4 +464,7 @@ public class CxScanJob implements Callable<Integer> {
         return isWindows;
     }
 
+    public String getErrorMsg() {
+        return errorMsg;
+    }
 }

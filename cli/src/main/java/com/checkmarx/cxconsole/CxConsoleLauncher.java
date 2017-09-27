@@ -119,11 +119,11 @@ public class CxConsoleLauncher {
             } catch (CommandLineArgumentException e) {
                 log.fatal(INVALID_COMMAND_PARAMETERS_MSG + e.getMessage() + "\n");
                 command.printHelp();
-                return errorCodeResolver(e.getCause().getMessage());
+                return errorCodeResolver(e.getMessage());
             } catch (Exception e) {
                 log.fatal(INVALID_COMMAND_PARAMETERS_MSG + e.getMessage() + "\n");
                 command.printHelp();
-                return errorCodeResolver(e.getCause().getMessage());
+                return errorCodeResolver(e.getMessage());
             }
 
             int exitCode = command.execute();
@@ -132,11 +132,11 @@ public class CxConsoleLauncher {
 
         } catch (org.apache.commons.cli.ParseException e) {
             // Ignore, the exception is handled in above catch statement
-            return errorCodeResolver(e.getCause().getMessage());
+            return errorCodeResolver(e.getMessage());
         } catch (Throwable e) {
             log.error("Unexpected error occurred during console session.Error message:\n" + e.getMessage());
             log.info("", e);
-            return errorCodeResolver(e.getCause().getMessage());
+            return errorCodeResolver(e.getMessage());
         }
     }
 }

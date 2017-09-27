@@ -118,6 +118,7 @@ public class CxCLIOsaScanJob extends CxScanJob {
             }
             if (!isAsyncOsaScan) {
                 log.info("OSA scan finished successfully");
+                exitCode = SCAN_SUCCEEDED_EXIT_CODE;
 
                 //OSA scan results
                 osaSummaryResults = restClient.getOSAScanSummaryResults(osaScan.getScanId());
@@ -165,8 +166,13 @@ public class CxCLIOsaScanJob extends CxScanJob {
                 log.info("OSA scan queued successfully. Job finished");
             }
         } finally {
+            if (super.getErrorMsg() != null) {
+                exitCode = errorCodeResolver(super.getErrorMsg());
+            }
             OsaUtils.deleteTempFiles();
-            restClient.close();
+            if (restClient != null) {
+                restClient.close();
+            }
         }
 
         return exitCode;
