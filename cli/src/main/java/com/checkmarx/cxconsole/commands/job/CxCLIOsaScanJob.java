@@ -53,24 +53,24 @@ public class CxCLIOsaScanJob extends CxScanJob {
         OSASummaryResults osaSummaryResults;
         int exitCode = GENERAL_ERROR_EXIT_CODE;
         try {
+            log.info("Project name is \"" + params.getProjName() + "\"");
+            // Connect to Checkmarx service.
+            String generatedHost = null;
+            wsMgr = ConfigMgr.getWSMgr();
+            try {
+                generatedHost = wsMgr.resolveServiceLocation(params.getHost());
+            } catch (Exception e) {
+                throw e;
+            }
+            if (!params.getOriginHost().contains("http")) {
+                if (generatedHost.contains("https://")) {
+                    params.setOriginHost("https://" + params.getOriginHost());
+                } else {
+                    params.setOriginHost("http://" + params.getOriginHost());
+                }
+            }
+            params.setHost(generatedHost);
             if (scanOsaOnly) {
-                log.info("Project name is \"" + params.getProjName() + "\"");
-                // Connect to Checkmarx service.
-                String generatedHost = null;
-                wsMgr = ConfigMgr.getWSMgr();
-                try {
-                    generatedHost = wsMgr.resolveServiceLocation(params.getHost());
-                } catch (Exception e) {
-                    throw e;
-                }
-                if (!params.getOriginHost().contains("http")) {
-                    if (generatedHost.contains("https://")) {
-                        params.setOriginHost("https://" + params.getOriginHost());
-                    } else {
-                        params.setOriginHost("http://" + params.getOriginHost());
-                    }
-                }
-                params.setHost(generatedHost);
                 URL wsdlLocation = wsMgr.makeWsdlLocation(params.getHost());
                 // Logging into the Checkmarx service.
                 login(wsdlLocation);
