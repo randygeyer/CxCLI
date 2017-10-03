@@ -70,7 +70,6 @@
 
 	</dependencies>
 
-
 	<build>
 		<finalName>${project.artifactId}-${project.version}-${maven.build.timestamp}</finalName>
 		<plugins>
