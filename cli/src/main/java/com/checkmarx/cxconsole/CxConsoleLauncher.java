@@ -112,16 +112,12 @@ public class CxConsoleLauncher {
                     return errorCodeResolver(e.getMessage());
                 }
                 command.checkParameters();
-            } catch (ParseException e) {
-                log.fatal(INVALID_COMMAND_PARAMETERS_MSG + e.getMessage() + "\n");
-                command.printHelp();
-                return errorCodeResolver(e.getCause().getMessage());
-            } catch (CommandLineArgumentException e) {
-                log.fatal(INVALID_COMMAND_PARAMETERS_MSG + e.getMessage() + "\n");
-                command.printHelp();
-                return errorCodeResolver(e.getMessage());
-            } catch (Exception e) {
-                log.fatal(INVALID_COMMAND_PARAMETERS_MSG + e.getMessage() + "\n");
+            } catch (ParseException | CommandLineArgumentException e) {
+                if (e.getMessage() != null) {
+                    log.fatal(INVALID_COMMAND_PARAMETERS_MSG + e.getMessage() + "\n");
+                } else {
+                    log.fatal(INVALID_COMMAND_PARAMETERS_MSG + "\n");
+                }
                 command.printHelp();
                 return errorCodeResolver(e.getMessage());
             }
