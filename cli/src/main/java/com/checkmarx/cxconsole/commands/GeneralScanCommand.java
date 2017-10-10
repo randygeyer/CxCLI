@@ -14,8 +14,9 @@ import static com.checkmarx.exitcodes.Constants.ErrorMassages.LOGIN_ERROR_MSG;
 public abstract class GeneralScanCommand extends VerboseCommand {
 
     public static final Option PARAM_HOST = OptionBuilder.isRequired().hasArg().withArgName("server").withDescription("IP address or resolvable name of CxSuite web server").create("CxServer");
-    public static final Option PARAM_USER = OptionBuilder.hasArg().withArgName("username").withDescription("Login username. Mandatory, Unless SSO login is used on Windows ('-useSSO' flag)").create("CxUser");
-    public static final Option PARAM_PASSWORD = OptionBuilder.hasArg().withArgName("password").withDescription("Login password. Mandatory, Unless SSO login is used on Windows ('-useSSO' flag)").create("CxPassword");
+    public static final Option PARAM_USER = OptionBuilder.hasArg().withArgName("username").withDescription("Login username. Mandatory, Unless token is used or SSO login is used on Windows ('-useSSO' flag)").create("CxUser");
+    public static final Option PARAM_PASSWORD = OptionBuilder.hasArg().withArgName("password").withDescription("Login password. Mandatory, Unless token is used or SSO login is used on Windows ('-useSSO' flag)").create("CxPassword");
+    public static final Option PARAM_TOKEN = OptionBuilder.hasArg().withArgName("token").withDescription("Login token. Mandatory, Unless use rname and password are provided or SSO login is used on Windows ('-useSSO' flag)").create("CxToken");
     public static final Option PARAM_CONFIG_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Config file. Optional.").create("Config");
 
     public static final Option PARAM_XML_FILE = OptionBuilder.hasArg().withArgName("file").withDescription("Name or path to results XML file. Optional.").create("ReportXML");
@@ -64,6 +65,7 @@ public abstract class GeneralScanCommand extends VerboseCommand {
         this.commandLineOptions.addOption(PARAM_HOST);
         this.commandLineOptions.addOption(PARAM_USER);
         this.commandLineOptions.addOption(PARAM_PASSWORD);
+        this.commandLineOptions.addOption(PARAM_TOKEN);
         this.commandLineOptions.addOption(PARAM_LOG_FILE);
         this.commandLineOptions.addOption(PARAM_CONFIG_FILE);
 
@@ -167,6 +169,11 @@ public abstract class GeneralScanCommand extends VerboseCommand {
         keys.append(KEY_DESCR_INTEND_SMALL);
         keys.append("- Login password. Mandatory\n");
 
+        keys.append(leftSpacing);
+        keys.append(PARAM_TOKEN);
+        keys.append(KEY_DESCR_INTEND_SMALL);
+        keys.append("- Login token. Mandatory\n");
+
         return keys.toString();
     }
 
@@ -231,9 +238,6 @@ public abstract class GeneralScanCommand extends VerboseCommand {
         keys.append(KEY_DESCR_INTEND_SINGLE);
         keys.append("- Comma separated list of files extensions to include in OSA scan. Example: '-OsaFilesInclude *.bin' include only files with .bin extension. Optional. \n");
 
-
-        //keys.append(super.getOptionalKeyDescriptions());
-
         return keys.toString();
     }
 
@@ -250,8 +254,7 @@ public abstract class GeneralScanCommand extends VerboseCommand {
                 + "[ " + PARAM_CSV_FILE + " results.csv ] "
                 + "[ " + PARAM_LOG_FILE + " logFile.log ] "
                 + "[ " + PARAM_EXCLUDE_FOLDERS + " \"DirName1,DirName2,DirName3\" ] "
-                + "[ " + PARAM_EXCLUDE_FILES + " \"FileName1,FileName2,FileName3\" ] "
-             /*+ super.getOptionalParams()*/;
+                + "[ " + PARAM_EXCLUDE_FILES + " \"FileName1,FileName2,FileName3\" ] ";
     }
 
     public void setTimeout(int timeout) {

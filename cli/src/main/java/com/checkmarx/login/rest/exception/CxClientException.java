@@ -1,4 +1,4 @@
-package com.checkmarx.cxosa.exception;
+package com.checkmarx.login.rest.exception;
 
 /**
  * Created by: Dorg.

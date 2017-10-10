@@ -3,7 +3,7 @@ package com.checkmarx.cxosa;
 
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxosa.dto.*;
-import com.checkmarx.cxosa.exception.CxClientException;
+import com.checkmarx.login.rest.exception.CxClientException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;

@@ -17,6 +17,10 @@ public class CommandsFactory {
             return new OsaScanCommand(false);
         } else if (Commands.ASYNC_OSA_SCAN.value().equalsIgnoreCase(commandName)) {
             return new OsaScanCommand(true);
+        } else if (Commands.GENERATE_TOKEN.value().equalsIgnoreCase(commandName)) {
+            return new GenerateTokenCommand();
+        }else if (Commands.REVOKE_TOKEN.value().equalsIgnoreCase(commandName)) {
+            return new RevokeTokenCommand();
         }
         return null;
     }

@@ -379,7 +379,7 @@ public class ScanCommand extends GeneralScanCommand {
     }
 
     @Override
-    protected String getLogFileLocation() {
+    public String getLogFileLocation() {
         String logFileLocation = commandLineArguments.getOptionValue(PARAM_LOG_FILE.getOpt());
         String projectName = commandLineArguments.getOptionValue(PARAM_PRJ_NAME.getOpt());
         if (projectName != null) {

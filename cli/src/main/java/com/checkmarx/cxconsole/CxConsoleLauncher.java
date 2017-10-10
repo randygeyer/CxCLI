@@ -123,7 +123,7 @@ public class CxConsoleLauncher {
             }
 
             int exitCode = command.execute();
-            log.info("CxConsole scan session finished");
+            log.info("CxConsole session finished");
             return exitCode;
 
         } catch (org.apache.commons.cli.ParseException e) {

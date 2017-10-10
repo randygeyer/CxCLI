@@ -4,7 +4,10 @@ import org.apache.commons.cli.CommandLine;
 
 import java.io.File;
 
-import static com.checkmarx.cxconsole.commands.OsaScanCommand.*;
+import static com.checkmarx.cxconsole.commands.OsaScanCommand.PARAM_OSA_HIGH_THRESHOLD;
+import static com.checkmarx.cxconsole.commands.OsaScanCommand.PARAM_OSA_LOW_THRESHOLD;
+import static com.checkmarx.cxconsole.commands.OsaScanCommand.PARAM_OSA_MEDIUM_THRESHOLD;
+import static com.checkmarx.cxconsole.commands.OsaScanCommand.PARAM_TOKEN;
 import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_CONFIGURATION;
 import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_CSV_FILE;
 import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_ENABLE_OSA;
@@ -103,22 +106,18 @@ public class ScanParams {
     private int sastLowThresholdValue = Integer.MAX_VALUE;
     private int sastMediumThresholdValue = Integer.MAX_VALUE;
     private int sastHighThresholdValue = Integer.MAX_VALUE;
-    private String sastLowThresholdStr;
-    private String sastMediumThresholdStr;
-    private String sastHighThresholdStr;
     private boolean isOsaThresholdEnabled = false;
     private int osaLowThresholdValue = Integer.MAX_VALUE;
     private int osaMediumThresholdValue = Integer.MAX_VALUE;
     private int osaHighThresholdValue = Integer.MAX_VALUE;
-    private String osaLowThresholdStr;
-    private String osaMediumThresholdStr;
-    private String osaHighThresholdStr;
+    private String token;
 
     public ScanParams(CommandLine commandLine) {
         this.host = commandLine.getOptionValue(PARAM_HOST.getOpt());
         this.originHost = commandLine.getOptionValue(PARAM_HOST.getOpt());
         this.user = commandLine.getOptionValue(PARAM_USER.getOpt());
         this.password = commandLine.getOptionValue(PARAM_PASSWORD.getOpt());
+        this.token = commandLine.getOptionValue(PARAM_TOKEN.getOpt());
 
         this.presetName = commandLine.getOptionValue(PARAM_PRESET.getOpt());
 
@@ -237,10 +236,10 @@ public class ScanParams {
         osaReportPDF = getOptionalValue(commandLine, PARAM_OSA_PDF_FILE.getOpt());
         osaJson = getOptionalValue(commandLine, PARAM_OSA_JSON.getOpt());
 
-        sastLowThresholdStr = getOptionalValue(commandLine, PARAM_SAST_LOW_THRESHOLD.getOpt());
-        sastMediumThresholdStr = getOptionalValue(commandLine, PARAM_SAST_MEDIUM_THRESHOLD.getOpt());
-        sastHighThresholdStr = getOptionalValue(commandLine, PARAM_SAST_HIGH_THRESHOLD.getOpt());
-        if (sastLowThresholdStr != null  || sastMediumThresholdStr != null || sastHighThresholdStr != null) {
+        String sastLowThresholdStr = getOptionalValue(commandLine, PARAM_SAST_LOW_THRESHOLD.getOpt());
+        String sastMediumThresholdStr = getOptionalValue(commandLine, PARAM_SAST_MEDIUM_THRESHOLD.getOpt());
+        String sastHighThresholdStr = getOptionalValue(commandLine, PARAM_SAST_HIGH_THRESHOLD.getOpt());
+        if (sastLowThresholdStr != null || sastMediumThresholdStr != null || sastHighThresholdStr != null) {
             isSastThresholdEnabled = true;
             if (sastLowThresholdStr != null) {
                 sastLowThresholdValue = Integer.parseInt(sastLowThresholdStr);
@@ -255,10 +254,10 @@ public class ScanParams {
             }
         }
 
-        osaLowThresholdStr = getOptionalValue(commandLine, PARAM_OSA_LOW_THRESHOLD.getOpt());
-        osaMediumThresholdStr = getOptionalValue(commandLine, PARAM_OSA_MEDIUM_THRESHOLD.getOpt());
-        osaHighThresholdStr = getOptionalValue(commandLine, PARAM_OSA_HIGH_THRESHOLD.getOpt());
-        if (osaLowThresholdStr != null  || osaMediumThresholdStr != null || osaHighThresholdStr != null) {
+        String osaLowThresholdStr = getOptionalValue(commandLine, PARAM_OSA_LOW_THRESHOLD.getOpt());
+        String osaMediumThresholdStr = getOptionalValue(commandLine, PARAM_OSA_MEDIUM_THRESHOLD.getOpt());
+        String osaHighThresholdStr = getOptionalValue(commandLine, PARAM_OSA_HIGH_THRESHOLD.getOpt());
+        if (osaLowThresholdStr != null || osaMediumThresholdStr != null || osaHighThresholdStr != null) {
             isOsaThresholdEnabled = true;
             if (osaLowThresholdStr != null) {
                 osaLowThresholdValue = Integer.parseInt(osaLowThresholdStr);
@@ -421,10 +420,6 @@ public class ScanParams {
     public String getLocationURL() {
         return locationURL;
     }
-
-//	public String getLocationRepository() {
-//		return locationRepository;
-//	}
 
     public String getLocationBranch() {
         return locationBranch;
@@ -638,5 +633,11 @@ public class ScanParams {
         this.osaHighThresholdValue = osaHighThresholdValue;
     }
 
+    public String getToken() {
+        return token;
+    }
 
+    public void setToken(String token) {
+        this.token = token;
+    }
 }
