@@ -94,6 +94,7 @@ public abstract class CxConsoleCommand {
 
     private void printCommandsDebug() {
         log.debug("----------------------------Configured Commands:-----------------------------");
+        log.debug("Command type: " + getCommandName());
         for (Option opt : commandLineArguments.getOptions()) {
             String option = opt.getOpt();
             if (option != "CxPassword") {
