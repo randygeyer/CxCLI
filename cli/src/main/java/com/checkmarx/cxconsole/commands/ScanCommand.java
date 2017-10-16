@@ -382,7 +382,7 @@ public class ScanCommand extends GeneralScanCommand {
         if (isAsyncScan && (scParams.getReportFile() != null || scParams.getXmlFile() != null || scParams.getReportType() != null)) {
             throw new CommandLineArgumentException("Asynchronous run does not allow report creation. Please remove the report parameters and run again");
         }
-        if (isAsyncScan && (scParams.getSastHighThresholdValue() == Integer.MAX_VALUE || scParams.getSastMediumThresholdValue() == Integer.MAX_VALUE || scParams.getSastLowThresholdValue() == Integer.MAX_VALUE)) {
+        if (isAsyncScan && (scParams.getSastHighThresholdValue() != Integer.MAX_VALUE || scParams.getSastMediumThresholdValue() != Integer.MAX_VALUE || scParams.getSastLowThresholdValue() != Integer.MAX_VALUE)) {
             throw new CommandLineArgumentException("Asynchronous run does not support threshold. Please remove the threshold parameters and run again");
         }
     }
