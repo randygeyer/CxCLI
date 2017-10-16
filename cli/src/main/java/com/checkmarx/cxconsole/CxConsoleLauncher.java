@@ -111,7 +111,11 @@ public class CxConsoleLauncher {
                 }
                 command.checkParameters();
             } catch (Exception e) {
-                log.fatal(INVALID_COMMAND_PARAMETERS_MSG + e.getMessage() + "\n");
+                if (e.getMessage() != null) {
+                    log.fatal(INVALID_COMMAND_PARAMETERS_MSG + e.getMessage() + "\n");
+                } else {
+                    log.fatal(INVALID_COMMAND_PARAMETERS_MSG + "\n");
+                }
                 if (!command.getCommandName().toLowerCase().contains("async")) {
                     command.printHelp();
                 }
