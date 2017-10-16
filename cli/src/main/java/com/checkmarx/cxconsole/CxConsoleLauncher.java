@@ -3,11 +3,9 @@ package com.checkmarx.cxconsole;
 import com.checkmarx.cxconsole.commands.CommandsFactory;
 import com.checkmarx.cxconsole.commands.CxConsoleCommand;
 import com.checkmarx.cxconsole.utils.BuildVersion;
-import com.checkmarx.cxconsole.utils.CommandLineArgumentException;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxconsole.utils.CustomStringList;
 import com.checkmarx.cxviewer.ws.SSLUtilities;
-import org.apache.commons.cli.ParseException;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -112,13 +110,15 @@ public class CxConsoleLauncher {
                     return errorCodeResolver(e.getMessage());
                 }
                 command.checkParameters();
-            } catch (ParseException | CommandLineArgumentException e) {
+            } catch (Exception e) {
                 if (e.getMessage() != null) {
                     log.fatal(INVALID_COMMAND_PARAMETERS_MSG + e.getMessage() + "\n");
                 } else {
                     log.fatal(INVALID_COMMAND_PARAMETERS_MSG + "\n");
                 }
-                command.printHelp();
+                if (!command.getCommandName().toLowerCase().contains("async")) {
+                    command.printHelp();
+                }
                 return errorCodeResolver(e.getMessage());
             }
 

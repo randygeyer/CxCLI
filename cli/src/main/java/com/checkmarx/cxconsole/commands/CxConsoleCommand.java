@@ -7,6 +7,7 @@ import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED_EXIT_CODE;
 
@@ -94,9 +95,10 @@ public abstract class CxConsoleCommand {
 
     private void printCommandsDebug() {
         log.debug("----------------------------Configured Commands:-----------------------------");
+        log.debug("Command type: " + getCommandName());
         for (Option opt : commandLineArguments.getOptions()) {
             String option = opt.getOpt();
-            if (option != "CxPassword") {
+            if (!Objects.equals(option, "CxPassword")) {
                 log.debug("Option: " + opt.getOpt() + " value: " + opt.getValue());
             }
         }

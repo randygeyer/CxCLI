@@ -18,7 +18,8 @@ import static com.checkmarx.exitcodes.ErrorHandler.errorCodeResolver;
 
 public class ScanCommand extends GeneralScanCommand {
 
-    public static String command;
+    private String command;
+    private boolean isAsyncScan;
 
     public static final Option PARAM_PRJ_NAME = OptionBuilder.withArgName("project name").hasArg().isRequired().withDescription("A full absolute name of a project. " +
             "The full Project name includes the whole path to the project, including Server, service provider, company, and team. " +
@@ -91,6 +92,7 @@ public class ScanCommand extends GeneralScanCommand {
 
     public ScanCommand(boolean isAsyncScan) {
         super();
+        this.isAsyncScan = isAsyncScan;
         if (isAsyncScan) {
             command = Commands.ASYNC_SCAN.value();
         } else {
@@ -375,6 +377,10 @@ public class ScanCommand extends GeneralScanCommand {
 
         if (scParams.isOsaEnabled() && (scParams.getLocationPath() == null || (scParams.getLocationType() != LocationType.folder && scParams.getLocationType() != LocationType.shared))) {
             throw new CommandLineArgumentException("For OSA Scan (" + PARAM_ENABLE_OSA.getOpt() + "), provide  " + PARAM_OSA_LOCATION_PATH.getOpt() + "  or " + PARAM_LOCATION_TYPE.getOpt() + " ( values: folder/shared)");
+        }
+
+        if (isAsyncScan && (scParams.getReportFile() != null || scParams.getXmlFile() != null || scParams.getReportType() != null)) {
+            throw new CommandLineArgumentException("Asynchronous run does not allow report creation. Please remove the report parameters and run again");
         }
     }
 

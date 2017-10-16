@@ -8,9 +8,11 @@ import org.apache.commons.cli.Options;
 public class OsaScanCommand extends ScanCommand {
 
     private String osaCommand;
+    private boolean isAsyncOsaScan;
 
     OsaScanCommand(boolean isAsyncOsaScan) {
         super(false);
+        this.isAsyncOsaScan = isAsyncOsaScan;
         if (isAsyncOsaScan) {
             osaCommand = Commands.ASYNC_OSA_SCAN.value();
         } else {
@@ -48,6 +50,9 @@ public class OsaScanCommand extends ScanCommand {
         super.checkParameters();
         if (scParams.getOsaLocationPath() == null && (scParams.getLocationType() != LocationType.folder && scParams.getLocationType() != LocationType.shared)) {
             throw new CommandLineArgumentException("For OSA Scan (" + Commands.OSASCAN.value() + "), provide  " + PARAM_OSA_LOCATION_PATH.getOpt() + "  or " + PARAM_LOCATION_TYPE.getOpt() + " ( values: folder/shared)");
+        }
+        if (isAsyncOsaScan && (scParams.getOsaReportHTML() != null || scParams.getOsaReportPDF() != null || scParams.getOsaJson() != null)) {
+            throw new CommandLineArgumentException("Asynchronous run does not allow report creation. Please remove the report parameters and run again");
         }
     }
 
