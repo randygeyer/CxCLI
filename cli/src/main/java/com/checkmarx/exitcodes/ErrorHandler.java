@@ -43,6 +43,8 @@ public class ErrorHandler {
         codeToMessageMap.put(SDLC_ERROR_EXIT_CODE, SDLC_ERROR_MSG);
         codeToMessageMap.put(NO_OSA_LICENSE_ERROR_EXIT_CODE, NO_OSA_LICENSE_ERROR_MSG);
         codeToMessageMap.put(NO_PROJECT_PRIOR_TO_OSA_SCAN_ERROR_EXIT_CODE, NO_PROJECT_PRIOR_TO_OSA_SCAN_ERROR_MSG);
+        codeToMessageMap.put(GENERAL_ERROR_EXIT_CODE, REPORT_PARAMETER_IN_ASYNC_SCAN);
+
         //Generic threshold
         codeToMessageMap.put(GENERIC_THRESHOLD_FAILURE_ERROR_EXIT_CODE, GENERIC_THRESHOLD_FAILURE_ERROR_MSG);
         //OSA thresholds
@@ -64,6 +66,8 @@ public class ErrorHandler {
         messageToCodeMap.put(SDLC_ERROR_MSG, SDLC_ERROR_EXIT_CODE);
         messageToCodeMap.put(NO_OSA_LICENSE_ERROR_MSG, NO_OSA_LICENSE_ERROR_EXIT_CODE);
         messageToCodeMap.put(NO_PROJECT_PRIOR_TO_OSA_SCAN_ERROR_MSG, NO_PROJECT_PRIOR_TO_OSA_SCAN_ERROR_EXIT_CODE);
+        messageToCodeMap.put(REPORT_PARAMETER_IN_ASYNC_SCAN, GENERAL_ERROR_EXIT_CODE);
+
         //Generic threshold
         messageToCodeMap.put(GENERIC_THRESHOLD_FAILURE_ERROR_MSG, GENERIC_THRESHOLD_FAILURE_ERROR_EXIT_CODE);
         //OSA thresholds
