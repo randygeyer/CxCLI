@@ -54,6 +54,9 @@ public class OsaScanCommand extends ScanCommand {
         if (isAsyncOsaScan && (scParams.getOsaReportHTML() != null || scParams.getOsaReportPDF() != null || scParams.getOsaJson() != null)) {
             throw new CommandLineArgumentException("Asynchronous run does not allow report creation. Please remove the report parameters and run again");
         }
+        if (isAsyncOsaScan && (scParams.getOsaHighThresholdValue() == Integer.MAX_VALUE || scParams.getOsaMediumThresholdValue() == Integer.MAX_VALUE || scParams.getOsaLowThresholdValue() == Integer.MAX_VALUE)) {
+            throw new CommandLineArgumentException("Asynchronous run does not support threshold. Please remove the threshold parameters and run again");
+        }
     }
 
     private Options getOsaOptionsOnly(Options all) {
