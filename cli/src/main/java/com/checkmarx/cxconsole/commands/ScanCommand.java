@@ -83,14 +83,10 @@ public class ScanCommand extends GeneralScanCommand {
 
     public static final Option PARAM_SAST_HIGH_THRESHOLD = OptionBuilder.hasArgs().withArgName("number of high SAST vulnerabilities").withDescription("SAST high severity vulnerability threshold. If the number of high vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").create("SASTHigh");
 
-    private static final String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
     private static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
     private static String MSG_ERR_SSO_WINDOWS_SUPPORT = "SSO login method is available only on Windows";
-    private static String MSG_ERR_MISSING_USER_PASSWORD = "Missing username/password parameters";
+    private static String MSG_ERR_MISSING_USERNAME_OR_PASSWORD = "Missing username/password parameters";
     private static String MSG_ERR_MISSING_LOCATION_TYPE = "Missing locationType parameter";
-
-    private static final String MSG_ERR_SSO_WINDOWS_SUPPORT = "SSO login method is available only on Windows";
-
     private static final String MSG_ERR_MISSING_AUTHENTICATION_PARAMETERS = "Missing authentication parameters, please provide user name and password or token";
 
 
