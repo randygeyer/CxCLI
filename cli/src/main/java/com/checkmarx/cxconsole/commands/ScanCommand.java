@@ -83,12 +83,12 @@ public class ScanCommand extends GeneralScanCommand {
 
     public static final Option PARAM_SAST_HIGH_THRESHOLD = OptionBuilder.hasArgs().withArgName("number of high SAST vulnerabilities").withDescription("SAST high severity vulnerability threshold. If the number of high vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").create("SASTHigh");
 
+    private static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
+    private static String MSG_ERR_SSO_WINDOWS_SUPPORT = "SSO login method is available only on Windows";
+    private static String MSG_ERR_MISSING_USER_PASSWORD = "Missing username/password parameters";
+    private static String MSG_ERR_MISSING_LOCATION_TYPE = "Missing locationType parameter";
 
-    public static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
-
-    public static String MSG_ERR_SSO_WINDOWS_SUPPORT = "SSO login method is available only on Windows";
-
-    public static String MSG_ERR_MISSING_USER_PASSWORD = "Missing username/password parameters";
+    
 
     public ScanCommand(boolean isAsyncScan) {
         super();
@@ -272,6 +272,9 @@ public class ScanCommand extends GeneralScanCommand {
     @Override
     public void checkParameters() throws CommandLineArgumentException {
         super.checkParameters();
+        if (scParams.getLocationType() == null) {
+            throw new CommandLineArgumentException(MSG_ERR_MISSING_LOCATION_TYPE);
+        }
         if (scParams.getSpFolderName() != null) {
             File projectDir = new File(scParams.getSpFolderName().trim());
             if (!projectDir.exists()) {
