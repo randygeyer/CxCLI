@@ -29,4 +29,12 @@ public class RestResourcesURIBuilder {
             return serverUrl;
         }
     }
+
+    public static URL getAccessTokenURL(URL serverUrl) {
+        try {
+            return new URL(serverUrl, APPLICATION_NAME + "/" + IDENTITY_CONNECT_RESOURCE + "/" + LOGIN_RESOURCE);
+        } catch (MalformedURLException e) {
+            return serverUrl;
+        }
+    }
 }

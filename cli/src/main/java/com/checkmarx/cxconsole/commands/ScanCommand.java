@@ -83,12 +83,13 @@ public class ScanCommand extends GeneralScanCommand {
 
     public static final Option PARAM_SAST_HIGH_THRESHOLD = OptionBuilder.hasArgs().withArgName("number of high SAST vulnerabilities").withDescription("SAST high severity vulnerability threshold. If the number of high vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").create("SASTHigh");
 
+    private static final String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
 
-    public static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
+    private static final String MSG_ERR_SSO_WINDOWS_SUPPORT = "SSO login method is available only on Windows";
 
-    public static String MSG_ERR_SSO_WINDOWS_SUPPORT = "SSO login method is available only on Windows";
+    private static final String MSG_ERR_MISSING_AUTHENTICATION_PARAMETERS = "Missing authentication parameters, please provide user name and password or token";
 
-    public static String MSG_ERR_MISSING_USER_PASSWORD = "Missing username/password parameters";
+    private static final String MSG_ERR_2_AUTHENTICATION_METHODS = "Please provide only one authentication type: user name and password or token";
 
     public ScanCommand(boolean isAsyncScan) {
         super();
@@ -371,15 +372,17 @@ public class ScanCommand extends GeneralScanCommand {
             if (!isWindows()) {
                 throw new CommandLineArgumentException(MSG_ERR_SSO_WINDOWS_SUPPORT);
             }
-        } else if (!scParams.hasUserParam() || !scParams.hasPasswordParam()) {
-            throw new CommandLineArgumentException(MSG_ERR_MISSING_USER_PASSWORD);
+        } else if ((!scParams.hasUserParam() || !scParams.hasPasswordParam()) && !scParams.hasTokenParam()) {
+            throw new CommandLineArgumentException(MSG_ERR_MISSING_AUTHENTICATION_PARAMETERS);
+        } else if ((scParams.hasUserParam() || scParams.hasPasswordParam()) && scParams.hasTokenParam()) {
+            throw new CommandLineArgumentException(MSG_ERR_2_AUTHENTICATION_METHODS);
         }
 
         if (scParams.isOsaEnabled() && (scParams.getLocationPath() == null || (scParams.getLocationType() != LocationType.folder && scParams.getLocationType() != LocationType.shared))) {
             throw new CommandLineArgumentException("For OSA Scan (" + PARAM_ENABLE_OSA.getOpt() + "), provide  " + PARAM_OSA_LOCATION_PATH.getOpt() + "  or " + PARAM_LOCATION_TYPE.getOpt() + " ( values: folder/shared)");
         }
 
-        if (isAsyncScan && (scParams.getReportFile() != null || scParams.getXmlFile() != null || scParams.getReportType() != null)) {
+        if (isAsyncScan && (scParams.getReportFile() != null || scParams.getXmlFile() != null || scParams.getReportType() != null) ) {
             throw new CommandLineArgumentException("Asynchronous run does not allow report creation. Please remove the report parameters and run again");
         }
     }

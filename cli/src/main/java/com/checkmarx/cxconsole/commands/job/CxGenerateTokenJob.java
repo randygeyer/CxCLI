@@ -1,7 +1,7 @@
 package com.checkmarx.cxconsole.commands.job;
 
 import com.checkmarx.cxconsole.utils.ScanParams;
-import com.checkmarx.login.rest.CxTokenizedLogin;
+import com.checkmarx.login.rest.CxTokenizeLogin;
 import org.apache.log4j.Logger;
 
 import java.net.URL;
@@ -15,18 +15,18 @@ public class CxGenerateTokenJob implements Callable<Integer> {
 
     private ScanParams params;
 
-    private CxTokenizedLogin cxTokenizedLogin;
+    private CxTokenizeLogin cxTokenizeLogin;
 
     public CxGenerateTokenJob(ScanParams params, Logger log) {
         this.params = params;
         this.log = log;
-        cxTokenizedLogin = new CxTokenizedLogin();
+        cxTokenizeLogin = new CxTokenizeLogin();
     }
 
     @Override
     public Integer call() throws Exception {
         log.info("Trying to login to server: " + params.getOriginHost());
-        String token = cxTokenizedLogin.generateToken(new URL(params.getOriginHost()), params.getUser(), params.getPassword());
+        String token = cxTokenizeLogin.generateToken(new URL(params.getOriginHost()), params.getUser(), params.getPassword());
         log.info("The requested token is: " + token);
 
         return SCAN_SUCCEEDED_EXIT_CODE;

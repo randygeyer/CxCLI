@@ -2,7 +2,7 @@ package com.checkmarx.cxconsole.commands.job;
 
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxconsole.utils.ScanParams;
-import com.checkmarx.cxosa.CxRestClient;
+import com.checkmarx.login.rest.CxRestClient;
 import com.checkmarx.cxosa.OSAConsoleScanWaitHandler;
 import com.checkmarx.cxosa.dto.CreateOSAScanResponse;
 import com.checkmarx.cxosa.dto.OSAScanStatus;
@@ -82,9 +82,14 @@ public class CxCLIOsaScanJob extends CxScanJob {
             //Request osa Scan
             log.info("");
             log.info("Request OSA scan");
-            restClient = new CxRestClient(params.getOriginHost(), params.getUser(), params.getPassword(), log);
-            // Logging into the OSA service.
-            restClient.login();
+            if (params.hasUserParam() && params.hasPasswordParam()) {
+                restClient = new CxRestClient(params.getOriginHost(), params.getUser(), params.getPassword(), log);
+                // Logging into the OSA service.
+                restClient.login();
+            }
+            else {
+                restClient = new CxRestClient(params.getOriginHost(), params.getToken(), log);
+            }
 
             if (projectId == -1) {
                 projectId = locateProjectOnServer();

@@ -93,6 +93,7 @@ public class ScanParams {
     private boolean isSsoLoginUsed = false;
     private boolean hasPasswordParam = false;
     private boolean hasUserParam = false;
+    private boolean hasTokenParam = false;
     private boolean isPerforceWorkspaceMode = false;
     private boolean isOsaEnabled = false;
     private String[] osaLocationPath = new String[]{};
@@ -487,6 +488,10 @@ public class ScanParams {
 
     public boolean hasPasswordParam() {
         return hasPasswordParam;
+    }
+
+    public boolean hasTokenParam() {
+        return hasTokenParam;
     }
 
     public boolean isIgnoreScanWithUnchangedSource() {

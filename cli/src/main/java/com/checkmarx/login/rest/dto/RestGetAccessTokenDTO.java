@@ -2,7 +2,13 @@ package com.checkmarx.login.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class RestGenerateTokenDTO {
+/**
+ * Created by nirli on 17/10/2017.
+ */
+public class RestGetAccessTokenDTO {
+
+    @JsonProperty("id_token")
+    private String idToken;
 
     @JsonProperty("access_token")
     private String accessToken;
@@ -15,6 +21,14 @@ public class RestGenerateTokenDTO {
 
     @JsonProperty("refresh_token")
     private String refreshToken;
+
+    public String getIdToken() {
+        return idToken;
+    }
+
+    public void setIdToken(String idToken) {
+        this.idToken = idToken;
+    }
 
     public String getAccessToken() {
         return accessToken;

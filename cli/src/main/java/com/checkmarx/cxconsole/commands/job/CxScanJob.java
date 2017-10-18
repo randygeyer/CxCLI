@@ -2,12 +2,15 @@ package com.checkmarx.cxconsole.commands.job;
 
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxconsole.utils.ScanParams;
-import com.checkmarx.cxosa.CxRestClient;
+import com.checkmarx.login.rest.CxRestClient;
 import com.checkmarx.cxviewer.ws.WSMgr;
 import com.checkmarx.cxviewer.ws.results.GetConfigurationsListResult;
 import com.checkmarx.cxviewer.ws.results.GetPresetsListResult;
 import com.checkmarx.cxviewer.ws.results.GetTeamsListResult;
 import com.checkmarx.cxviewer.ws.results.LoginResult;
+import com.checkmarx.jwt.exceptions.JWTException;
+import com.checkmarx.login.rest.CxTokenizeLogin;
+import com.checkmarx.login.rest.exception.CxClientException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -67,13 +70,6 @@ public class CxScanJob implements Callable<Integer> {
             void operation() throws Exception {
                 try {
                     wsMgr.connectWebService(wsdlLocation);
-                } catch (Error e) {
-                    if (log.isEnabledFor(Level.TRACE)) {
-                        log.trace("WS connection error", e);
-                    }
-                    error = "Cannot establish connection with the server. This may be an issue of incompatible client and server versions";
-                    finished = true;
-                    return;
                 } catch (Exception e) {
                     if (log.isEnabledFor(Level.TRACE)) {
                         log.trace("WS connection error", e);
@@ -84,7 +80,7 @@ public class CxScanJob implements Callable<Integer> {
                 }
 
 				/*GeneralResult result = wsMgr.checkVersion(CxClientType.CLI, ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_VERSION), Const.WS_API_DEFAULT_VER);
-				if (!result.isSuccesfullResponce()) {
+                if (!result.isSuccesfullResponce()) {
 					error = result.getErrorMessage();
 					if (log.isEnabledFor(Level.INFO)) {
 						log.info("Version unsupported: " + error);
@@ -98,20 +94,37 @@ public class CxScanJob implements Callable<Integer> {
                 }
 
                 // Login
-                LoginResult r;
+                LoginResult r = null;
+                sessionId = null;
                 if (isWindows() && params.isSsoLoginUsed()) {
                     //SSO login
                     r = wsMgr.ssoLogin("", "");
-                } else {
-                    //Applicative login
+                } else if (params.hasUserParam() && params.hasPasswordParam()) {
+                    //Applicative login with user name and password
                     r = wsMgr.login(params.getUser(), params.getPassword());
+                    if (r != null && r.getSessionId() != null && !r.getSessionId().isEmpty()) {
+                        sessionId = r.getSessionId();
+                    }
+                } else if (params.hasTokenParam()) {
+                    CxTokenizeLogin cxTokenizeLogin = new CxTokenizeLogin();
+                    try {
+                        sessionId = cxTokenizeLogin.getSessionIdFromToken(new URL(params.getOriginHost()), params.getToken());
+                    } catch (JWTException | CxClientException e) {
+                        error = "Unsuccessful login." + e.getMessage();
+                        if (log.isEnabledFor(Level.TRACE)) {
+                            log.trace(error);
+                        }
+                        finished = true;
+                        return;
+                    }
                 }
 
-                if (r.getSessionId() != null && !r.getSessionId().isEmpty()) {
-                    sessionId = r.getSessionId();
-                } else {
+                // 2 methods of login failed(username + password/token)
+                if (sessionId == null) {
                     String message = "Unsuccessful login.";
-                    message += ((r.getErrorMessage() != null && !r.getErrorMessage().isEmpty()) ? " Error message:" + r.getErrorMessage() : "Login or password might be incorrect.");
+                    if (r != null) {
+                        message += ((r.getErrorMessage() != null && !r.getErrorMessage().isEmpty()) ? " Error message:" + r.getErrorMessage() : "Login or password might be incorrect.");
+                    }
                     if (log.isEnabledFor(Level.TRACE)) {
                         log.trace(message);
                     }
