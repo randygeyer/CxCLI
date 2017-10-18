@@ -84,10 +84,15 @@ public class ScanCommand extends GeneralScanCommand {
     public static final Option PARAM_SAST_HIGH_THRESHOLD = OptionBuilder.hasArgs().withArgName("number of high SAST vulnerabilities").withDescription("SAST high severity vulnerability threshold. If the number of high vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").create("SASTHigh");
 
     private static final String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
+    private static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
+    private static String MSG_ERR_SSO_WINDOWS_SUPPORT = "SSO login method is available only on Windows";
+    private static String MSG_ERR_MISSING_USER_PASSWORD = "Missing username/password parameters";
+    private static String MSG_ERR_MISSING_LOCATION_TYPE = "Missing locationType parameter";
 
     private static final String MSG_ERR_SSO_WINDOWS_SUPPORT = "SSO login method is available only on Windows";
 
     private static final String MSG_ERR_MISSING_AUTHENTICATION_PARAMETERS = "Missing authentication parameters, please provide user name and password or token";
+
 
     private static final String MSG_ERR_2_AUTHENTICATION_METHODS = "Please provide only one authentication type: user name and password or token";
 
@@ -273,6 +278,9 @@ public class ScanCommand extends GeneralScanCommand {
     @Override
     public void checkParameters() throws CommandLineArgumentException {
         super.checkParameters();
+        if (scParams.getLocationType() == null) {
+            throw new CommandLineArgumentException(MSG_ERR_MISSING_LOCATION_TYPE);
+        }
         if (scParams.getSpFolderName() != null) {
             File projectDir = new File(scParams.getSpFolderName().trim());
             if (!projectDir.exists()) {
@@ -382,13 +390,16 @@ public class ScanCommand extends GeneralScanCommand {
             throw new CommandLineArgumentException("For OSA Scan (" + PARAM_ENABLE_OSA.getOpt() + "), provide  " + PARAM_OSA_LOCATION_PATH.getOpt() + "  or " + PARAM_LOCATION_TYPE.getOpt() + " ( values: folder/shared)");
         }
 
-        if (isAsyncScan && (scParams.getReportFile() != null || scParams.getXmlFile() != null || scParams.getReportType() != null) ) {
+        if (isAsyncScan && (scParams.getReportFile() != null || scParams.getXmlFile() != null || scParams.getReportType() != null)) {
             throw new CommandLineArgumentException("Asynchronous run does not allow report creation. Please remove the report parameters and run again");
+        }
+        if (isAsyncScan && (scParams.getSastHighThresholdValue() != Integer.MAX_VALUE || scParams.getSastMediumThresholdValue() != Integer.MAX_VALUE || scParams.getSastLowThresholdValue() != Integer.MAX_VALUE)) {
+            throw new CommandLineArgumentException("Asynchronous run does not support threshold. Please remove the threshold parameters and run again");
         }
     }
 
     @Override
-    public String getLogFileLocation() {
+    protected String getLogFileLocation() {
         String logFileLocation = commandLineArguments.getOptionValue(PARAM_LOG_FILE.getOpt());
         String projectName = commandLineArguments.getOptionValue(PARAM_PRJ_NAME.getOpt());
         if (projectName != null) {
