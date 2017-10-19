@@ -1,4 +1,4 @@
-package com.checkmarx.login.rest.util;
+package com.checkmarx.login.rest.utils;
 
 import com.checkmarx.login.rest.exception.CxClientException;
 import org.apache.commons.io.IOUtils;

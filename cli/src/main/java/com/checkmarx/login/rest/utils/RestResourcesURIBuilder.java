@@ -1,11 +1,11 @@
-package com.checkmarx.login.rest.util;
+package com.checkmarx.login.rest.utils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
 public class RestResourcesURIBuilder {
 
-    private static final String APPLICATION_NAME = "CxRestApi";
+    private static final String APPLICATION_NAME = "cxrestapi";
     private static final String IDENTITY_CONNECT_RESOURCE = "identity/connect";
     private static final String LOGIN_RESOURCE = "token";
     private static final String REVOCATION_RESOURCE = "revocation";

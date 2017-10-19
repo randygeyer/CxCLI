@@ -65,7 +65,7 @@ public class CxRestClient {
     public static final String SCAN_ID_QUERY_PARAM = "?scanId=";
     private static final String AUTHENTICATION_PATH = "auth/login";
     private static final String OSA_ZIPPED_FILE_KEY_NAME = "OSAZippedSourceCode";
-    private static final String ROOT_PATH = "CxRestAPI";
+    private static final String ROOT_PATH = "cxrestapi";
     private static final String CSRF_TOKEN_HEADER = "CXCSRFToken";
 
     public static final String ITEM_PER_PAGE_QUERY_PARAM = "&itemsPerPage=";
@@ -205,7 +205,6 @@ public class CxRestClient {
     }
 
     private OSAScanStatus getOSAScanStatus(String scanId) throws CxClientException, IOException {
-
         String resolvedPath = hostName + "/" + ROOT_PATH + "/" + OSA_SCAN_STATUS_PATH.replace("{scanId}", String.valueOf(scanId));
         HttpGet getRequest = new HttpGet(resolvedPath);
         HttpResponse response = null;
@@ -389,7 +388,10 @@ public class CxRestClient {
 
     public OSAScanStatus waitForOSAScanToFinish(String scanId, long scanTimeoutInMin, ScanWaitHandler<OSAScanStatus> waitHandler, boolean isAsyncOsaScan) throws CxClientException, IOException {
         //re login in case of session timed out
-        login();
+        // TODO: verify if needed
+        if (token == null) {
+            login();
+        }
         long timeToStop = (System.currentTimeMillis() / 60000) + scanTimeoutInMin;
 
         long startTime = System.currentTimeMillis();

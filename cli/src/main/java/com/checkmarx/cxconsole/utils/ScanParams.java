@@ -216,6 +216,7 @@ public class ScanParams {
         ignoreScanWithUnchangedSource = !commandLine.hasOption(PARAM_FORCE_SCAN.getOpt());
         hasUserParam = commandLine.hasOption(PARAM_USER.getOpt());
         hasPasswordParam = commandLine.hasOption(PARAM_PASSWORD.getOpt());
+        hasTokenParam = commandLine.hasOption(PARAM_TOKEN.getOpt());
         isPerforceWorkspaceMode = commandLine.hasOption(PARAM_WORKSPACE.getOpt());
 
         if (commandLine.hasOption(PARAM_EXCLUDE_FOLDERS.getOpt())) {
