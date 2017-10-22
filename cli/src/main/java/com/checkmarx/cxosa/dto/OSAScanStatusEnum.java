@@ -9,7 +9,8 @@ public enum OSAScanStatusEnum {
     NONE(0, "None"),
     IN_PROGRESS(1, "In progress"),
     FINISHED(2, "Finished"),
-    FAILED(3 ,"Failed");
+    FAILED(3 ,"Failed"),
+    QUEUED(4, "Queued");
 
     private int num;
     private String uiValue;

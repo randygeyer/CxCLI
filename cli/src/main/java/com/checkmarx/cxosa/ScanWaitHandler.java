@@ -1,7 +1,7 @@
 package com.checkmarx.cxosa;
 
 
-import com.checkmarx.cxosa.exception.CxClientException;
+import com.checkmarx.login.rest.exception.CxClientException;
 import org.apache.log4j.Logger;
 
 /**
@@ -15,6 +15,8 @@ public interface ScanWaitHandler<T> {
     void onIdle(T scanStatus) throws CxClientException;
 
     void onSuccess(T scanStatus);
+
+    void onQueued(T scanStatus);
 
     void onFail(T scanStatus) throws CxClientException;
 

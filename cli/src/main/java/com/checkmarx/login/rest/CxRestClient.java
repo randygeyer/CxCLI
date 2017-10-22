@@ -1,9 +1,10 @@
-package com.checkmarx.cxosa;
+package com.checkmarx.login.rest;
 
 
 import com.checkmarx.cxconsole.utils.ConfigMgr;
+import com.checkmarx.cxosa.ScanWaitHandler;
 import com.checkmarx.cxosa.dto.*;
-import com.checkmarx.cxosa.exception.CxClientException;
+import com.checkmarx.login.rest.exception.CxClientException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -24,14 +25,19 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * Created by: Dorg.
@@ -39,34 +45,40 @@ import java.util.List;
  */
 public class CxRestClient {
 
+    private enum LOGIN_TYPE {TOKEN, USERNAME_AND_PASWORD}
+
     private static Logger log;
 
     private final String username;
     private final String password;
     private final String hostName;
+    private final String token;
+    private LOGIN_TYPE loginType;
 
     private static final String OSA_SCAN_PROJECT_PATH = "projects/{projectId}/scans";
     private static final String OSA_SCAN_STATUS_PATH = "scans/{scanId}";
     private static final String OSA_SCAN_SUMMARY_PATH = "osa/reports";
     private static final String CX_ORIGIN_HEADER = "cxOrigin";
-    private static final String CX_ORIGIN_VALUE = "CLI";
+    private static final String CX_ORIGIN_VALUE = "cx-CLI";
     public static final String OSA_SCAN_LIBRARIES_PATH = "/osa/libraries";
     public static final String OSA_SCAN_VULNERABILITIES_PATH = "/osa/vulnerabilities";
     public static final String SCAN_ID_QUERY_PARAM = "?scanId=";
     private static final String AUTHENTICATION_PATH = "auth/login";
     private static final String OSA_ZIPPED_FILE_KEY_NAME = "OSAZippedSourceCode";
-    private static final String ROOT_PATH = "CxRestAPI";
+    private static final String ROOT_PATH = "cxrestapi";
     private static final String CSRF_TOKEN_HEADER = "CXCSRFToken";
 
     public static final String ITEM_PER_PAGE_QUERY_PARAM = "&itemsPerPage=";
     public static final long MAX_ITEMS = 1000000;
     public static final String OSA_SUMMARY_NAME = "CxOSASummary";
     public static final String OSA_LIBRARIES_NAME = "CxOSALibraries";
-    public static final String OSA_VULNERABILITIES_NAME =  "CxOSAVulnerabilities";
+    public static final String OSA_VULNERABILITIES_NAME = "CxOSAVulnerabilities";
     private ObjectMapper objectMapper = new ObjectMapper();
 
     private HttpClient apacheClient;
     private CookieStore cookieStore;
+    private Header cxcsrfTokenHeader;
+    private Header authorizationHeader;
     private String cookies;
     private String csrfToken;
 
@@ -78,18 +90,13 @@ public class CxRestClient {
         public void process(HttpRequest httpRequest, HttpContext httpContext) throws HttpException, IOException {
             if (csrfToken != null) {
                 httpRequest.addHeader(CSRF_TOKEN_HEADER, csrfToken);
-            }
-
-            if (cookies != null) {
-                httpRequest.addHeader("cookie", cookies);
+                cxcsrfTokenHeader = new BasicHeader(CSRF_TOKEN_HEADER, csrfToken);
             }
         }
     };
 
     private final HttpResponseInterceptor responseFilter = new HttpResponseInterceptor() {
-
         public void process(HttpResponse httpResponse, HttpContext httpContext) throws HttpException, IOException {
-
             for (org.apache.http.cookie.Cookie c : cookieStore.getCookies()) {
                 if (CSRF_TOKEN_HEADER.equals(c.getName())) {
                     csrfToken = c.getValue();
@@ -103,7 +110,6 @@ public class CxRestClient {
             }
 
             cookies = (cookies == null ? "" : cookies) + sb.toString();
-
         }
     };
 
@@ -111,12 +117,35 @@ public class CxRestClient {
         this.hostName = hostname;
         this.username = username;
         this.password = password;
+        this.token = null;
+        this.loginType = LOGIN_TYPE.USERNAME_AND_PASWORD;
         setLogger(log);
 
         //create httpclient
         cookieStore = new BasicCookieStore();
+        List<Header> headers = new ArrayList<>();
+        headers.add(cxcsrfTokenHeader);
+        apacheClient = HttpClientBuilder.create().addInterceptorFirst(requestFilter).addInterceptorLast(responseFilter).setDefaultHeaders(headers).setDefaultCookieStore(cookieStore).build();
+    }
 
-        apacheClient = HttpClientBuilder.create().addInterceptorFirst(requestFilter).addInterceptorLast(responseFilter).setDefaultCookieStore(cookieStore).build();
+    public CxRestClient(String hostname, String token, Logger log) {
+        this.hostName = hostname;
+        this.token = token;
+        this.username = null;
+        this.password = null;
+        this.loginType = LOGIN_TYPE.TOKEN;
+        setLogger(log);
+
+        //create httpclient
+        CxTokenizeLogin cxTokenizeLogin = new CxTokenizeLogin();
+        List<Header> headers = new ArrayList<>();
+        try {
+            authorizationHeader = new BasicHeader("Authorization", "Bearer " + cxTokenizeLogin.getAccessToken(new URL(hostname), token));
+        } catch (CxClientException | MalformedURLException e) {
+            e.printStackTrace();
+        }
+        headers.add(authorizationHeader);
+        apacheClient = HttpClientBuilder.create().setDefaultHeaders(headers).build();
     }
 
     public void setLogger(Logger log) {
@@ -141,14 +170,17 @@ public class CxRestClient {
         } finally {
             loginPost.releaseConnection();
             HttpClientUtils.closeQuietly(loginResponse);
-
         }
     }
 
     public CreateOSAScanResponse createOSAScan(long projectId, File zipFile) throws IOException, CxClientException {
         //create scan request
         HttpPost post = new HttpPost(hostName + "/" + ROOT_PATH + "/" + OSA_SCAN_PROJECT_PATH.replace("{projectId}", String.valueOf(projectId)));
-        post.setHeader(CX_ORIGIN_HEADER, CX_ORIGIN_VALUE);
+        if (loginType == LOGIN_TYPE.USERNAME_AND_PASWORD) {
+            post.setHeader(CX_ORIGIN_HEADER, CX_ORIGIN_VALUE);
+        } else {
+            post.setHeader(authorizationHeader);
+        }
         FileInputStream fileInputStream = new FileInputStream(zipFile);
         InputStreamBody streamBody = new InputStreamBody(fileInputStream, ContentType.APPLICATION_OCTET_STREAM, OSA_ZIPPED_FILE_KEY_NAME);
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
@@ -173,7 +205,6 @@ public class CxRestClient {
     }
 
     private OSAScanStatus getOSAScanStatus(String scanId) throws CxClientException, IOException {
-
         String resolvedPath = hostName + "/" + ROOT_PATH + "/" + OSA_SCAN_STATUS_PATH.replace("{scanId}", String.valueOf(scanId));
         HttpGet getRequest = new HttpGet(resolvedPath);
         HttpResponse response = null;
@@ -208,7 +239,7 @@ public class CxRestClient {
 
     private String getOSAScanHTMLResults(String scanId) throws CxClientException, IOException {
 
-        String relativePath = OSA_SCAN_SUMMARY_PATH + SCAN_ID_QUERY_PARAM + scanId;;
+        String relativePath = OSA_SCAN_SUMMARY_PATH + SCAN_ID_QUERY_PARAM + scanId;
         HttpGet getRequest = createHttpRequest(relativePath, "text/html");
         HttpResponse response = null;
         try {
@@ -277,12 +308,11 @@ public class CxRestClient {
                 objectMapper.writerWithDefaultPrettyPrinter().writeValue(file, data);
                 break;
             default:
-                log.error("OSA " + toLog + " location is invalid" );
+                log.error("OSA " + toLog + " location is invalid");
                 return;
         }
         log.info("OSA " + toLog + " location: " + file.getAbsolutePath());
     }
-
 
 
     private List<Library> getOSALibraries(String scanId) throws CxClientException, IOException {
@@ -356,9 +386,12 @@ public class CxRestClient {
         }
     }
 
-    public OSAScanStatus waitForOSAScanToFinish(String scanId, long scanTimeoutInMin, ScanWaitHandler<OSAScanStatus> waitHandler) throws CxClientException, IOException {
+    public OSAScanStatus waitForOSAScanToFinish(String scanId, long scanTimeoutInMin, ScanWaitHandler<OSAScanStatus> waitHandler, boolean isAsyncOsaScan) throws CxClientException, IOException {
         //re login in case of session timed out
-        login();
+        // TODO: verify if needed
+        if (token == null) {
+            login();
+        }
         long timeToStop = (System.currentTimeMillis() / 60000) + scanTimeoutInMin;
 
         long startTime = System.currentTimeMillis();
@@ -371,12 +404,13 @@ public class CxRestClient {
 
         while (scanTimeoutInMin <= 0 || (System.currentTimeMillis() / 60000) <= timeToStop) {
 
-            try {
-                Thread.sleep(10000); //Get status every 10 sec
-            } catch (InterruptedException e) {
-                // log.debug("caught exception during sleep", e);
+            if (!isAsyncOsaScan) {
+                try {
+                    Thread.sleep(10000); //Get status every 10 sec
+                } catch (InterruptedException e) {
+                    // log.debug("caught exception during sleep", e);
+                }
             }
-
 
             try {
                 scanStatus = getOSAScanStatus(scanId);
@@ -394,6 +428,10 @@ public class CxRestClient {
                 throw new CxClientException("OSA scan cannot be completed. status: [" + status.uiValue() + "]. message: [" + StringUtils.defaultString(scanStatus.getMessage()) + "]");
             }
 
+            if (isAsyncOsaScan && (OSAScanStatusEnum.QUEUED.equals(status) || OSAScanStatusEnum.IN_PROGRESS.equals(status))) {
+                waitHandler.onQueued(scanStatus);
+                return scanStatus;
+            }
 
             if (OSAScanStatusEnum.FINISHED.equals(status)) {
                 waitHandler.onSuccess(scanStatus);

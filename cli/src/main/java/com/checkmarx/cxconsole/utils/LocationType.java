@@ -9,7 +9,6 @@ public enum LocationType {
 
 	folder("folder"),
 	shared("shared"),
-	//tsf_svn("TFS/SVN"),
 	tfs("TFS"),
 	svn("SVN"),
     perforce("Perforce"),
@@ -54,7 +53,7 @@ public enum LocationType {
 
     public static String stringOfValues()
     {
-        ArrayList<String> locationTypeNames = new ArrayList<String>(values().length);
+        ArrayList<String> locationTypeNames = new ArrayList<>(values().length);
         for (LocationType lt : values())
         {
             locationTypeNames.add(lt.getLocationType());

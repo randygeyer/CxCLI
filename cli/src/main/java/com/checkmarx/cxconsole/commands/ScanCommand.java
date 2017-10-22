@@ -11,11 +11,15 @@ import org.apache.log4j.Level;
 
 import java.io.*;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.concurrent.*;
+
+import static com.checkmarx.exitcodes.ErrorHandler.errorCodeResolver;
 
 public class ScanCommand extends GeneralScanCommand {
 
-    public static String COMMAND_SCAN = Commands.SCAN.value();
+    private String command;
+    private boolean isAsyncScan;
 
     public static final Option PARAM_PRJ_NAME = OptionBuilder.withArgName("project name").hasArg().isRequired().withDescription("A full absolute name of a project. " +
             "The full Project name includes the whole path to the project, including Server, service provider, company, and team. " +
@@ -73,14 +77,26 @@ public class ScanCommand extends GeneralScanCommand {
     public static final Option PARAM_OSA_LOCATION_PATH = OptionBuilder.hasArgs().withArgName("folders list").withDescription("Comma separated list of folder path patterns(Local or shared path ) to OSA sources.").withValueSeparator(',').create("OsaLocationPath");
 
 
-    public static String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
+    public static final Option PARAM_SAST_LOW_THRESHOLD = OptionBuilder.hasArgs().withArgName("number of low SAST vulnerabilities").withDescription("SAST low severity vulnerability threshold. If the number of low vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").create("SASTLow");
 
-    public static String MSG_ERR_SSO_WINDOWS_SUPPORT = "SSO login method is available only on Windows";
+    public static final Option PARAM_SAST_MEDIUM_THRESHOLD = OptionBuilder.hasArgs().withArgName("number of medium SAST vulnerabilities").withDescription("SAST medium severity vulnerability threshold. If the number of medium vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").create("SASTMedium");
 
-    public static String MSG_ERR_MISSING_USER_PASSWORD = "Missing username/password parameters";
+    public static final Option PARAM_SAST_HIGH_THRESHOLD = OptionBuilder.hasArgs().withArgName("number of high SAST vulnerabilities").withDescription("SAST high severity vulnerability threshold. If the number of high vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").create("SASTHigh");
 
-    public ScanCommand() {
+    private static final String MSG_ERR_FOLDER_NOT_EXIST = "Specified source folder does not exist.";
+    private static final String MSG_ERR_SSO_WINDOWS_SUPPORT = "SSO login method is available only on Windows";
+    private static final String MSG_ERR_MISSING_LOCATION_TYPE = "Missing locationType parameter";
+    private static final String MSG_ERR_MISSING_AUTHENTICATION_PARAMETERS = "Missing authentication parameters, please provide user name and password or token";
+    private static final String MSG_ERR_2_AUTHENTICATION_METHODS = "Please provide only one authentication type: user name and password or token";
+
+    public ScanCommand(boolean isAsyncScan) {
         super();
+        this.isAsyncScan = isAsyncScan;
+        if (isAsyncScan) {
+            command = Commands.ASYNC_SCAN.value();
+        } else {
+            command = Commands.SCAN.value();
+        }
         initCommandLineOptions();
     }
 
@@ -104,6 +120,9 @@ public class ScanCommand extends GeneralScanCommand {
         this.commandLineOptions.addOption(PARAM_WORKSPACE);
         this.commandLineOptions.addOption(PARAM_ENABLE_OSA);
         this.commandLineOptions.addOption(PARAM_OSA_LOCATION_PATH);
+        this.commandLineOptions.addOption(PARAM_SAST_LOW_THRESHOLD);
+        this.commandLineOptions.addOption(PARAM_SAST_MEDIUM_THRESHOLD);
+        this.commandLineOptions.addOption(PARAM_SAST_HIGH_THRESHOLD);
     }
 
     @Override
@@ -129,7 +148,7 @@ public class ScanCommand extends GeneralScanCommand {
                 if (log.isEnabledFor(Level.ERROR)) {
                     log.error("Private key file not found [ " + scParams.getLocationPrivateKey() + "]");
                 }
-                errorCode = CODE_ERRROR;
+                errorCode = errorCodeResolver(ex.getCause().getMessage());
                 return;
             } catch (IOException ex) {
                 if (log.isEnabledFor(Level.TRACE)) {
@@ -138,7 +157,7 @@ public class ScanCommand extends GeneralScanCommand {
                 if (log.isEnabledFor(Level.ERROR)) {
                     log.error("Error reading private key file. " + ex.getMessage());
                 }
-                errorCode = CODE_ERRROR;
+                errorCode = errorCodeResolver(ex.getCause().getMessage());
                 return;
             } finally {
                 if (in != null) {
@@ -151,15 +170,26 @@ public class ScanCommand extends GeneralScanCommand {
             }
         }
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        CxScanJob job;
+        CxScanJob job = null;
         if (this instanceof OsaScanCommand) {
-            job = new CxCLIOsaScanJob(scParams);
-            scanType = "OSA";
+            if (Objects.equals(this.getCommandName(), Commands.OSASCAN.value())) {
+                job = new CxCLIOsaScanJob(scParams, false);
+                scanType = "OSA";
+            } else if (Objects.equals(this.getCommandName(), Commands.ASYNC_OSA_SCAN.value())) {
+                job = new CxCLIOsaScanJob(scParams, true);
+                scanType = "Async OSA";
+            }
         } else if (this instanceof ScanCommand) {
-            job = new CxCLIScanJob(scParams);
+            if (Objects.equals(this.getCommandName(), Commands.SCAN.value())) {
+                job = new CxCLIScanJob(scParams, false);
+                scanType = "SAST";
+            } else if (Objects.equals(this.getCommandName(), Commands.ASYNC_SCAN.value())) {
+                job = new CxCLIScanJob(scParams, true);
+                scanType = "Async SAST";
+            }
         } else {
             log.error("Command was not found. Available commands:\n" + CommandsFactory.getCommandNames());
-            errorCode = CODE_ERRROR;
+            errorCode = errorCodeResolver("Command was not found. Available commands:\n" + CommandsFactory.getCommandNames());
             return;
         }
         job.setLog(log);
@@ -175,7 +205,7 @@ public class ScanCommand extends GeneralScanCommand {
             if (log.isEnabledFor(Level.DEBUG)) {
                 log.debug(scanType + "Scan job was interrupted.", e);
             }
-            errorCode = CODE_ERRROR;
+            errorCode = errorCodeResolver(e.getCause().getMessage());
         } catch (ExecutionException e) {
             if (log.isEnabledFor(Level.ERROR)) {
                 if (e.getCause().getMessage() != null) {
@@ -189,7 +219,7 @@ public class ScanCommand extends GeneralScanCommand {
             if (log.isEnabledFor(Level.TRACE)) {
                 log.trace("Error during " + scanType + " scan job execution.", e);
             }
-            errorCode = CODE_ERRROR;
+            errorCode = errorCodeResolver(e.getCause().getMessage());
         } catch (TimeoutException e) {
             if (log.isEnabledFor(Level.ERROR)) {
                 log.error(scanType + "Scan job failed due to timeout.");
@@ -197,17 +227,28 @@ public class ScanCommand extends GeneralScanCommand {
             if (log.isEnabledFor(Level.TRACE)) {
                 log.trace(scanType + "Scan job failed due to timeout.", e);
             }
-            errorCode = CODE_ERRROR;
+            errorCode = errorCodeResolver(e.getCause().getMessage());
+        } catch (Exception e) {
+            if (log.isEnabledFor(Level.ERROR)) {
+                if (e.getCause().getMessage() != null) {
+                    log.error("Error during " + scanType + " scan job execution: "
+                            + e.getCause().getMessage());
+                } else {
+                    log.error("Error during " + scanType + " scan job execution: "
+                            + e.getCause());
+                }
+            }
         } finally {
             if (executor != null) {
                 executor.shutdownNow();
             }
         }
+
     }
 
     @Override
     public String getCommandName() {
-        return COMMAND_SCAN;
+        return command;
     }
 
     @Override
@@ -216,7 +257,6 @@ public class ScanCommand extends GeneralScanCommand {
                 + "CxConsole Scan -projectname SP\\Cx\\Engine\\AST -cxserver http://localhost -cxuser admin@cx -cxpassword admin -locationtype tfs -locationurl http://vsts2003:8080 -locationuser dm\\matys -locationpassword XYZ -preset default -reportxml a.xml -reportpdf b.pdf -incremental -forcescan\n"
                 + "CxConsole Scan -projectname SP\\Cx\\Engine\\AST -cxserver http://localhost -cxuser admin@cx -cxpassword admin -locationtype share -locationpath '\\\\storage\\path1;\\\\storage\\path2' -locationuser dm\\matys -locationpassword XYZ -preset \"Sans 25\" -reportxls a.xls -reportpdf b.pdf -private -verbose -log a.log\n -LocationPathExclude test*, *log* -LocationFilesExclude web.config , *.class\n";
     }
-
 
     @Override
     protected boolean isKeyFlag(String key) {
@@ -231,6 +271,9 @@ public class ScanCommand extends GeneralScanCommand {
     @Override
     public void checkParameters() throws CommandLineArgumentException {
         super.checkParameters();
+        if (scParams.getLocationType() == null) {
+            throw new CommandLineArgumentException(MSG_ERR_MISSING_LOCATION_TYPE);
+        }
         if (scParams.getSpFolderName() != null) {
             File projectDir = new File(scParams.getSpFolderName().trim());
             if (!projectDir.exists()) {
@@ -330,18 +373,26 @@ public class ScanCommand extends GeneralScanCommand {
             if (!isWindows()) {
                 throw new CommandLineArgumentException(MSG_ERR_SSO_WINDOWS_SUPPORT);
             }
-        } else if (!scParams.hasUserParam() || !scParams.hasPasswordParam()) {
-            throw new CommandLineArgumentException(MSG_ERR_MISSING_USER_PASSWORD);
+        } else if ((!scParams.hasUserParam() || !scParams.hasPasswordParam()) && !scParams.hasTokenParam()) {
+            throw new CommandLineArgumentException(MSG_ERR_MISSING_AUTHENTICATION_PARAMETERS);
+        } else if ((scParams.hasUserParam() || scParams.hasPasswordParam()) && scParams.hasTokenParam()) {
+            throw new CommandLineArgumentException(MSG_ERR_2_AUTHENTICATION_METHODS);
         }
 
         if (scParams.isOsaEnabled() && (scParams.getLocationPath() == null || (scParams.getLocationType() != LocationType.folder && scParams.getLocationType() != LocationType.shared))) {
             throw new CommandLineArgumentException("For OSA Scan (" + PARAM_ENABLE_OSA.getOpt() + "), provide  " + PARAM_OSA_LOCATION_PATH.getOpt() + "  or " + PARAM_LOCATION_TYPE.getOpt() + " ( values: folder/shared)");
         }
+
+        if (isAsyncScan && (scParams.getReportFile() != null || scParams.getXmlFile() != null || scParams.getReportType() != null)) {
+            throw new CommandLineArgumentException("Asynchronous run does not allow report creation. Please remove the report parameters and run again");
+        }
+        if (isAsyncScan && (scParams.getSastHighThresholdValue() != Integer.MAX_VALUE || scParams.getSastMediumThresholdValue() != Integer.MAX_VALUE || scParams.getSastLowThresholdValue() != Integer.MAX_VALUE)) {
+            throw new CommandLineArgumentException("Asynchronous run does not support threshold. Please remove the threshold parameters and run again");
+        }
     }
 
     @Override
     protected String getLogFileLocation() {
-
         String logFileLocation = commandLineArguments.getOptionValue(PARAM_LOG_FILE.getOpt());
         String projectName = commandLineArguments.getOptionValue(PARAM_PRJ_NAME.getOpt());
         if (projectName != null) {
@@ -407,7 +458,6 @@ public class ScanCommand extends GeneralScanCommand {
         return logFileLocation;
     }
 
-
     private String normalizeLogPath(String projectName) {
         if (projectName == null || projectName.isEmpty()) {
             return "cx_scan.log";
@@ -438,7 +488,6 @@ public class ScanCommand extends GeneralScanCommand {
                 + " fullProjectName "/* + PARAM_LOCATION_TYPE + " ltype" */;
     }
 
-
     @Override
     public String getKeyDescriptions() {
         String leftSpacing = "  ";
@@ -461,5 +510,4 @@ public class ScanCommand extends GeneralScanCommand {
 
         return keys.toString();
     }
-
 }

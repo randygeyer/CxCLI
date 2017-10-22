@@ -4,7 +4,7 @@
 
 	<groupId>com.checkmarx</groupId>
 	<artifactId>CxConsolePlugin</artifactId>
-	<version>8.5.0</version>
+	<version>8.6.0</version>
 	<packaging>jar</packaging>
 
 	<name>cli</name>
@@ -75,7 +75,6 @@
 		</dependency>
 
 	</dependencies>
-
 
 	<build>
 		<finalName>${project.artifactId}-${project.version}-${maven.build.timestamp}</finalName>

@@ -2,17 +2,25 @@ package com.checkmarx.cxconsole.commands.job;
 
 import com.checkmarx.components.zipper.ZipListener;
 import com.checkmarx.components.zipper.Zipper;
-import com.checkmarx.cxconsole.commands.CxConsoleCommand;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxconsole.utils.LocationType;
 import com.checkmarx.cxconsole.utils.ScanParams;
 import com.checkmarx.cxviewer.ws.generated.*;
 import com.checkmarx.cxviewer.ws.results.*;
+import com.checkmarx.thresholds.dto.ThresholdDto;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
+import java.io.StringReader;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,7 +29,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import static com.checkmarx.exitcodes.Constants.ExitCodes.GENERIC_THRESHOLD_FAILURE_ERROR_EXIT_CODE;
+import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED_EXIT_CODE;
+import static com.checkmarx.thresholds.ThresholdResolver.resolveThresholdExitCode;
+
 public class CxCLIScanJob extends CxScanJob {
+
+    private static final int LOW_VULNERABILITY_RESULTS = 0;
+    private static final int MEDIUM_VULNERABILITY_RESULTS = 1;
+    private static final int HIGH_VULNERABILITY_RESULTS = 2;
 
     private byte[] zippedSourcesBytes;
     private long projectId = -1;
@@ -31,10 +47,13 @@ public class CxCLIScanJob extends CxScanJob {
     private List<ConfigurationSet> configs;
     private ConfigurationSet selectedConfig;
     private GetProjectConfigResult projectConfig;
-    protected int osaErrorCode = CxConsoleCommand.CODE_OK;
+    private int osaExitCode = SCAN_SUCCEEDED_EXIT_CODE;
+    private int sastExitCode = SCAN_SUCCEEDED_EXIT_CODE;
+    private boolean isAsyncScan = true;
 
-    public CxCLIScanJob(ScanParams params) {
+    public CxCLIScanJob(ScanParams params, boolean isAsyncScan) {
         super(params);
+        this.isAsyncScan = isAsyncScan;
     }
 
     @Override
@@ -108,9 +127,13 @@ public class CxCLIScanJob extends CxScanJob {
 
 
         // wait for scan completion
-        log.info("Waiting for SAST scan to finish.");
+        if (isAsyncScan) {
+            log.info("Waiting for SAST scan to queue.");
+        } else {
+            log.info("Waiting for SAST scan to finish.");
+        }
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        WaitScanCompletionJob waiterJob = new WaitScanCompletionJob(wsMgr, sessionId, runId);
+        WaitScanCompletionJob waiterJob = new WaitScanCompletionJob(wsMgr, sessionId, runId, isAsyncScan);
         waiterJob.setLog(log);
         try {
             Future<Boolean> furute = executor.submit(waiterJob);
@@ -118,7 +141,11 @@ public class CxCLIScanJob extends CxScanJob {
             furute.get();
 
             scanId = waiterJob.getScanId();
-            log.info("SAST scan finished. Retrieving scan results");
+            if (isAsyncScan) {
+                log.info("SAST scan queued. Job finished");
+            } else {
+                log.info("SAST scan finished. Retrieving scan results");
+            }
 
         } catch (ExecutionException e) {
             if (log.isEnabledFor(Level.TRACE)) {
@@ -133,9 +160,22 @@ public class CxCLIScanJob extends CxScanJob {
             executor.shutdownNow();
         }
 
+        if (!isAsyncScan) {
+            String scanSummary = wsMgr.getScanSummary(params.getHost(), sessionId, scanId);
+            int[] scanResults = parseScanSummary(scanSummary);
+            printSASTResultsToConsole(scanResults);
+
+            //SAST threshold calculation
+            if (params.isSastThresholdEnabled()) {
+                ThresholdDto thresholdDto = new ThresholdDto(ThresholdDto.ScanType.SAST_SCAN, params.getSastHighThresholdValue(), params.getSastMediumThresholdValue(),
+                        params.getSastLowThresholdValue(), scanResults[HIGH_VULNERABILITY_RESULTS], scanResults[MEDIUM_VULNERABILITY_RESULTS], scanResults[LOW_VULNERABILITY_RESULTS]);
+                sastExitCode = resolveThresholdExitCode(thresholdDto, log);
+            }
+        }
+
         if (params.isIgnoreScanWithUnchangedSource() && scanId == -1 && waiterJob.getCurrentStatusEnum() == CurrentStatusEnum.FINISHED) {
             log.info("Scan finished with ScanId = (-1): finish Scan Job");
-            return CxConsoleCommand.CODE_OK;
+            return SCAN_SUCCEEDED_EXIT_CODE;
         }
 
         //update scan comment
@@ -164,19 +204,19 @@ public class CxCLIScanJob extends CxScanJob {
             resultsFileName = normalizePathString(params.getProjName()) + ".xml";
         }
 
-        //Document doc = getResultsXML();
-        storeXMLResults(resultsFileName, wsMgr.getScanReport(sessionId, scanId, "XML"));
-
+        if (!isAsyncScan) {
+            storeXMLResults(resultsFileName, wsMgr.getScanReport(sessionId, scanId, "XML"));
+        }
 
         //Osa Scan
         ExecutorService osaExecutor = null;
         if (params.isOsaEnabled()) {
             try {
                 osaExecutor = Executors.newSingleThreadExecutor();
-                CxScanJob job = new CxCLIOsaScanJob(params, wsMgr, sessionId, projectId);
+                CxScanJob job = new CxCLIOsaScanJob(params, wsMgr, sessionId, projectId, isAsyncScan);
                 job.setLog(log);
                 Future<Integer> future = osaExecutor.submit(job);
-                osaErrorCode = future.get();
+                osaExitCode = future.get();
             } catch (Exception e) {
                 throw new Exception("An error has occurred during OSA scan: " + e.getMessage(), e);
 
@@ -187,7 +227,55 @@ public class CxCLIScanJob extends CxScanJob {
             }
         }
 
-        return CxConsoleCommand.CODE_OK;
+        if (sastExitCode == SCAN_SUCCEEDED_EXIT_CODE && osaExitCode != SCAN_SUCCEEDED_EXIT_CODE) {
+            return osaExitCode;
+        } else if (sastExitCode != SCAN_SUCCEEDED_EXIT_CODE && osaExitCode == SCAN_SUCCEEDED_EXIT_CODE) {
+            return sastExitCode;
+        } else if (sastExitCode != SCAN_SUCCEEDED_EXIT_CODE) {
+            return GENERIC_THRESHOLD_FAILURE_ERROR_EXIT_CODE;
+        } else {
+            return SCAN_SUCCEEDED_EXIT_CODE;
+        }
+    }
+
+    private int[] parseScanSummary(String scanSummary) throws Exception {
+        int[] scanResults = new int[3];
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        InputSource is = new InputSource(new StringReader(scanSummary));
+        Document xmlDoc = builder.parse(is);
+        xmlDoc.getDocumentElement().normalize();
+        NodeList nList = xmlDoc.getElementsByTagName("GetScanSummaryResult");
+        Node node = nList.item(0);
+        node.getNodeType();
+        Element eElement = (Element) node;
+        String highStr = eElement.getElementsByTagName("High").item(0).getTextContent();
+        if (highStr != null) {
+            scanResults[HIGH_VULNERABILITY_RESULTS] = Integer.parseInt(highStr);
+        }
+        String mediumStr = eElement.getElementsByTagName("Medium").item(0).getTextContent();
+        if (highStr != null) {
+            scanResults[MEDIUM_VULNERABILITY_RESULTS] = Integer.parseInt(mediumStr);
+        }
+        String lowStr = eElement.getElementsByTagName("Low").item(0).getTextContent();
+        if (lowStr != null) {
+            scanResults[LOW_VULNERABILITY_RESULTS] = Integer.parseInt(lowStr);
+        }
+
+        return scanResults;
+    }
+
+    private void printSASTResultsToConsole(int[] scanResults) {
+        log.info("----------------------------Checkmarx Scan Results(CxSAST):-------------------------------");
+        log.info("");
+        log.info("------------------------");
+        log.info("SAST vulnerabilities Summary:");
+        log.info("------------------------");
+        log.info("SAST high severity results: " + scanResults[HIGH_VULNERABILITY_RESULTS]);
+        log.info("SAST medium severity results: " + scanResults[MEDIUM_VULNERABILITY_RESULTS]);
+        log.info("SAST low severity results: " + scanResults[LOW_VULNERABILITY_RESULTS]);
+        log.info("");
+        log.info("-----------------------------------------------------------------------------------------");
     }
 
     private LocationType getLocationType(SourceCodeSettings scSettings) {

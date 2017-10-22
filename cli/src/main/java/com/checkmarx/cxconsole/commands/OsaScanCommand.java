@@ -7,16 +7,22 @@ import org.apache.commons.cli.Options;
 
 public class OsaScanCommand extends ScanCommand {
 
-    public static String COMMAND_SCAN = Commands.OSASCAN.value();
+    private String osaCommand;
+    private boolean isAsyncOsaScan;
 
-
-    public OsaScanCommand() {
-        super();
+    OsaScanCommand(boolean isAsyncOsaScan) {
+        super(false);
+        this.isAsyncOsaScan = isAsyncOsaScan;
+        if (isAsyncOsaScan) {
+            osaCommand = Commands.ASYNC_OSA_SCAN.value();
+        } else {
+            osaCommand = Commands.OSASCAN.value();
+        }
     }
 
     @Override
     public String getCommandName() {
-        return COMMAND_SCAN;
+        return osaCommand;
     }
 
     @Override
@@ -45,6 +51,12 @@ public class OsaScanCommand extends ScanCommand {
         if (scParams.getOsaLocationPath() == null && (scParams.getLocationType() != LocationType.folder && scParams.getLocationType() != LocationType.shared)) {
             throw new CommandLineArgumentException("For OSA Scan (" + Commands.OSASCAN.value() + "), provide  " + PARAM_OSA_LOCATION_PATH.getOpt() + "  or " + PARAM_LOCATION_TYPE.getOpt() + " ( values: folder/shared)");
         }
+        if (isAsyncOsaScan && (scParams.getOsaReportHTML() != null || scParams.getOsaReportPDF() != null || scParams.getOsaJson() != null)) {
+            throw new CommandLineArgumentException("Asynchronous run does not allow report creation. Please remove the report parameters and run again");
+        }
+        if (isAsyncOsaScan && (scParams.getOsaHighThresholdValue() != Integer.MAX_VALUE || scParams.getOsaMediumThresholdValue() != Integer.MAX_VALUE || scParams.getOsaLowThresholdValue() != Integer.MAX_VALUE)) {
+            throw new CommandLineArgumentException("Asynchronous run does not support threshold. Please remove the threshold parameters and run again");
+        }
     }
 
     private Options getOsaOptionsOnly(Options all) {
@@ -66,6 +78,9 @@ public class OsaScanCommand extends ScanCommand {
         osaOnly.addOption(all.getOption(PARAM_OSA_JSON.getOpt()));
         osaOnly.addOption(all.getOption(PARAM_USE_SSO.getOpt()));
         osaOnly.addOption(all.getOption(PARAM_VERBOSE.getOpt()));
+        osaOnly.addOption(all.getOption(PARAM_OSA_LOW_THRESHOLD.getOpt()));
+        osaOnly.addOption(all.getOption(PARAM_OSA_MEDIUM_THRESHOLD.getOpt()));
+        osaOnly.addOption(all.getOption(PARAM_OSA_HIGH_THRESHOLD.getOpt()));
 
         return osaOnly;
     }

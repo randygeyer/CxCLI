@@ -3,11 +3,9 @@ package com.checkmarx.cxconsole;
 import com.checkmarx.cxconsole.commands.CommandsFactory;
 import com.checkmarx.cxconsole.commands.CxConsoleCommand;
 import com.checkmarx.cxconsole.utils.BuildVersion;
-import com.checkmarx.cxconsole.utils.CommandLineArgumentException;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxconsole.utils.CustomStringList;
 import com.checkmarx.cxviewer.ws.SSLUtilities;
-import org.apache.commons.cli.ParseException;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -15,16 +13,19 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static com.checkmarx.cxconsole.commands.CxConsoleCommand.*;
+import static com.checkmarx.exitcodes.Constants.ExitCodes.GENERAL_ERROR_EXIT_CODE;
+import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED_EXIT_CODE;
+import static com.checkmarx.exitcodes.ErrorHandler.errorCodeResolver;
+import static com.checkmarx.exitcodes.ErrorHandler.errorMsgResolver;
 
 /**
  * @author Oleksiy Mysnyk
- *
  */
 public class CxConsoleLauncher {
 
     public static Logger log = Logger.getLogger("com.checkmarx.cxconsole.CxConsoleLauncher");
-    public static String MSG_ERR_SRV_NAME_OR_NETWORK = "Server Name is invalid or network is unavailable.";
+
+    private static final String INVALID_COMMAND_PARAMETERS_MSG = "Command parameters are invalid: ";
 
     /**
      * CxConsole commands
@@ -32,23 +33,31 @@ public class CxConsoleLauncher {
     public static String COMM_CONNECT = "connect";
     public static String COMM_QUIT = "quit";
 
-
     /**
      * Entry point to CxScan Console
+     *
      * @param args
      */
-
     public static void main(String[] args) {
+        int exitCode = -1;
         log.setLevel(Level.TRACE);
-        runCli(args);
+
+        exitCode = runCli(args);
+        if (exitCode == SCAN_SUCCEEDED_EXIT_CODE) {
+            log.info("Scan completed successfully - exit code " + exitCode);
+        } else {
+            log.error("Failure - " + errorMsgResolver(exitCode) + " - error code " + exitCode);
+        }
+
+        System.exit(exitCode);
     }
 
     /**
      * Entry point to CxScan Console that returns exitCode
      * This entry point is used by Jenkins plugin
+     *
      * @param args
      */
-
     public static int runCli(String[] args) {
         try {
 
@@ -58,7 +67,7 @@ public class CxConsoleLauncher {
 
             if (args == null || args.length == 0) {
                 log.fatal("Missing command name. Available commands: " + CommandsFactory.getCommandNames());
-                return CODE_ERRROR;
+                return GENERAL_ERROR_EXIT_CODE;
             }
 
             ArrayList<String> customArgs = new CustomStringList(Arrays.asList(args));
@@ -86,7 +95,7 @@ public class CxConsoleLauncher {
             if (command == null) {
                 log.error("Command \"" + commandName + "\" was not found. Available commands:\n"
                         + CommandsFactory.getCommandNames());
-                return CODE_ERRROR;
+                return GENERAL_ERROR_EXIT_CODE;
             }
 
             try {
@@ -97,37 +106,33 @@ public class CxConsoleLauncher {
                     command.resolveServerUrl();
                 } catch (Exception e) {
                     log.trace("", e);
-                    log.fatal(MSG_ERR_SRV_NAME_OR_NETWORK + " Error message: " + e.getMessage() + "\n");
-                    command.printHelp();
-                    return CODE_ERRROR;
+                    log.fatal(e.getMessage() + "\n");
+                    return errorCodeResolver(e.getMessage());
                 }
                 command.checkParameters();
-            } catch (ParseException e) {
-                log.fatal("Command parameters are invalid: " + e.getMessage() + "\n");
-                command.printHelp();
-                return CODE_ERRROR;
-            } catch (CommandLineArgumentException e) {
-                log.fatal("Command parameters are invalid: " + e.getMessage() + "\n");
-                command.printHelp();
-                return CODE_ERRROR;
             } catch (Exception e) {
-                log.fatal("Command parameters are invalid: " + e.getMessage() + "\n");
-                command.printHelp();
-                return CODE_ERRROR;
+                if (e.getMessage() != null) {
+                    log.fatal(INVALID_COMMAND_PARAMETERS_MSG + e.getMessage() + "\n");
+                } else {
+                    log.fatal(INVALID_COMMAND_PARAMETERS_MSG + "\n");
+                }
+                if (!command.getCommandName().toLowerCase().contains("async")) {
+                    command.printHelp();
+                }
+                return errorCodeResolver(e.getMessage());
             }
 
-
             int exitCode = command.execute();
-            log.info("CxConsole scan session finished");
+            log.info("CxConsole session finished");
             return exitCode;
 
         } catch (org.apache.commons.cli.ParseException e) {
             // Ignore, the exception is handled in above catch statement
-            return CODE_ERRROR;
+            return errorCodeResolver(e.getMessage());
         } catch (Throwable e) {
             log.error("Unexpected error occurred during console session.Error message:\n" + e.getMessage());
             log.info("", e);
-            return CODE_ERRROR;
+            return errorCodeResolver(e.getMessage());
         }
     }
 }

@@ -23,14 +23,14 @@ public class WSResolver {
     protected static CxWSResolverSoap wService;
 
 	
-	public static String getServiceURL(String server) {
+	public static String getServiceURL(String server) throws Exception {
 
 		wService=getWService(server);
 		if (wService!=null) {
 			CxWSResponseDiscovery resp=wService.getWebServiceUrl(CxClientType.CLI, CLI_WEBSERVICE_VERSION);
 			if (!resp.isIsSuccesfull()) {
 				logger.error("CxWebserviceResolver error: "+resp.getErrorMessage());
-                return null;
+				throw new Exception("CxWebserviceResolver error: "+resp.getErrorMessage());
 			} else {
 			    return resp.getServiceURL();
             }

@@ -1,21 +1,15 @@
 package com.checkmarx.cxconsole.commands;
 
-import org.apache.commons.cli.*;
-import org.apache.log4j.Logger;
-
 import com.checkmarx.cxconsole.utils.CommandLineArgumentException;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxviewer.utils.DynamicAuthSupplier;
 import org.apache.commons.cli.*;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import java.io.File;
-
-import static com.checkmarx.cxconsole.commands.GeneralScanCommand.PARAM_LOG_FILE;
-import static com.checkmarx.cxconsole.commands.ScanCommand.PARAM_PRJ_NAME;
-
 import java.io.IOException;
+import java.util.Objects;
+
+import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED_EXIT_CODE;
 
 /**
  * Base class for all CLI commands.<br>
@@ -27,21 +21,11 @@ public abstract class CxConsoleCommand {
 
     public static final String KEY_DESCR_INTEND_SINGLE = "\t";
     public static final String KEY_DESCR_INTEND_SMALL = "\t\t";
-    public static final String KEY_DESCR_INTEND = "\t\t\t";
-    /**
-     * Error code indicating command executed successfully
-     */
-    public static final int CODE_OK = 0;
-
-    /**
-     * Error code indicating that error occurred during command execution
-     */
-    public static final int CODE_ERRROR = 1;
 
     /*
      * Error code indicating whether command execution was successful
      */
-    protected int errorCode = CODE_OK;
+    protected int errorCode = SCAN_SUCCEEDED_EXIT_CODE;
 
     /**
      * Definition of command line parameters to be used by Apache CLI parser
@@ -99,6 +83,7 @@ public abstract class CxConsoleCommand {
     public abstract void checkParameters() throws CommandLineArgumentException;
 
     public abstract void resolveServerUrl() throws Exception;
+
     /**
      * Check whether provided key is flag - i.e. it doesn't have followed
      * value in CLI (like "-verbose" flag)
@@ -110,9 +95,10 @@ public abstract class CxConsoleCommand {
 
     private void printCommandsDebug() {
         log.debug("----------------------------Configured Commands:-----------------------------");
+        log.debug("Command type: " + getCommandName());
         for (Option opt : commandLineArguments.getOptions()) {
             String option = opt.getOpt();
-            if (option != "CxPassword") {
+            if (!Objects.equals(option, "CxPassword")) {
                 log.debug("Option: " + opt.getOpt() + " value: " + opt.getValue());
             }
         }
