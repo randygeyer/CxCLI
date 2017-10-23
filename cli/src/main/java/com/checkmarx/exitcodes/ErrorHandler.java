@@ -23,6 +23,11 @@ public class ErrorHandler {
                 retVal = entry.getValue();
             }
         }
+
+        if (errorMsg.toLowerCase().contains("unsuccessful login")) {
+            return LOGIN_FAILED_ERROR_EXIT_CODE;
+        }
+
         return (retVal != null) ? retVal : GENERAL_ERROR_EXIT_CODE;
     }
 

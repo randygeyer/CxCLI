@@ -14,6 +14,8 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.concurrent.*;
 
+import static com.checkmarx.exitcodes.Constants.ErrorMassages.REPORT_PARAMETER_IN_ASYNC_SCAN;
+import static com.checkmarx.exitcodes.Constants.ErrorMassages.THRESHOLD_PARAMETER_IN_ASYNC_SCAN;
 import static com.checkmarx.exitcodes.ErrorHandler.errorCodeResolver;
 
 public class ScanCommand extends GeneralScanCommand {
@@ -383,10 +385,10 @@ public class ScanCommand extends GeneralScanCommand {
         }
 
         if (isAsyncScan && (scParams.getReportFile() != null || scParams.getXmlFile() != null || scParams.getReportType() != null)) {
-            throw new CommandLineArgumentException("Asynchronous run does not allow report creation. Please remove the report parameters and run again");
+            throw new CommandLineArgumentException(REPORT_PARAMETER_IN_ASYNC_SCAN);
         }
         if (isAsyncScan && (scParams.getSastHighThresholdValue() != Integer.MAX_VALUE || scParams.getSastMediumThresholdValue() != Integer.MAX_VALUE || scParams.getSastLowThresholdValue() != Integer.MAX_VALUE)) {
-            throw new CommandLineArgumentException("Asynchronous run does not support threshold. Please remove the threshold parameters and run again");
+            throw new CommandLineArgumentException(THRESHOLD_PARAMETER_IN_ASYNC_SCAN);
         }
     }
 
