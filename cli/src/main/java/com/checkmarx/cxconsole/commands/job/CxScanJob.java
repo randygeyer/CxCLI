@@ -2,13 +2,13 @@ package com.checkmarx.cxconsole.commands.job;
 
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxconsole.utils.ScanParams;
-import com.checkmarx.login.rest.CxRestClient;
 import com.checkmarx.cxviewer.ws.WSMgr;
 import com.checkmarx.cxviewer.ws.results.GetConfigurationsListResult;
 import com.checkmarx.cxviewer.ws.results.GetPresetsListResult;
 import com.checkmarx.cxviewer.ws.results.GetTeamsListResult;
 import com.checkmarx.cxviewer.ws.results.LoginResult;
 import com.checkmarx.jwt.exceptions.JWTException;
+import com.checkmarx.login.rest.CxRestClient;
 import com.checkmarx.login.rest.CxTokenizeLogin;
 import com.checkmarx.login.rest.exception.CxClientException;
 import org.apache.log4j.Level;
@@ -108,13 +108,14 @@ public class CxScanJob implements Callable<Integer> {
                 } else if (params.hasTokenParam()) {
                     CxTokenizeLogin cxTokenizeLogin = new CxTokenizeLogin();
                     try {
-                        String hostWithProtocol;
-                        if (params.getHost().contains("https://")) {
-                            hostWithProtocol = "https://" + params.getOriginHost();
-                        } else {
-                            hostWithProtocol = "http://" + params.getOriginHost();
+                        if (!params.getOriginHost().contains("http")) {
+                            if (params.getHost().contains("https://")) {
+                                params.setOriginHost("https://" + params.getOriginHost());
+                            } else {
+                                params.setOriginHost("http://" + params.getOriginHost());
+                            }
                         }
-                        sessionId = cxTokenizeLogin.getSessionIdFromToken(new URL(hostWithProtocol), params.getToken());
+                        sessionId = cxTokenizeLogin.getSessionIdFromToken(new URL(params.getOriginHost()), params.getToken());
                     } catch (JWTException | CxClientException e) {
                         error = "Unsuccessful login." + e.getMessage();
                         if (log.isEnabledFor(Level.TRACE)) {
@@ -197,7 +198,7 @@ public class CxScanJob implements Callable<Integer> {
         if (folderPath == null || folderPath.isEmpty()) {
             //in case of ScanProject command
             String prjName = normalizePathString(params.getProjName());
-			/*if (prjName.contains("\\")) {
+            /*if (prjName.contains("\\")) {
 				prjName = prjName.replace('\\', '_');
 			}
 			if (prjName.contains("/")) {
