@@ -5,6 +5,9 @@ import com.checkmarx.cxconsole.utils.LocationType;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 
+import static com.checkmarx.exitcodes.Constants.ErrorMassages.REPORT_PARAMETER_IN_ASYNC_SCAN;
+import static com.checkmarx.exitcodes.Constants.ErrorMassages.THRESHOLD_PARAMETER_IN_ASYNC_SCAN;
+
 public class OsaScanCommand extends ScanCommand {
 
     private String osaCommand;
@@ -52,10 +55,10 @@ public class OsaScanCommand extends ScanCommand {
             throw new CommandLineArgumentException("For OSA Scan (" + Commands.OSASCAN.value() + "), provide  " + PARAM_OSA_LOCATION_PATH.getOpt() + "  or " + PARAM_LOCATION_TYPE.getOpt() + " ( values: folder/shared)");
         }
         if (isAsyncOsaScan && (scParams.getOsaReportHTML() != null || scParams.getOsaReportPDF() != null || scParams.getOsaJson() != null)) {
-            throw new CommandLineArgumentException("Asynchronous run does not allow report creation. Please remove the report parameters and run again");
+            throw new CommandLineArgumentException(REPORT_PARAMETER_IN_ASYNC_SCAN);
         }
         if (isAsyncOsaScan && (scParams.getOsaHighThresholdValue() != Integer.MAX_VALUE || scParams.getOsaMediumThresholdValue() != Integer.MAX_VALUE || scParams.getOsaLowThresholdValue() != Integer.MAX_VALUE)) {
-            throw new CommandLineArgumentException("Asynchronous run does not support threshold. Please remove the threshold parameters and run again");
+            throw new CommandLineArgumentException(THRESHOLD_PARAMETER_IN_ASYNC_SCAN);
         }
     }
 
