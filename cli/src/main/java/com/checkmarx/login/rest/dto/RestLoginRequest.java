@@ -1,15 +1,15 @@
-package com.checkmarx.cxosa.dto;
+package com.checkmarx.login.rest.dto;
 
 /**
  * Created by: Dorg.
  * Date: 08/09/2016.
  */
-public class LoginRequest {
+public class RestLoginRequest {
 
     private String username;
     private String password;
 
-    public LoginRequest(String username, String password) {
+    public RestLoginRequest(String username, String password) {
         this.username = username;
         this.password = password;
     }

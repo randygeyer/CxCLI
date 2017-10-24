@@ -1,11 +1,11 @@
 package com.checkmarx.login.rest;
 
-
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxosa.ScanWaitHandler;
 import com.checkmarx.cxosa.dto.*;
+import com.checkmarx.login.rest.dto.RestLoginRequest;
 import com.checkmarx.login.rest.exception.CxClientException;
-import com.fasterxml.jackson.databind.JavaType;
+import com.checkmarx.login.rest.utils.RestClientUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import org.apache.commons.io.FileUtils;
@@ -45,7 +45,7 @@ import java.util.List;
  */
 public class CxRestClient {
 
-    private enum LOGIN_TYPE {TOKEN, USERNAME_AND_PASWORD}
+    private enum LOGIN_TYPE {TOKEN, USERNAME_AND_PASSWORD}
 
     private static Logger log;
 
@@ -118,7 +118,7 @@ public class CxRestClient {
         this.username = username;
         this.password = password;
         this.token = null;
-        this.loginType = LOGIN_TYPE.USERNAME_AND_PASWORD;
+        this.loginType = LOGIN_TYPE.USERNAME_AND_PASSWORD;
         setLogger(log);
 
         //create httpclient
@@ -159,14 +159,14 @@ public class CxRestClient {
         //create login request
         HttpPost loginPost = new HttpPost(hostName + "/" + ROOT_PATH + "/" + AUTHENTICATION_PATH);
         loginPost.setHeader(CX_ORIGIN_HEADER, CX_ORIGIN_VALUE);
-        StringEntity requestEntity = new StringEntity(mapper.writeValueAsString(new LoginRequest(username, password)), ContentType.APPLICATION_JSON);
+        StringEntity requestEntity = new StringEntity(mapper.writeValueAsString(new RestLoginRequest(username, password)), ContentType.APPLICATION_JSON);
         loginPost.setEntity(requestEntity);
         try {
             //send login request
             loginResponse = apacheClient.execute(loginPost);
 
             //validate login response
-            validateResponse(loginResponse, 200, "Fail to authenticate");
+            RestClientUtils.validateResponse(loginResponse, 200, "Fail to authenticate");
         } finally {
             loginPost.releaseConnection();
             HttpClientUtils.closeQuietly(loginResponse);
@@ -176,7 +176,7 @@ public class CxRestClient {
     public CreateOSAScanResponse createOSAScan(long projectId, File zipFile) throws IOException, CxClientException {
         //create scan request
         HttpPost post = new HttpPost(hostName + "/" + ROOT_PATH + "/" + OSA_SCAN_PROJECT_PATH.replace("{projectId}", String.valueOf(projectId)));
-        if (loginType == LOGIN_TYPE.USERNAME_AND_PASWORD) {
+        if (loginType == LOGIN_TYPE.USERNAME_AND_PASSWORD) {
             post.setHeader(CX_ORIGIN_HEADER, CX_ORIGIN_VALUE);
         } else {
             post.setHeader(authorizationHeader);
@@ -194,9 +194,10 @@ public class CxRestClient {
             //send scan request
             response = apacheClient.execute(post);
             //verify scan request
-            validateResponse(response, 202, "Fail to create OSA scan");
+            RestClientUtils.validateResponse(response, 202, "Fail to create OSA scan");
+
             //extract response as object and return the link
-            return convertToObject(response, CreateOSAScanResponse.class);
+            return RestClientUtils.parseJsonFromResponse(response, CreateOSAScanResponse.class);
         } finally {
             post.releaseConnection();
             IOUtils.closeQuietly(fileInputStream);
@@ -211,9 +212,9 @@ public class CxRestClient {
 
         try {
             response = apacheClient.execute(getRequest);
-            validateResponse(response, 200, "Failed to get OSA scan status");
+            RestClientUtils.validateResponse(response, 200, "Failed to get OSA scan status");
 
-            return convertToObject(response, OSAScanStatus.class);
+            return RestClientUtils.parseJsonFromResponse(response, OSAScanStatus.class);
         } finally {
             getRequest.releaseConnection();
             HttpClientUtils.closeQuietly(response);
@@ -221,16 +222,15 @@ public class CxRestClient {
     }
 
     public OSASummaryResults getOSAScanSummaryResults(String scanId) throws CxClientException, IOException {
-
         String relativePath = OSA_SCAN_SUMMARY_PATH + SCAN_ID_QUERY_PARAM + scanId;
         HttpGet getRequest = createHttpRequest(relativePath, "application/json");
         HttpResponse response = null;
 
         try {
             response = apacheClient.execute(getRequest);
-            validateResponse(response, 200, "fail get OSA scan summary results");
+            RestClientUtils.validateResponse(response, 200, "fail get OSA scan summary results");
 
-            return convertToObject(response, OSASummaryResults.class);
+            return RestClientUtils.parseJsonFromResponse(response, OSASummaryResults.class);
         } finally {
             getRequest.releaseConnection();
             HttpClientUtils.closeQuietly(response);
@@ -244,10 +244,9 @@ public class CxRestClient {
         HttpResponse response = null;
         try {
             response = apacheClient.execute(getRequest);
-            validateResponse(response, 200, "Failed to get OSA scan html results");
+            RestClientUtils.validateResponse(response, 200, "Failed to get OSA scan html results");
 
             return IOUtils.toString(response.getEntity().getContent(), Charset.defaultCharset());
-
         } finally {
             getRequest.releaseConnection();
             HttpClientUtils.closeQuietly(response);
@@ -261,7 +260,8 @@ public class CxRestClient {
 
         try {
             response = apacheClient.execute(getRequest);
-            validateResponse(response, 200, "Failed to get OSA scan pdf results");
+            RestClientUtils.validateResponse(response, 200, "Failed to get OSA scan pdf results");
+
             return IOUtils.toByteArray(response.getEntity().getContent());
         } finally {
             getRequest.releaseConnection();
@@ -316,14 +316,14 @@ public class CxRestClient {
 
 
     private List<Library> getOSALibraries(String scanId) throws CxClientException, IOException {
-
         String relativePath = OSA_SCAN_LIBRARIES_PATH + SCAN_ID_QUERY_PARAM + scanId + ITEM_PER_PAGE_QUERY_PARAM + MAX_ITEMS;
         HttpGet getRequest = createHttpRequest(relativePath, "application/json");
         HttpResponse response = null;
         try {
             response = apacheClient.execute(getRequest);
-            validateResponse(response, 200, "Failed to get OSA libraries");
-            return convertToObject(response, TypeFactory.defaultInstance().constructCollectionType(List.class, Library.class));
+            RestClientUtils.validateResponse(response, 200, "Failed to get OSA libraries");
+
+            return RestClientUtils.parseJsonListFromResponse(response, TypeFactory.defaultInstance().constructCollectionType(List.class, Library.class));
         } finally {
             getRequest.releaseConnection();
             HttpClientUtils.closeQuietly(response);
@@ -336,8 +336,9 @@ public class CxRestClient {
         HttpResponse response = null;
         try {
             response = apacheClient.execute(getRequest);
-            validateResponse(response, 200, "Failed to get OSA vulnerabilities");
-            return convertToObject(response, TypeFactory.defaultInstance().constructCollectionType(List.class, CVE.class));
+            RestClientUtils.validateResponse(response, 200, "Failed to get OSA vulnerabilities");
+
+            return RestClientUtils.parseJsonListFromResponse(response, TypeFactory.defaultInstance().constructCollectionType(List.class, CVE.class));
         } finally {
             getRequest.releaseConnection();
             HttpClientUtils.closeQuietly(response);
@@ -353,37 +354,6 @@ public class CxRestClient {
 
     public void close() {
         HttpClientUtils.closeQuietly(apacheClient);
-    }
-
-    private void validateResponse(HttpResponse response, int status, String message) throws CxClientException, IOException {
-
-        if (response.getStatusLine().getStatusCode() != status) {
-            String responseBody = IOUtils.toString(response.getEntity().getContent(), Charset.defaultCharset());
-            responseBody = responseBody.replace("{", "").replace("}", "").replace(System.getProperty("line.separator"), " ").replace("  ", "");
-            throw new CxClientException(message + ": " + "status code: " + response.getStatusLine() + ". error:" + responseBody);
-        }
-    }
-
-    private <T> T convertToObject(HttpResponse response, Class<T> valueType) throws CxClientException {
-        String json = "";
-        try {
-            json = IOUtils.toString(response.getEntity().getContent(), Charset.defaultCharset());
-            return mapper.readValue(json, valueType);
-        } catch (IOException e) {
-            log.debug("fail to parse json response: [" + json + "]", e);
-            throw new CxClientException("fail to parse json response: " + e.getMessage());
-        }
-    }
-
-    private <T> T convertToObject(HttpResponse response, JavaType javaType) throws CxClientException {
-        String json = "";
-        try {
-            json = IOUtils.toString(response.getEntity().getContent(), Charset.defaultCharset());
-            return mapper.readValue(json, javaType);
-        } catch (IOException e) {
-            log.debug("Failed to parse json response: [" + json + "]", e);
-            throw new CxClientException("Failed to parse json response: " + e.getMessage());
-        }
     }
 
     public OSAScanStatus waitForOSAScanToFinish(String scanId, long scanTimeoutInMin, ScanWaitHandler<OSAScanStatus> waitHandler, boolean isAsyncOsaScan) throws CxClientException, IOException {
@@ -457,7 +427,4 @@ public class CxRestClient {
 
         return retry;
     }
-
-
 }
-
