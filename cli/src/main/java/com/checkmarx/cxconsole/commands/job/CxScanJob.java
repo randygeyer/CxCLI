@@ -108,7 +108,13 @@ public class CxScanJob implements Callable<Integer> {
                 } else if (params.hasTokenParam()) {
                     CxTokenizeLogin cxTokenizeLogin = new CxTokenizeLogin();
                     try {
-                        sessionId = cxTokenizeLogin.getSessionIdFromToken(new URL(params.getOriginHost()), params.getToken());
+                        String hostWithProtocol;
+                        if (params.getHost().contains("https://")) {
+                            hostWithProtocol = "https://" + params.getOriginHost();
+                        } else {
+                            hostWithProtocol = "http://" + params.getOriginHost();
+                        }
+                        sessionId = cxTokenizeLogin.getSessionIdFromToken(new URL(hostWithProtocol), params.getToken());
                     } catch (JWTException | CxClientException e) {
                         error = "Unsuccessful login." + e.getMessage();
                         if (log.isEnabledFor(Level.TRACE)) {
