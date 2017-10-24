@@ -90,7 +90,6 @@ public class ScanCommand extends GeneralScanCommand {
     private static String MSG_ERR_MISSING_USER_PASSWORD = "Missing username/password parameters";
     private static String MSG_ERR_MISSING_LOCATION_TYPE = "Missing locationType parameter";
 
-    
 
     public ScanCommand(boolean isAsyncScan) {
         super();
@@ -274,9 +273,10 @@ public class ScanCommand extends GeneralScanCommand {
     @Override
     public void checkParameters() throws CommandLineArgumentException {
         super.checkParameters();
-        if (scParams.getLocationType() == null) {
-            throw new CommandLineArgumentException(MSG_ERR_MISSING_LOCATION_TYPE);
-        }
+        //TODO: Add and fix to version 8.6.0
+//        if (scParams.getLocationType() == null && scParams.getOsaLocationPath() == null) {
+//            throw new CommandLineArgumentException(MSG_ERR_MISSING_LOCATION_TYPE);
+//        }
         if (scParams.getSpFolderName() != null) {
             File projectDir = new File(scParams.getSpFolderName().trim());
             if (!projectDir.exists()) {
