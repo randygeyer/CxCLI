@@ -2,7 +2,6 @@ package com.checkmarx.cxconsole.commands.job;
 
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxconsole.utils.ScanParams;
-import com.checkmarx.login.rest.CxRestClient;
 import com.checkmarx.cxosa.OSAConsoleScanWaitHandler;
 import com.checkmarx.cxosa.dto.CreateOSAScanResponse;
 import com.checkmarx.cxosa.dto.OSAScanStatus;
@@ -11,6 +10,9 @@ import com.checkmarx.cxosa.utils.OsaUtils;
 import com.checkmarx.cxviewer.ws.WSMgr;
 import com.checkmarx.cxviewer.ws.generated.ProjectDisplayData;
 import com.checkmarx.cxviewer.ws.results.GetProjectDataResult;
+import com.checkmarx.login.rest.CxRestLoginClient;
+import com.checkmarx.login.rest.CxRestOSAClient;
+import com.checkmarx.login.rest.dto.RestLoginResponseDTO;
 import com.checkmarx.thresholds.dto.ThresholdDto;
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,6 +29,7 @@ import static com.checkmarx.thresholds.ThresholdResolver.resolveThresholdExitCod
 public class CxCLIOsaScanJob extends CxScanJob {
 
     private String workDirectory = "";
+    private CxRestOSAClient cxRestOSAClient;
     private String osaProjectSummaryLink;
     private boolean scanOsaOnly = false;
     private long projectId = -1;
@@ -82,14 +85,16 @@ public class CxCLIOsaScanJob extends CxScanJob {
             //Request osa Scan
             log.info("");
             log.info("Request OSA scan");
+            RestLoginResponseDTO restLoginResponseDTO;
             if (params.hasUserParam() && params.hasPasswordParam()) {
-                restClient = new CxRestClient(params.getOriginHost(), params.getUser(), params.getPassword(), log);
+                cxRestLoginClient = new CxRestLoginClient(params.getOriginHost(), params.getUser(), params.getPassword(), log);
                 // Logging into the OSA service.
-                restClient.login();
+                restLoginResponseDTO = cxRestLoginClient.credentialsLogin();
+            } else {
+                cxRestLoginClient = new CxRestLoginClient(params.getOriginHost(), params.getToken(), log);
+                restLoginResponseDTO = cxRestLoginClient.tokenLogin();
             }
-            else {
-                restClient = new CxRestClient(params.getOriginHost(), params.getToken(), log);
-            }
+            cxRestOSAClient = new CxRestOSAClient(params.getOriginHost(), restLoginResponseDTO, log);
 
             if (projectId == -1) {
                 projectId = locateProjectOnServer();
@@ -101,7 +106,7 @@ public class CxCLIOsaScanJob extends CxScanJob {
             log.info("Zipping dependencies");
             File zipForOSA = OsaUtils.zipWorkspaceFolder(params.getOsaExcludedFiles(), params.getOsaExcludedFolders(), params.getOsaIncludedFiles(), maxZipSize, osaLocationPath, log);
             log.info("Sending OSA scan request");
-            CreateOSAScanResponse osaScan = restClient.createOSAScan(projectId, zipForOSA);
+            CreateOSAScanResponse osaScan = cxRestOSAClient.createOSAScan(projectId, zipForOSA);
             osaProjectSummaryLink = OsaUtils.composeProjectOSASummaryLink(params.getOriginHost(), projectId);
             log.info("OSA scan created successfully");
 
@@ -117,7 +122,7 @@ public class CxCLIOsaScanJob extends CxScanJob {
             //wait for OSA scan to finish
             OSAConsoleScanWaitHandler osaConsoleScanWaitHandler = new OSAConsoleScanWaitHandler();
             osaConsoleScanWaitHandler.setLogger(log);
-            OSAScanStatus returnStatus = restClient.waitForOSAScanToFinish(osaScan.getScanId(), -1, osaConsoleScanWaitHandler, isAsyncOsaScan);
+            OSAScanStatus returnStatus = cxRestOSAClient.waitForOSAScanToFinish(osaScan.getScanId(), -1, osaConsoleScanWaitHandler, isAsyncOsaScan);
             if (isAsyncOsaScan && returnStatus.getStatus() == QUEUED) {
                 exitCode = SCAN_SUCCEEDED_EXIT_CODE;
             }
@@ -126,7 +131,7 @@ public class CxCLIOsaScanJob extends CxScanJob {
                 exitCode = SCAN_SUCCEEDED_EXIT_CODE;
 
                 //OSA scan results
-                osaSummaryResults = restClient.getOSAScanSummaryResults(osaScan.getScanId());
+                osaSummaryResults = cxRestOSAClient.getOSAScanSummaryResults(osaScan.getScanId());
                 printOSAResultsToConsole(osaSummaryResults, osaProjectSummaryLink);
 
                 //Osa threshold calculation
@@ -150,17 +155,17 @@ public class CxCLIOsaScanJob extends CxScanJob {
                         //OSA HTML report
                         if (htmlFile != null) {
                             String resultFilePath = resolveReportPath("HTML", htmlFile, OSA_REPORT_NAME + ".html");
-                            restClient.createOsaHtmlReport(osaScan.getScanId(), resultFilePath);
+                            cxRestOSAClient.createOsaHtmlReport(osaScan.getScanId(), resultFilePath);
                         }
                         //OSA PDF report
                         if (pdfFile != null) {
                             String resultFilePath = resolveReportPath("PDF", pdfFile, OSA_REPORT_NAME + ".pdf");
-                            restClient.createOsaPdfReport(osaScan.getScanId(), resultFilePath);
+                            cxRestOSAClient.createOsaPdfReport(osaScan.getScanId(), resultFilePath);
                         }
                         //OSA json reports
                         if (jsonFile != null) {
                             String resultFilePath = resolveReportPath("JSON", jsonFile, "");
-                            restClient.createOsaJson(osaScan.getScanId(), resultFilePath, osaSummaryResults);
+                            cxRestOSAClient.createOsaJson(osaScan.getScanId(), resultFilePath, osaSummaryResults);
                         }
                     }
                 } catch (Exception e) {
@@ -175,8 +180,8 @@ public class CxCLIOsaScanJob extends CxScanJob {
                 exitCode = errorCodeResolver(super.getErrorMsg());
             }
             OsaUtils.deleteTempFiles();
-            if (restClient != null) {
-                restClient.close();
+            if (cxRestOSAClient != null) {
+                cxRestOSAClient.close();
             }
         }
 

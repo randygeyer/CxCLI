@@ -2,15 +2,13 @@ package com.checkmarx.cxconsole.commands.job;
 
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxconsole.utils.ScanParams;
-import com.checkmarx.login.rest.CxRestClient;
 import com.checkmarx.cxviewer.ws.WSMgr;
 import com.checkmarx.cxviewer.ws.results.GetConfigurationsListResult;
 import com.checkmarx.cxviewer.ws.results.GetPresetsListResult;
 import com.checkmarx.cxviewer.ws.results.GetTeamsListResult;
 import com.checkmarx.cxviewer.ws.results.LoginResult;
-import com.checkmarx.jwt.exceptions.JWTException;
-import com.checkmarx.login.rest.CxTokenizeLogin;
-import com.checkmarx.login.rest.exception.CxClientException;
+import com.checkmarx.login.rest.CxRestLoginClient;
+import com.checkmarx.login.rest.exception.CxLoginClientException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -37,7 +35,7 @@ public class CxScanJob implements Callable<Integer> {
      */
     protected WSMgr wsMgr;
 
-    protected CxRestClient restClient;
+    protected CxRestLoginClient cxRestLoginClient;
     // Current scan identifier
     protected String runId;
     // Current session ID
@@ -106,11 +104,11 @@ public class CxScanJob implements Callable<Integer> {
                         sessionId = r.getSessionId();
                     }
                 } else if (params.hasTokenParam()) {
-                    CxTokenizeLogin cxTokenizeLogin = new CxTokenizeLogin();
+                    cxRestLoginClient = new CxRestLoginClient(params.getOriginHost(), params.getToken(), log);
                     try {
-                        sessionId = cxTokenizeLogin.getSessionIdFromToken(new URL(params.getOriginHost()), params.getToken());
-                    } catch (JWTException | CxClientException e) {
-                        error = "Unsuccessful login." + e.getMessage();
+                        sessionId = cxRestLoginClient.tokenLogin().getSessionId();
+                    } catch (CxLoginClientException e) {
+                        error = "Unsuccessful login.\\n" + e.getMessage();
                         if (log.isEnabledFor(Level.TRACE)) {
                             log.trace(error);
                         }
@@ -191,7 +189,7 @@ public class CxScanJob implements Callable<Integer> {
         if (folderPath == null || folderPath.isEmpty()) {
             //in case of ScanProject command
             String prjName = normalizePathString(params.getProjName());
-			/*if (prjName.contains("\\")) {
+            /*if (prjName.contains("\\")) {
 				prjName = prjName.replace('\\', '_');
 			}
 			if (prjName.contains("/")) {

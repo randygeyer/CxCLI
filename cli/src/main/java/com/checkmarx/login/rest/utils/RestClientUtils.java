@@ -1,8 +1,9 @@
 package com.checkmarx.login.rest.utils;
 
-import com.checkmarx.login.rest.exception.CxClientException;
+import com.checkmarx.login.rest.exception.CxLoginClientException;
+import com.checkmarx.login.rest.exception.CxRestClientException;
+import com.checkmarx.login.rest.exception.CxRestClientValidatorException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionLikeType;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -18,15 +19,22 @@ import java.util.List;
  */
 public class RestClientUtils {
 
+    public static final String PARSING_ERROR = "Failed due to parsing error: ";
+    public static final String FAIL_TO_AUTHENTICATE_ERROR = "Fail to authenticate";
+
     private RestClientUtils() {
         throw new IllegalStateException("Utility class");
     }
 
-    public static void validateResponse(HttpResponse response, int status, String message) throws CxClientException, IOException {
-        if (response.getStatusLine().getStatusCode() != status) {
-            String responseBody = IOUtils.toString(response.getEntity().getContent(), Charset.defaultCharset());
-            responseBody = responseBody.replace("{", "").replace("}", "").replace(System.getProperty("line.separator"), " ").replace("  ", "");
-            throw new CxClientException(message + ": " + "status code: " + response.getStatusLine() + ". error:" + responseBody);
+    public static void validateResponse(HttpResponse response, int status, String message) throws CxRestClientValidatorException {
+        try {
+            if (response.getStatusLine().getStatusCode() != status) {
+                String responseBody = IOUtils.toString(response.getEntity().getContent(), Charset.defaultCharset());
+                responseBody = responseBody.replace("{", "").replace("}", "").replace(System.getProperty("line.separator"), " ").replace("  ", "");
+                throw new CxRestClientValidatorException(message + ": " + "status code: " + response.getStatusLine() + ". error:" + responseBody);
+            }
+        } catch (IOException e) {
+            throw new CxRestClientValidatorException("Error parse REST response body: " + e.getMessage());
         }
     }
 

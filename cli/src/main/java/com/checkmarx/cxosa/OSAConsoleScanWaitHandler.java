@@ -3,7 +3,8 @@ package com.checkmarx.cxosa;
 
 import com.checkmarx.cxosa.dto.OSAScanStatus;
 import com.checkmarx.cxosa.dto.OSAScanStatusEnum;
-import com.checkmarx.login.rest.exception.CxClientException;
+import com.checkmarx.login.rest.exception.CxLoginClientException;
+import com.checkmarx.login.rest.exception.CxOSAClientException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -20,15 +21,15 @@ public class OSAConsoleScanWaitHandler implements ScanWaitHandler<OSAScanStatus>
     private long startTime;
     private long scanTimeoutInMin;
 
-    public void onTimeout(OSAScanStatus scanStatus) throws CxClientException {
+    public void onTimeout(OSAScanStatus scanStatus) throws CxOSAClientException {
 
         String status = scanStatus.getStatus() == null ? OSAScanStatusEnum.NONE.uiValue() : scanStatus.getStatus().uiValue();
-        throw new CxClientException("OSA scan has reached the time limit (" + scanTimeoutInMin + " minutes). status: [" + status + "]");
+        throw new CxOSAClientException("OSA scan has reached the time limit (" + scanTimeoutInMin + " minutes). status: [" + status + "]");
 
     }
 
-    public void onFail(OSAScanStatus scanStatus) throws CxClientException {
-        throw new CxClientException("OSA scan cannot be completed. status [" + scanStatus.getStatus().uiValue() + "]. message: [" + StringUtils.defaultString(scanStatus.getMessage()) + "]");
+    public void onFail(OSAScanStatus scanStatus) throws CxOSAClientException {
+        throw new CxOSAClientException("OSA scan cannot be completed. status [" + scanStatus.getStatus().uiValue() + "]. message: [" + StringUtils.defaultString(scanStatus.getMessage()) + "]");
 
     }
 
