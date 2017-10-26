@@ -15,7 +15,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -29,6 +28,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
 
+import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -50,7 +50,6 @@ public class CxRestOSAClient {
 
     private String hostName;
     private HttpClient apacheClient;
-    private HttpRequest httpRequest;
     private RestLoginResponseDTO restLoginResponseDTO;
     private RestLoginResponseDTO.LOGIN_TYPE loginType;
     private static int waitForScanToFinishRetry = ConfigMgr.getCfgMgr().getIntProperty(ConfigMgr.KEY_OSA_PROGRESS_INTERVAL);
@@ -63,6 +62,7 @@ public class CxRestOSAClient {
     private static final String OSA_SUMMARY_NAME = "CxOSASummary";
     private static final String OSA_LIBRARIES_NAME = "CxOSALibraries";
     private static final String OSA_VULNERABILITIES_NAME = "CxOSAVulnerabilities";
+    private static final String JSON_FILE = ".json";
     private ObjectMapper objectMapper = new ObjectMapper();
 
     public CxRestOSAClient(String hostName, RestLoginResponseDTO restLoginResponseDTO, Logger log) {
@@ -103,6 +103,7 @@ public class CxRestOSAClient {
             //extract response as object and return the link
             return parseJsonFromResponse(response, CreateOSAScanResponse.class);
         } catch (IOException | CxRestClientValidatorException e) {
+            log.error("Failed to create OSA scan: " + e.getMessage());
             throw new CxOSAClientException("Failed to create OSA scan: " + e.getMessage());
         } finally {
             if (post != null) {
@@ -118,12 +119,13 @@ public class CxRestOSAClient {
         HttpResponse response = null;
 
         try {
-            getRequest = createHttpRequest(String.valueOf(RestResourcesURIBuilder.buildGetOSAScanSummaryResultsURL(new URL(hostName), scanId)), "application/json");
+            getRequest = createHttpRequest(String.valueOf(RestResourcesURIBuilder.buildGetOSAScanSummaryResultsURL(new URL(hostName), scanId)), MediaType.APPLICATION_JSON);
             response = apacheClient.execute(getRequest);
             validateResponse(response, 200, "fail get OSA scan summary results");
 
             return parseJsonFromResponse(response, OSASummaryResults.class);
         } catch (IOException | CxRestClientValidatorException e) {
+            log.error("Failed to get OSA scan summary results: " + e.getMessage());
             throw new CxOSAClientException("Failed to get OSA scan summary results: " + e.getMessage());
         } finally {
             if (getRequest != null) {
@@ -142,7 +144,6 @@ public class CxRestOSAClient {
         }
     }
 
-
     public void createOsaPdfReport(String scanId, String filePath) throws CxOSAClientException {
         try {
             byte[] osaPDF = getOSAScanPDFResults(scanId);
@@ -154,15 +155,15 @@ public class CxRestOSAClient {
 
     public void createOsaJson(String scanId, String filePath, OSASummaryResults osaSummaryResults) throws CxOSAClientException {
         try {
-            String specificFilePath = filePath.replace(".json", "_" + OSA_SUMMARY_NAME + ".json");
+            String specificFilePath = filePath.replace(JSON_FILE, "_" + OSA_SUMMARY_NAME + JSON_FILE);
             writeReport(osaSummaryResults, specificFilePath, "summary json");
 
             List<Library> libraries = getOSALibraries(scanId);
-            specificFilePath = filePath.replace(".json", "_" + OSA_LIBRARIES_NAME + ".json");
+            specificFilePath = filePath.replace(JSON_FILE, "_" + OSA_LIBRARIES_NAME + JSON_FILE);
             writeReport(libraries, specificFilePath, "libraries json");
 
             List<CVE> osaVulnerabilities = getOSAVulnerabilities(scanId);
-            specificFilePath = filePath.replace(".json", "_" + OSA_VULNERABILITIES_NAME + ".json");
+            specificFilePath = filePath.replace(JSON_FILE, "_" + OSA_VULNERABILITIES_NAME + JSON_FILE);
             writeReport(osaVulnerabilities, specificFilePath, "vulnerabilities json");
         } catch (IOException | CxRestClientValidatorException e) {
             throw new CxOSAClientException("Failed to create OSA JSON report: " + e.getMessage());
@@ -173,8 +174,8 @@ public class CxRestOSAClient {
         HttpClientUtils.closeQuietly(apacheClient);
     }
 
-    private String getOSAScanHTMLResults(String scanId) throws CxOSAClientException, IOException, CxRestClientValidatorException {
-        HttpGet getRequest = createHttpRequest(String.valueOf(RestResourcesURIBuilder.buildGetOSAScanSummaryResultsURL(new URL(hostName), scanId)), "text/html");
+    private String getOSAScanHTMLResults(String scanId) throws IOException, CxRestClientValidatorException {
+        HttpGet getRequest = createHttpRequest(String.valueOf(RestResourcesURIBuilder.buildGetOSAScanSummaryResultsURL(new URL(hostName), scanId)), MediaType.TEXT_HTML);
         HttpResponse response = null;
         try {
             response = apacheClient.execute(getRequest);
@@ -187,7 +188,7 @@ public class CxRestOSAClient {
         }
     }
 
-    private byte[] getOSAScanPDFResults(String scanId) throws CxOSAClientException, IOException, CxRestClientValidatorException {
+    private byte[] getOSAScanPDFResults(String scanId) throws IOException, CxRestClientValidatorException {
         HttpGet getRequest = createHttpRequest(String.valueOf(RestResourcesURIBuilder.buildGetOSAScanSummaryResultsURL(new URL(hostName), scanId)), "application/pdf");
         HttpResponse response = null;
 
@@ -222,8 +223,8 @@ public class CxRestOSAClient {
         log.info("OSA " + toLog + " location: " + file.getAbsolutePath());
     }
 
-    private List<Library> getOSALibraries(String scanId) throws CxOSAClientException, IOException, CxRestClientValidatorException {
-        HttpGet getRequest = createHttpRequest(String.valueOf(RestResourcesURIBuilder.buildGetOSAScanLibrariesResultsURL(new URL(hostName), scanId)), "application/json");
+    private List<Library> getOSALibraries(String scanId) throws IOException, CxRestClientValidatorException {
+        HttpGet getRequest = createHttpRequest(String.valueOf(RestResourcesURIBuilder.buildGetOSAScanLibrariesResultsURL(new URL(hostName), scanId)), MediaType.APPLICATION_JSON);
         HttpResponse response = null;
         try {
             response = apacheClient.execute(getRequest);
@@ -237,8 +238,8 @@ public class CxRestOSAClient {
     }
 
 
-    private List<CVE> getOSAVulnerabilities(String scanId) throws CxOSAClientException, IOException, CxRestClientValidatorException {
-        HttpGet getRequest = createHttpRequest(String.valueOf(RestResourcesURIBuilder.buildGetOSAScanVulnerabilitiesResultsURL(new URL(hostName), scanId)), "application/json");
+    private List<CVE> getOSAVulnerabilities(String scanId) throws IOException, CxRestClientValidatorException {
+        HttpGet getRequest = createHttpRequest(String.valueOf(RestResourcesURIBuilder.buildGetOSAScanVulnerabilitiesResultsURL(new URL(hostName), scanId)), MediaType.APPLICATION_JSON);
         HttpResponse response = null;
         try {
             response = apacheClient.execute(getRequest);
@@ -270,7 +271,9 @@ public class CxRestOSAClient {
         } catch (IOException e) {
             throw new CxOSAClientException("Failed to get OSA scan status: " + e.getMessage());
         } finally {
-            getRequest.releaseConnection();
+            if (getRequest != null) {
+                getRequest.releaseConnection();
+            }
             HttpClientUtils.closeQuietly(response);
         }
     }
@@ -292,7 +295,7 @@ public class CxRestOSAClient {
                 try {
                     Thread.sleep(10000); //Get status every 10 sec
                 } catch (InterruptedException e) {
-                    // log.debug("caught exception during sleep", e);
+                    log.debug("caught exception during sleep: " + e.getMessage());
                 }
             }
 
@@ -326,6 +329,7 @@ public class CxRestOSAClient {
 
         if (!OSAScanStatusEnum.FINISHED.equals(status)) {
             waitHandler.onTimeout(scanStatus);
+            log.error("OSA scan has reached the time limit. (" + scanTimeoutInMin + " minutes).");
             throw new CxOSAClientException("OSA scan has reached the time limit. (" + scanTimeoutInMin + " minutes).");
         }
 
@@ -336,6 +340,7 @@ public class CxRestOSAClient {
         log.debug("fail to get status from scan. retrying (" + (retry - 1) + " tries left). error message: " + errorMessage);
         retry--;
         if (retry <= 0) {
+            log.error("fail to get status from scan. error message: " + errorMessage);
             throw new CxOSAClientException("fail to get status from scan. error message: " + errorMessage);
         }
 

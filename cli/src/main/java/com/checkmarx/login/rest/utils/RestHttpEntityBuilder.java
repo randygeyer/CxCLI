@@ -1,5 +1,7 @@
 package com.checkmarx.login.rest.utils;
 
+import com.checkmarx.login.rest.exception.CxRestClientException;
+import com.checkmarx.login.rest.exception.CxRestLoginClientException;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.StringEntity;
@@ -28,7 +30,7 @@ public class RestHttpEntityBuilder {
         throw new IllegalStateException("Utility class");
     }
 
-    public static StringEntity createGenerateTokenParamsEntity(String userName, String password) {
+    public static StringEntity createGenerateTokenParamsEntity(String userName, String password) throws CxRestClientException {
         List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair(USERNAME_KEY, userName));
         urlParameters.add(new BasicNameValuePair(PASSWORD_KEY, password));
@@ -40,12 +42,11 @@ public class RestHttpEntityBuilder {
         try {
             return new UrlEncodedFormEntity(urlParameters, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            throw new CxRestClientException("Failed to create body entity, due to: " + e.getMessage());
         }
-        return null;
     }
 
-    public static StringEntity createRevokeTokenParamsEntity(String token) {
+    public static StringEntity createRevokeTokenParamsEntity(String token) throws CxRestClientException {
         List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair("token_type_hint", REFRESH_TOKEN));
         urlParameters.add(new BasicNameValuePair("token", token));
@@ -55,12 +56,11 @@ public class RestHttpEntityBuilder {
         try {
             return new UrlEncodedFormEntity(urlParameters, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            throw new CxRestClientException("Failed to create body entity, due to: " + e.getMessage());
         }
-        return null;
     }
 
-    public static StringEntity createGetAccessTokenParamsEntity(String token) {
+    public static StringEntity createGetAccessTokenParamsEntity(String token) throws CxRestLoginClientException {
         List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair("grant_type", REFRESH_TOKEN));
         urlParameters.add(new BasicNameValuePair(CLIENT_ID_KEY, CLI_CLIENT));
@@ -70,12 +70,11 @@ public class RestHttpEntityBuilder {
         try {
             return new UrlEncodedFormEntity(urlParameters, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            throw new CxRestLoginClientException("Failed to create body entity, due to: " + e.getMessage());
         }
-        return null;
     }
 
-    public static UrlEncodedFormEntity createLoginParamsEntity(String userName, String password) {
+    public static UrlEncodedFormEntity createLoginParamsEntity(String userName, String password) throws CxRestLoginClientException {
         List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair(USERNAME_KEY, userName));
         urlParameters.add(new BasicNameValuePair(PASSWORD_KEY, password));
@@ -83,8 +82,7 @@ public class RestHttpEntityBuilder {
         try {
             return new UrlEncodedFormEntity(urlParameters, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            throw new CxRestLoginClientException("Failed to create body entity, due to: " + e.getMessage());
         }
-        return null;
     }
 }

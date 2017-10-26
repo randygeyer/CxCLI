@@ -3,7 +3,6 @@ package com.checkmarx.cxosa;
 
 import com.checkmarx.cxosa.dto.OSAScanStatus;
 import com.checkmarx.cxosa.dto.OSAScanStatusEnum;
-import com.checkmarx.login.rest.exception.CxLoginClientException;
 import com.checkmarx.login.rest.exception.CxOSAClientException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;

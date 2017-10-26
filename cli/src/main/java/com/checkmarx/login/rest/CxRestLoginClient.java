@@ -5,12 +5,15 @@ import com.checkmarx.jwt.exceptions.JWTException;
 import com.checkmarx.jwt.utils.JwtUtils;
 import com.checkmarx.login.rest.dto.RestGetAccessTokenDTO;
 import com.checkmarx.login.rest.dto.RestLoginResponseDTO;
-import com.checkmarx.login.rest.exception.CxLoginClientException;
 import com.checkmarx.login.rest.exception.CxRestClientValidatorException;
+import com.checkmarx.login.rest.exception.CxRestLoginClientException;
 import com.checkmarx.login.rest.utils.RestClientUtils;
 import com.checkmarx.login.rest.utils.RestHttpEntityBuilder;
 import com.checkmarx.login.rest.utils.RestResourcesURIBuilder;
-import org.apache.http.*;
+import org.apache.http.Header;
+import org.apache.http.HttpException;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -30,7 +33,6 @@ import java.util.List;
 
 import static com.checkmarx.login.rest.utils.RestClientUtils.FAIL_TO_AUTHENTICATE_ERROR;
 import static com.checkmarx.login.rest.utils.RestClientUtils.validateResponse;
-
 
 /**
  * Created by nirli on 24/10/2017.
@@ -69,8 +71,8 @@ public class CxRestLoginClient {
         try {
             String accessToken = getAccessToken(token);
             authorizationHeader = new BasicHeader("Authorization", "Bearer " + accessToken);
-        } catch (CxLoginClientException e) {
-            e.printStackTrace();
+        } catch (CxRestLoginClientException e) {
+            log.error("Failed to login with token, due to: " + e.getMessage());
         }
         headers.add(authorizationHeader);
         apacheClient = HttpClientBuilder.create().setDefaultHeaders(headers).build();
@@ -113,7 +115,7 @@ public class CxRestLoginClient {
         }
     };
 
-    public RestLoginResponseDTO credentialsLogin() throws CxLoginClientException {
+    public RestLoginResponseDTO credentialsLogin() throws CxRestLoginClientException {
         cookies = null;
         csrfToken = null;
         HttpResponse loginResponse = null;
@@ -128,7 +130,8 @@ public class CxRestLoginClient {
             validateResponse(loginResponse, 200, "Fail to authenticate");
             log.info("Logged in successfully to: " + hostName);
         } catch (IOException | CxRestClientValidatorException e) {
-            throw new CxLoginClientException("Fail to login with credentials: " + e.getMessage());
+            log.error("Fail to login with credentials: " + e.getMessage());
+            throw new CxRestLoginClientException("Fail to login with credentials: " + e.getMessage());
         } finally {
             if (loginPost != null) {
                 loginPost.releaseConnection();
@@ -139,11 +142,11 @@ public class CxRestLoginClient {
         return new RestLoginResponseDTO(cxcsrfTokenHeader, cookieStore);
     }
 
-    public RestLoginResponseDTO tokenLogin() throws CxLoginClientException {
+    public RestLoginResponseDTO tokenLogin() throws CxRestLoginClientException {
         return new RestLoginResponseDTO(authorizationHeader, getSessionIdFromToken(token));
     }
 
-    private String getSessionIdFromToken(String token) throws CxLoginClientException {
+    private String getSessionIdFromToken(String token) throws CxRestLoginClientException {
         String accessToken = getAccessToken(token);
         JwtAccessTokenDto jwtAccessTokenDto;
         try {
@@ -151,13 +154,15 @@ public class CxRestLoginClient {
             String decodedPayload = JwtUtils.convertBase64ToString(payload);
             jwtAccessTokenDto = JwtUtils.parseJsonFromString(decodedPayload, JwtAccessTokenDto.class);
         } catch (JWTException e) {
-            throw new CxLoginClientException("Failed to get session ID from token: " + e.getMessage());
+            log.error("Failed to get session ID from token: " + e.getMessage());
+            throw new CxRestLoginClientException("Failed to get session ID from token: " + e.getMessage());
         }
 
+        log.info("Logged in successfully to: " + hostName);
         return jwtAccessTokenDto.getSessionId();
     }
 
-    private String getAccessToken(String token) throws CxLoginClientException {
+    private String getAccessToken(String token) throws CxRestLoginClientException {
         HttpResponse getAccessTokenResponse = null;
         String accessToken;
         HttpPost postRequest = null;
@@ -173,7 +178,7 @@ public class CxRestLoginClient {
             RestGetAccessTokenDTO jsonResponse = RestClientUtils.parseJsonFromResponse(getAccessTokenResponse, RestGetAccessTokenDTO.class);
             accessToken = jsonResponse.getAccessToken();
         } catch (IOException | CxRestClientValidatorException e) {
-            throw new CxLoginClientException("Failed to get access token: " + e.getMessage());
+            throw new CxRestLoginClientException("Failed to get access token: " + e.getMessage());
         } finally {
             if (postRequest != null) {
                 postRequest.releaseConnection();

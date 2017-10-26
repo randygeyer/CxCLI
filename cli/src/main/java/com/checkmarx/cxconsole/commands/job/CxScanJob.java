@@ -8,7 +8,7 @@ import com.checkmarx.cxviewer.ws.results.GetPresetsListResult;
 import com.checkmarx.cxviewer.ws.results.GetTeamsListResult;
 import com.checkmarx.cxviewer.ws.results.LoginResult;
 import com.checkmarx.login.rest.CxRestLoginClient;
-import com.checkmarx.login.rest.exception.CxLoginClientException;
+import com.checkmarx.login.rest.exception.CxRestLoginClientException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -107,7 +107,7 @@ public class CxScanJob implements Callable<Integer> {
                     cxRestLoginClient = new CxRestLoginClient(params.getOriginHost(), params.getToken(), log);
                     try {
                         sessionId = cxRestLoginClient.tokenLogin().getSessionId();
-                    } catch (CxLoginClientException e) {
+                    } catch (CxRestLoginClientException e) {
                         error = "Unsuccessful login.\\n" + e.getMessage();
                         if (log.isEnabledFor(Level.TRACE)) {
                             log.trace(error);

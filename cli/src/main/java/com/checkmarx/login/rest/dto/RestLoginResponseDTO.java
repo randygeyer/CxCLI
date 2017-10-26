@@ -24,7 +24,7 @@ public class RestLoginResponseDTO {
     }
 
     public RestLoginResponseDTO(Header tokenAuthorizationHeader, String sessionId) {
-        this.cxcsrfTokenHeader = tokenAuthorizationHeader;
+        this.tokenAuthorizationHeader = tokenAuthorizationHeader;
         this.sessionId = sessionId;
         loginType = LOGIN_TYPE.TOKEN;
     }

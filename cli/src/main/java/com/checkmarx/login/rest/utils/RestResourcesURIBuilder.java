@@ -21,8 +21,6 @@ public class RestResourcesURIBuilder {
     private static final String OSA_SCAN_VULNERABILITIES_PATH = "/osa/vulnerabilities";
     private static final long MAX_ITEMS = 1000000;
 
-//    private static final String ROOT_PATH = "cxrestapi";
-
     private RestResourcesURIBuilder() {
         throw new IllegalStateException("Utility class");
     }

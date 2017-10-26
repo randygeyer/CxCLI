@@ -1,7 +1,6 @@
 package com.checkmarx.cxosa;
 
 
-import com.checkmarx.login.rest.exception.CxLoginClientException;
 import com.checkmarx.login.rest.exception.CxOSAClientException;
 import org.apache.log4j.Logger;
 

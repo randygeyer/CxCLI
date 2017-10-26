@@ -1,7 +1,7 @@
 package com.checkmarx.login.rest;
 
 import com.checkmarx.login.rest.dto.RestGenerateTokenDTO;
-import com.checkmarx.login.rest.exception.CxLoginClientException;
+import com.checkmarx.login.rest.exception.CxRestLoginClientException;
 import com.checkmarx.login.rest.exception.CxRestClientException;
 import com.checkmarx.login.rest.utils.RestClientUtils;
 import com.checkmarx.login.rest.utils.RestHttpEntityBuilder;
@@ -38,7 +38,7 @@ public class CxRestTokenClient {
             RestGenerateTokenDTO jsonResponse = RestClientUtils.parseJsonFromResponse(generateTokenResponse, RestGenerateTokenDTO.class);
             token = jsonResponse.getRefreshToken();
         } catch (IOException e) {
-            throw new CxLoginClientException(PARSING_ERROR + e.getMessage());
+            throw new CxRestLoginClientException(PARSING_ERROR + e.getMessage());
         } finally {
             postRequest.releaseConnection();
             HttpClientUtils.closeQuietly(generateTokenResponse);
@@ -58,7 +58,7 @@ public class CxRestTokenClient {
 
             validateResponse(generateTokenResponse, 200, FAIL_TO_AUTHENTICATE_ERROR);
         } catch (IOException e) {
-            throw new CxLoginClientException(PARSING_ERROR + e.getMessage());
+            throw new CxRestLoginClientException(PARSING_ERROR + e.getMessage());
         } finally {
             postRequest.releaseConnection();
             HttpClientUtils.closeQuietly(generateTokenResponse);
