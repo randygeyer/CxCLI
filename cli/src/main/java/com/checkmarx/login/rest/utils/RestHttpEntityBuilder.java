@@ -1,7 +1,7 @@
 package com.checkmarx.login.rest.utils;
 
-import com.checkmarx.login.rest.exception.CxRestClientException;
-import com.checkmarx.login.rest.exception.CxRestLoginClientException;
+import com.checkmarx.login.rest.exceptions.CxRestClientException;
+import com.checkmarx.login.rest.exceptions.CxRestLoginClientException;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.StringEntity;

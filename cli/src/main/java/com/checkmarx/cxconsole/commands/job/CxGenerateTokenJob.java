@@ -1,7 +1,7 @@
 package com.checkmarx.cxconsole.commands.job;
 
-import com.checkmarx.cxconsole.utils.ScanParams;
 import com.checkmarx.login.rest.CxRestTokenClient;
+import com.checkmarx.parameters.CLIScanParameters;
 import org.apache.log4j.Logger;
 
 import java.net.URL;
@@ -13,11 +13,11 @@ public class CxGenerateTokenJob implements Callable<Integer> {
 
     private Logger log;
 
-    private ScanParams params;
+    private CLIScanParameters params;
 
     private CxRestTokenClient cxRestTokenClient;
 
-    public CxGenerateTokenJob(ScanParams params, Logger log) {
+    public CxGenerateTokenJob(CLIScanParameters params, Logger log) {
         this.params = params;
         this.log = log;
         cxRestTokenClient = new CxRestTokenClient();
@@ -25,8 +25,8 @@ public class CxGenerateTokenJob implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        log.info("Trying to login to server: " + params.getOriginHost());
-        String token = cxRestTokenClient.generateToken(new URL(params.getOriginHost()), params.getUser(), params.getPassword());
+        log.info("Trying to login to server: " + params.getCliMandatoryParameters().getOriginalHost());
+        String token = cxRestTokenClient.generateToken(new URL(params.getCliMandatoryParameters().getOriginalHost()), params.getCliMandatoryParameters().getUsername(), params.getCliMandatoryParameters().getPassword());
         log.info("The requested token is: " + token);
 
         return SCAN_SUCCEEDED_EXIT_CODE;

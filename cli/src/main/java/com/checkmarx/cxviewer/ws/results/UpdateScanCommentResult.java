@@ -1,8 +1,7 @@
 package com.checkmarx.cxviewer.ws.results;
 
-import org.jdom.Element;
-
 import com.checkmarx.cxviewer.ws.generated.CxWSBasicRepsonse;
+import org.jdom.Element;
 
 public class UpdateScanCommentResult extends SimpleResult {
 

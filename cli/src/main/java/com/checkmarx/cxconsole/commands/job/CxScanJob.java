@@ -1,14 +1,12 @@
 package com.checkmarx.cxconsole.commands.job;
 
 import com.checkmarx.cxconsole.utils.ConfigMgr;
-import com.checkmarx.cxconsole.utils.ScanParams;
-import com.checkmarx.cxviewer.ws.WSMgr;
-import com.checkmarx.cxviewer.ws.results.GetConfigurationsListResult;
-import com.checkmarx.cxviewer.ws.results.GetPresetsListResult;
-import com.checkmarx.cxviewer.ws.results.GetTeamsListResult;
-import com.checkmarx.cxviewer.ws.results.LoginResult;
+import com.checkmarx.cxviewer.ws.generated.CxWSResponseLoginData;
 import com.checkmarx.login.rest.CxRestLoginClient;
-import com.checkmarx.login.rest.exception.CxRestLoginClientException;
+import com.checkmarx.login.rest.exceptions.CxRestLoginClientException;
+import com.checkmarx.login.soap.CxSoapLoginClient;
+import com.checkmarx.login.soap.CxSoapSASTClient;
+import com.checkmarx.parameters.CLIScanParameters;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -28,12 +26,12 @@ public class CxScanJob implements Callable<Integer> {
     /**
      * Scan parameters
      */
-    protected ScanParams params;
+    protected CLIScanParameters params;
 
     /*
      * WebService manager used to connect and communicate server
      */
-    protected WSMgr wsMgr;
+    protected CxSoapLoginClient cxSoapLoginClient;
 
     protected CxRestLoginClient cxRestLoginClient;
     // Current scan identifier
@@ -50,13 +48,13 @@ public class CxScanJob implements Callable<Integer> {
     private static String errorMsg;
 
 
-    // Utility fields for accessing and saving results from anonymous  classes
-    protected GetPresetsListResult presetsListResult;
-    protected GetTeamsListResult teamsListResult;
-    protected GetConfigurationsListResult configurationsListResult;
-
-    public CxScanJob(ScanParams params) {
+    public CxScanJob(CLIScanParameters params) {
         this.params = params;
+        if (params.getCliMandatoryParameters().isHasTokenParam()) {
+            cxRestLoginClient = new CxRestLoginClient(params.getCliMandatoryParameters().getOriginalHost(), params.getCliMandatoryParameters().getToken());
+        } else if ((params.getCliMandatoryParameters().isHasUserParam() && params.getCliMandatoryParameters().isHasPasswordParam()) || params.getCliSharedParameters().isSsoLoginUsed()) {
+            cxSoapLoginClient = new CxSoapLoginClient();
+        }
     }
 
     protected void login(URL wsdlLocation) throws Exception {
@@ -67,7 +65,7 @@ public class CxScanJob implements Callable<Integer> {
             @Override
             void operation() throws Exception {
                 try {
-                    wsMgr.connectWebService(wsdlLocation);
+                    cxSoapLoginClient.initSoapClient(wsdlLocation);
                 } catch (Exception e) {
                     if (log.isEnabledFor(Level.TRACE)) {
                         log.trace("WS connection error", e);
@@ -77,8 +75,8 @@ public class CxScanJob implements Callable<Integer> {
                     return;
                 }
 
-				/*GeneralResult result = wsMgr.checkVersion(CxClientType.CLI, ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_VERSION), Const.WS_API_DEFAULT_VER);
-                if (!result.isSuccesfullResponce()) {
+				/*GeneralResult result = wsMgr.checkVersion(CxClientType.CLI, ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_VERSION), "6.2.0");
+                if (!result.isSuccessfulResponse()) {
 					error = result.getErrorMessage();
 					if (log.isEnabledFor(Level.INFO)) {
 						log.info("Version unsupported: " + error);
@@ -92,19 +90,18 @@ public class CxScanJob implements Callable<Integer> {
                 }
 
                 // Login
-                LoginResult r = null;
+                CxWSResponseLoginData responseLoginData = null;
                 sessionId = null;
-                if (isWindows() && params.isSsoLoginUsed()) {
+                if (isWindows() && params.getCliSharedParameters().isSsoLoginUsed()) {
                     //SSO login
-                    r = wsMgr.ssoLogin("", "");
-                } else if (params.hasUserParam() && params.hasPasswordParam()) {
+                    responseLoginData = cxSoapLoginClient.ssoLogin("", "");
+                } else if (params.getCliMandatoryParameters().isHasUserParam() && params.getCliMandatoryParameters().isHasPasswordParam()) {
                     //Applicative login with user name and password
-                    r = wsMgr.login(params.getUser(), params.getPassword());
-                    if (r != null && r.getSessionId() != null && !r.getSessionId().isEmpty()) {
-                        sessionId = r.getSessionId();
+                    responseLoginData = cxSoapLoginClient.login(params.getCliMandatoryParameters().getUsername(), params.getCliMandatoryParameters().getPassword());
+                    if (responseLoginData != null && responseLoginData.getSessionId() != null && !responseLoginData.getSessionId().isEmpty()) {
+                        sessionId = responseLoginData.getSessionId();
                     }
-                } else if (params.hasTokenParam()) {
-                    cxRestLoginClient = new CxRestLoginClient(params.getOriginHost(), params.getToken(), log);
+                } else if (params.getCliMandatoryParameters().isHasTokenParam()) {
                     try {
                         sessionId = cxRestLoginClient.tokenLogin().getSessionId();
                     } catch (CxRestLoginClientException e) {
@@ -120,8 +117,8 @@ public class CxScanJob implements Callable<Integer> {
                 // 2 methods of login failed(username + password/token)
                 if (sessionId == null) {
                     String message = "Unsuccessful login.";
-                    if (r != null) {
-                        message += ((r.getErrorMessage() != null && !r.getErrorMessage().isEmpty()) ? " Error message:" + r.getErrorMessage() : "Login or password might be incorrect.");
+                    if (responseLoginData != null) {
+                        message += ((responseLoginData.getErrorMessage() != null && !responseLoginData.getErrorMessage().isEmpty()) ? " Error message:" + responseLoginData.getErrorMessage() : "Login or password might be incorrect.");
                     }
                     if (log.isEnabledFor(Level.TRACE)) {
                         log.trace(message);
@@ -184,18 +181,12 @@ public class CxScanJob implements Callable<Integer> {
     }
 
     public String gerWorkDirectory() {
-        String folderPath = params.getSrcPath();
+        String folderPath = params.getCliMandatoryParameters().getSrcPath();
 
         if (folderPath == null || folderPath.isEmpty()) {
             //in case of ScanProject command
-            String prjName = normalizePathString(params.getProjName());
-            /*if (prjName.contains("\\")) {
-				prjName = prjName.replace('\\', '_');
-			}
-			if (prjName.contains("/")) {
-				prjName = prjName.replace('/', '_');
-			}*/
-            folderPath = System.getProperty("user.dir") + File.separator + /*params.getProjName()*/prjName;
+            String prjName = normalizePathString(params.getCliMandatoryParameters().getProjectName());
+            folderPath = System.getProperty("user.dir") + File.separator + prjName;
             File folder = new File(folderPath);
             if (!folder.exists()) {
                 folder.mkdir();
@@ -286,13 +277,14 @@ public class CxScanJob implements Callable<Integer> {
     }
 
     protected void downloadAndStoreReport(String fileName, String type) throws Exception {
+        CxSoapSASTClient cxSoapSASTClient = new CxSoapSASTClient(cxSoapLoginClient.getCxSoapClient());
         type = type.toUpperCase();
         FileOutputStream fileOutputStream = null;
         try {
-            String folderPath = params.getSrcPath();
+            String folderPath = params.getCliMandatoryParameters().getSrcPath();
             String resultFilePath = "";
             if (folderPath == null || folderPath.isEmpty()) {
-                folderPath = System.getProperty("user.dir") + File.separator + normalizePathString(params.getProjName());
+                folderPath = System.getProperty("user.dir") + File.separator + normalizePathString(params.getCliMandatoryParameters().getProjectName());
                 File folder = new File(folderPath);
                 if (!folder.exists()) {
                     folder.mkdir();
@@ -307,7 +299,7 @@ public class CxScanJob implements Callable<Integer> {
             }
             //File resultsFile;
             fileOutputStream = new FileOutputStream(new File(resultFilePath));
-            fileOutputStream.write(wsMgr.getScanReport(sessionId, scanId, type));
+            fileOutputStream.write(cxSoapSASTClient.getScanReport(sessionId, scanId, type));
         } catch (FileNotFoundException e) {
             if (log.isEnabledFor(Level.INFO)) {
                 log.info("Error creating " + type + " results URL. Specified file is whether directory, or other file error occurred.");
@@ -377,18 +369,18 @@ public class CxScanJob implements Callable<Integer> {
     }
 
     protected boolean isProjectDirectoryValid() {
-        File projectDir = new File(params.getLocationPath());
+        File projectDir = new File(params.getCliSharedParameters().getLocationPath());
         if (!projectDir.exists()) {
             //if there is a semicolon separator, take the first path
-            String[] paths = params.getLocationPath().split(";");
+            String[] paths = params.getCliSharedParameters().getLocationPath().split(";");
             if (paths != null && paths.length > 0) {
                 projectDir = new File(paths[0]);
             }
             if (projectDir.exists()) {
-                params.setLocationPath(paths[0]);
+                params.getCliSharedParameters().setLocationPath(paths[0]);
             } else {
                 if (log.isEnabledFor(Level.ERROR)) {
-                    log.error("Project directory [" + params.getLocationPath()
+                    log.error("Project directory [" + params.getCliSharedParameters().getLocationPath()
                             + "] does not exist.");
                 }
                 return false;
@@ -398,7 +390,7 @@ public class CxScanJob implements Callable<Integer> {
 
         if (!projectDir.isDirectory()) {
             if (log.isEnabledFor(Level.ERROR)) {
-                log.error("Project path [" + params.getLocationPath()
+                log.error("Project path [" + params.getCliSharedParameters().getLocationPath()
                         + "] should point to a directory.");
             }
             return false;
@@ -415,10 +407,10 @@ public class CxScanJob implements Callable<Integer> {
      * Generates project name according to folder name
      */
     protected String getProjectName() {
-        String projPath = params.getSrcPath();
+        String projPath = params.getCliMandatoryParameters().getSrcPath();
         String projectName;
-        if (params.getFolderProjName() != null && !params.getFolderProjName().isEmpty()) {
-            projectName = params.getFolderProjName();
+        if (params.getCliMandatoryParameters().getFolderProjectName() != null && !params.getCliMandatoryParameters().getFolderProjectName().isEmpty()) {
+            projectName = params.getCliMandatoryParameters().getFolderProjectName();
         } else {
             projectName = projPath.substring(projPath.lastIndexOf(File.separator) + 1, projPath.length());
         }

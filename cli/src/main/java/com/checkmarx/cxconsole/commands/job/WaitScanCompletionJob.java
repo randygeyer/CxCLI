@@ -1,9 +1,9 @@
 package com.checkmarx.cxconsole.commands.job;
 
 import com.checkmarx.cxconsole.utils.ConfigMgr;
-import com.checkmarx.cxviewer.ws.WSMgr;
 import com.checkmarx.cxviewer.ws.generated.CurrentStatusEnum;
 import com.checkmarx.cxviewer.ws.results.GetStatusOfScanResult;
+import com.checkmarx.login.soap.CxSoapSASTClient;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -14,7 +14,7 @@ public class WaitScanCompletionJob implements Callable<Boolean> {
 
     public int totalPercentScanned;
 
-    private WSMgr wsMgr;
+    private CxSoapSASTClient cxSoapSASTClient;
     private String sessionId;
     private String runId;
     private String finalMessage;
@@ -25,9 +25,9 @@ public class WaitScanCompletionJob implements Callable<Boolean> {
 
     private Logger log;
 
-    public WaitScanCompletionJob(WSMgr wsMgr, String sessionId, String scanId, boolean isAsyncScan) {
+    public WaitScanCompletionJob(CxSoapSASTClient cxSoapSASTClient, String sessionId, String scanId, boolean isAsyncScan) {
         super();
-        this.wsMgr = wsMgr;
+        this.cxSoapSASTClient = cxSoapSASTClient;
         this.sessionId = sessionId;
         this.runId = scanId;
         this.isAsyncScan = isAsyncScan;
@@ -59,7 +59,7 @@ public class WaitScanCompletionJob implements Callable<Boolean> {
                 currTime = System.currentTimeMillis();
                 GetStatusOfScanResult statusOfScanResult = null;
                 try {
-                    statusOfScanResult = wsMgr.getStatusOfScan(runId, sessionId);
+                    statusOfScanResult = cxSoapSASTClient.getStatusOfScan(runId, sessionId);
                     if (log.isEnabledFor(Level.TRACE)) {
                         log.trace("getScanStatus: " + statusOfScanResult);
                     }
@@ -70,7 +70,7 @@ public class WaitScanCompletionJob implements Callable<Boolean> {
                     lastMessage = e.getMessage();
                 }
 
-                if (statusOfScanResult != null && statusOfScanResult.isSuccesfullResponce()) {
+                if (statusOfScanResult != null && statusOfScanResult.isSuccessfulResponse()) {
                     // Update progress bar
                     totalPercentScanned = statusOfScanResult.getTotalPercent();
                     currentStatusEnum = statusOfScanResult.getRunStatus();
@@ -135,7 +135,7 @@ public class WaitScanCompletionJob implements Callable<Boolean> {
                 }
 
                 if (progressRequestAttempt > retriesNum) {
-                    if (statusOfScanResult != null && !statusOfScanResult.isSuccesfullResponce()) {
+                    if (statusOfScanResult != null && !statusOfScanResult.isSuccessfulResponse()) {
                         String errorMsg = "Scan service error: progress request have not succeeded.";
                         String responseErrMsg = statusOfScanResult.getErrorMessage();
                         if (responseErrMsg != null && !responseErrMsg.isEmpty()) {
@@ -152,7 +152,7 @@ public class WaitScanCompletionJob implements Callable<Boolean> {
                         throw new Exception(errorMsg);
                     }
                 } else {
-                    if ((statusOfScanResult != null && !statusOfScanResult.isSuccesfullResponce()) ||
+                    if ((statusOfScanResult != null && !statusOfScanResult.isSuccessfulResponse()) ||
                             (statusOfScanResult == null)) {
                         log.error("Performing another request. Attempt#" + progressRequestAttempt);
                     }

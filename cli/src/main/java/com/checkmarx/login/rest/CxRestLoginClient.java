@@ -5,8 +5,8 @@ import com.checkmarx.jwt.exceptions.JWTException;
 import com.checkmarx.jwt.utils.JwtUtils;
 import com.checkmarx.login.rest.dto.RestGetAccessTokenDTO;
 import com.checkmarx.login.rest.dto.RestLoginResponseDTO;
-import com.checkmarx.login.rest.exception.CxRestClientValidatorException;
-import com.checkmarx.login.rest.exception.CxRestLoginClientException;
+import com.checkmarx.login.rest.exceptions.CxRestClientValidatorException;
+import com.checkmarx.login.rest.exceptions.CxRestLoginClientException;
 import com.checkmarx.login.rest.utils.RestClientUtils;
 import com.checkmarx.login.rest.utils.RestHttpEntityBuilder;
 import com.checkmarx.login.rest.utils.RestResourcesURIBuilder;
@@ -39,7 +39,7 @@ import static com.checkmarx.login.rest.utils.RestClientUtils.validateResponse;
  */
 public class CxRestLoginClient {
 
-    private Logger log;
+    private Logger log = Logger.getLogger("com.checkmarx.cxconsole.CxConsoleLauncher");
 
     private final String username;
     private final String password;
@@ -58,12 +58,11 @@ public class CxRestLoginClient {
     private static final Header CLI_ORIGIN_HEADER = new BasicHeader(CX_ORIGIN_HEADER_KEY, CX_ORIGIN_HEADER_VALUE);
     private static final String CSRF_TOKEN_HEADER = "CXCSRFToken";
 
-    public CxRestLoginClient(String hostname, String token, Logger log) {
+    public CxRestLoginClient(String hostname, String token) {
         this.hostName = hostname;
         this.token = token;
         this.username = null;
         this.password = null;
-        this.log = log;
 
         //create httpclient
         List<Header> headers = new ArrayList<>();
@@ -78,12 +77,11 @@ public class CxRestLoginClient {
         apacheClient = HttpClientBuilder.create().setDefaultHeaders(headers).build();
     }
 
-    public CxRestLoginClient(String hostname, String username, String password, Logger log) {
+    public CxRestLoginClient(String hostname, String username, String password) {
         this.hostName = hostname;
         this.username = username;
         this.password = password;
         this.token = null;
-        this.log = log;
 
         //create httpclient
         cookieStore = new BasicCookieStore();

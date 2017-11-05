@@ -1,8 +1,8 @@
 package com.checkmarx.login.rest;
 
 import com.checkmarx.login.rest.dto.RestGenerateTokenDTO;
-import com.checkmarx.login.rest.exception.CxRestLoginClientException;
-import com.checkmarx.login.rest.exception.CxRestClientException;
+import com.checkmarx.login.rest.exceptions.CxRestLoginClientException;
+import com.checkmarx.login.rest.exceptions.CxRestClientException;
 import com.checkmarx.login.rest.utils.RestClientUtils;
 import com.checkmarx.login.rest.utils.RestHttpEntityBuilder;
 import com.checkmarx.login.rest.utils.RestResourcesURIBuilder;

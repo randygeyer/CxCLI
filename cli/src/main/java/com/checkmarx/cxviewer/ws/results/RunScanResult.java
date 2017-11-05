@@ -13,11 +13,11 @@ public class RunScanResult extends SimpleResult {
 	public String getRunId() {
 		return runId;
 	}
-	
+
 	public long getProjectId() {
 		return projectId;
 	}
-	
+
 	@Override
 	protected void parseReturnValue(Element returnValueNode) {
 		for (Object childObj : returnValueNode.getChildren()) {
@@ -31,7 +31,7 @@ public class RunScanResult extends SimpleResult {
 	@Override
 	public String toString() {
 		String result;
-		if (isSuccesfullResponce()) {
+		if (isSuccessfulResponse()) {
 			result = "" + this.getClass().getSimpleName() +
 					"(scanId:" + runId + ",projectId:" + projectId + ")";
 		} else {
@@ -43,9 +43,9 @@ public class RunScanResult extends SimpleResult {
 
     @Override
     protected void parseReturnValue(CxWSBasicRepsonse responseObject) {
-    	
+
     	if (responseObject instanceof CxWSResponseRunID) {
-    		CxWSResponseRunID runResponse = 
+    		CxWSResponseRunID runResponse =
     				(CxWSResponseRunID) responseObject;
     		this.runId = runResponse.getRunId();
     		this.projectId = runResponse.getProjectID();

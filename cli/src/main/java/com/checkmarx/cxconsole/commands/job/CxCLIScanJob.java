@@ -3,10 +3,18 @@ package com.checkmarx.cxconsole.commands.job;
 import com.checkmarx.components.zipper.ZipListener;
 import com.checkmarx.components.zipper.Zipper;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
-import com.checkmarx.cxconsole.utils.LocationType;
-import com.checkmarx.cxconsole.utils.ScanParams;
+import com.checkmarx.cxconsole.commands.constants.LocationType;
 import com.checkmarx.cxviewer.ws.generated.*;
-import com.checkmarx.cxviewer.ws.results.*;
+import com.checkmarx.cxviewer.ws.results.GetProjectConfigResult;
+import com.checkmarx.cxviewer.ws.results.GetProjectDataResult;
+import com.checkmarx.cxviewer.ws.results.RunScanResult;
+import com.checkmarx.cxviewer.ws.results.UpdateScanCommentResult;
+import com.checkmarx.login.soap.CxSoapSASTClient;
+import com.checkmarx.login.soap.dto.ConfigurationDTO;
+import com.checkmarx.login.soap.dto.PresetDTO;
+import com.checkmarx.login.soap.providers.ScanPrerequisitesValidator;
+import com.checkmarx.login.soap.utils.SoapClientUtils;
+import com.checkmarx.parameters.CLIScanParameters;
 import com.checkmarx.thresholds.dto.ThresholdDto;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
@@ -29,6 +37,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import static com.checkmarx.cxconsole.commands.constants.LocationType.folder;
 import static com.checkmarx.exitcodes.Constants.ExitCodes.GENERIC_THRESHOLD_FAILURE_ERROR_EXIT_CODE;
 import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED_EXIT_CODE;
 import static com.checkmarx.thresholds.ThresholdResolver.resolveThresholdExitCode;
@@ -42,16 +51,18 @@ public class CxCLIScanJob extends CxScanJob {
     private byte[] zippedSourcesBytes;
     private long projectId = -1;
 
-    private List<Preset> presets;
-    private Preset selectedPreset;
-    private List<ConfigurationSet> configs;
-    private ConfigurationSet selectedConfig;
+    private List<PresetDTO> presets;
+    private PresetDTO selectedPreset;
+    private List<ConfigurationDTO> configs;
+    private ConfigurationDTO selectedConfig;
     private GetProjectConfigResult projectConfig;
     private int osaExitCode = SCAN_SUCCEEDED_EXIT_CODE;
     private int sastExitCode = SCAN_SUCCEEDED_EXIT_CODE;
-    private boolean isAsyncScan = true;
+    private boolean isAsyncScan;
 
-    public CxCLIScanJob(ScanParams params, boolean isAsyncScan) {
+    private CxSoapSASTClient cxSoapSASTClient;
+
+    public CxCLIScanJob(CLIScanParameters params, boolean isAsyncScan) {
         super(params);
         this.isAsyncScan = isAsyncScan;
     }
@@ -59,13 +70,19 @@ public class CxCLIScanJob extends CxScanJob {
     @Override
     public Integer call() throws Exception {
 
-        //String projectName = getProjectValidName();
-        log.info("Project name is \"" + params.getProjName() + "\"");
+        log.info("Project name is \"" + params.getCliMandatoryParameters().getProjectName() + "\"");
 
 
         // Connect
-        wsMgr = ConfigMgr.getWSMgr();
-        URL wsdlLocation = wsMgr.makeWsdlLocation(params.getHost());
+        cxSoapLoginClient = ConfigMgr.getWSMgr();
+//        String hostWithProtocol = resolveServerProtocol(params.getCliMandatoryParameters().getOriginalHost());
+//        if (hostWithProtocol != null) {
+//            params.getCliMandatoryParameters().setOriginalHost(hostWithProtocol);
+//            log.trace("Server found in: " + params.getCliMandatoryParameters().getOriginalHost());
+//        } else {
+//            throw new Exception("Failed to validate server connectivity");
+//        }
+        URL wsdlLocation = new URL(SoapClientUtils.buildHostWithWSDL(params.getCliMandatoryParameters().getOriginalHost()));
 
         // Login
         login(wsdlLocation);
@@ -74,19 +91,19 @@ public class CxCLIScanJob extends CxScanJob {
         if (log.isEnabledFor(Level.INFO)) {
             log.info("Read preset and configuration settings");
         }
-        locateProjectOnServer(params.getFullProjName(), sessionId);
+        locateProjectOnServer(params.getCliMandatoryParameters().getProjectNameWithPath(), sessionId);
 
-        if (params.getLocationType() == null && this.projectConfig != null) {
+        if (params.getCliSharedParameters().getLocationType() == null && this.projectConfig != null) {
             if (!this.projectConfig.getProjectConfig().getSourceCodeSettings().getSourceOrigin().equals(SourceLocationType.LOCAL)) {
-                params.setLocationType(getLocationType(this.projectConfig.getProjectConfig().getSourceCodeSettings()));
-                if (params.getLocationType() == LocationType.perforce) {
+                params.getCliSharedParameters().setLocationType(getLocationType(this.projectConfig.getProjectConfig().getSourceCodeSettings()));
+                if (params.getCliSharedParameters().getLocationType() == LocationType.perforce) {
                     boolean isworkspace = (this.projectConfig.getProjectConfig().getSourceCodeSettings().getSourceControlSetting().getPerforceBrowsingMode() == CxWSPerforceBrowsingMode.WORKSPACE);
-                    params.setIsPerforceWorkspaceMode(isworkspace);
+                    params.getCliSastParameters().setPerforceWorkspaceMode(isworkspace);
                 }
             }
         }
 
-        if (params.getLocationType() == LocationType.folder) {
+        if (params.getCliSharedParameters().getLocationType() == folder) {
             long maxZipSize = ConfigMgr.getCfgMgr().getLongProperty(ConfigMgr.KEY_MAX_ZIP_SIZE);
             maxZipSize *= (1024 * 1024);
 
@@ -116,6 +133,7 @@ public class CxCLIScanJob extends CxScanJob {
 //		if (log.isEnabledFor(Level.INFO)) {
 //			log.info("Checking project source type");
 //		}
+        cxSoapSASTClient = new CxSoapSASTClient(cxSoapLoginClient.getCxSoapClient());
         checkProjectType(sessionId, projectId);
 
         // request scan
@@ -133,7 +151,7 @@ public class CxCLIScanJob extends CxScanJob {
             log.info("Waiting for SAST scan to finish.");
         }
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        WaitScanCompletionJob waiterJob = new WaitScanCompletionJob(wsMgr, sessionId, runId, isAsyncScan);
+        WaitScanCompletionJob waiterJob = new WaitScanCompletionJob(cxSoapSASTClient, sessionId, runId, isAsyncScan);
         waiterJob.setLog(log);
         try {
             Future<Boolean> furute = executor.submit(waiterJob);
@@ -161,59 +179,59 @@ public class CxCLIScanJob extends CxScanJob {
         }
 
         if (!isAsyncScan) {
-            String scanSummary = wsMgr.getScanSummary(params.getHost(), sessionId, scanId);
+            String scanSummary = cxSoapSASTClient.getScanSummary(params.getCliMandatoryParameters().getOriginalHost(), sessionId, scanId);
             int[] scanResults = parseScanSummary(scanSummary);
             printSASTResultsToConsole(scanResults);
 
             //SAST threshold calculation
-            if (params.isSastThresholdEnabled()) {
-                ThresholdDto thresholdDto = new ThresholdDto(ThresholdDto.ScanType.SAST_SCAN, params.getSastHighThresholdValue(), params.getSastMediumThresholdValue(),
-                        params.getSastLowThresholdValue(), scanResults[HIGH_VULNERABILITY_RESULTS], scanResults[MEDIUM_VULNERABILITY_RESULTS], scanResults[LOW_VULNERABILITY_RESULTS]);
+            if (params.getCliSastParameters().isSastThresholdEnabled()) {
+                ThresholdDto thresholdDto = new ThresholdDto(ThresholdDto.ScanType.SAST_SCAN, params.getCliSastParameters().getSastHighThresholdValue(), params.getCliSastParameters().getSastMediumThresholdValue(),
+                        params.getCliSastParameters().getSastLowThresholdValue(), scanResults[HIGH_VULNERABILITY_RESULTS], scanResults[MEDIUM_VULNERABILITY_RESULTS], scanResults[LOW_VULNERABILITY_RESULTS]);
                 sastExitCode = resolveThresholdExitCode(thresholdDto, log);
             }
         }
 
-        if (params.isIgnoreScanWithUnchangedSource() && scanId == -1 && waiterJob.getCurrentStatusEnum() == CurrentStatusEnum.FINISHED) {
+        if (params.getCliSastParameters().isForceScan() && scanId == -1 && waiterJob.getCurrentStatusEnum() == CurrentStatusEnum.FINISHED) {
             log.info("Scan finished with ScanId = (-1): finish Scan Job");
             return SCAN_SUCCEEDED_EXIT_CODE;
         }
 
         //update scan comment
-        String comment = params.getScanComment();
+        String comment = params.getCliSharedParameters().getScanComment();
         if (comment != null) {
-            UpdateScanCommentResult result = wsMgr.updateScanComment(sessionId, scanId, comment);
-            if (!result.isSuccesfullResponce()) {
+            UpdateScanCommentResult result = cxSoapSASTClient.updateScanComment(sessionId, scanId, comment);
+            if (!result.isSuccessfulResponse()) {
                 log.warn("Cannot update the scan comment: " + result.getErrorMessage());
             }
         }
 
 
         //SAST reports
-        if (params.getReportType() != null) {
-            log.info("Report type: " + params.getReportType());
-            String resultsPath = params.getReportFile();
+        if (params.getCliSastParameters().getReportType() != null) {
+            log.info("Report type: " + params.getCliSastParameters().getReportType());
+            String resultsPath = params.getCliSastParameters().getReportFile();
             if (resultsPath == null) {
-                resultsPath = normalizePathString(params.getProjName()) + "." + params.getReportType().toLowerCase();
+                resultsPath = normalizePathString(params.getCliMandatoryParameters().getProjectName()) + "." + params.getCliSastParameters().getReportType().toLowerCase();
             }
-            downloadAndStoreReport(resultsPath, params.getReportType());
+            downloadAndStoreReport(resultsPath, params.getCliSastParameters().getReportType());
         }
 
         // Store to xml anyway
-        String resultsFileName = params.getXmlFile();
+        String resultsFileName = params.getCliSastParameters().getXmlFile();
         if (resultsFileName == null) {
-            resultsFileName = normalizePathString(params.getProjName()) + ".xml";
+            resultsFileName = normalizePathString(params.getCliMandatoryParameters().getProjectName()) + ".xml";
         }
 
         if (!isAsyncScan) {
-            storeXMLResults(resultsFileName, wsMgr.getScanReport(sessionId, scanId, "XML"));
+            storeXMLResults(resultsFileName, cxSoapSASTClient.getScanReport(sessionId, scanId, "XML"));
         }
 
         //Osa Scan
         ExecutorService osaExecutor = null;
-        if (params.isOsaEnabled()) {
+        if (params.getCliSastParameters().isOsaEnabled()) {
             try {
                 osaExecutor = Executors.newSingleThreadExecutor();
-                CxScanJob job = new CxCLIOsaScanJob(params, wsMgr, sessionId, projectId, isAsyncScan);
+                CxScanJob job = new CxCLIOsaScanJob(params, cxSoapLoginClient, sessionId, projectId, isAsyncScan);
                 job.setLog(log);
                 Future<Integer> future = osaExecutor.submit(job);
                 osaExitCode = future.get();
@@ -281,7 +299,7 @@ public class CxCLIScanJob extends CxScanJob {
     private LocationType getLocationType(SourceCodeSettings scSettings) {
         SourceLocationType slType = scSettings.getSourceOrigin();
         if (slType.equals(SourceLocationType.LOCAL)) {
-            return LocationType.folder;
+            return folder;
         } else if (slType.equals(SourceLocationType.SHARED)) {
             return LocationType.shared;
         } else if (slType.equals(SourceLocationType.SOURCE_CONTROL)) {
@@ -307,20 +325,20 @@ public class CxCLIScanJob extends CxScanJob {
         int count = 0;
         String errMsg = "";
 
-        GetPresetsListResult presetsResult = wsMgr.getPresetsList(sessionId);
-        presets = presetsResult.getPresetList();
-        GetConfigurationsListResult configsResult = wsMgr.getConfigurationsList(sessionId);
-        configs = configsResult.getConfigList();
+        ScanPrerequisitesValidator scanPrerequisitesValidator = new ScanPrerequisitesValidator(cxSoapLoginClient.getCxSoapClient(), sessionId);
+
+        presets = scanPrerequisitesValidator.getPresetList();
+        configs = scanPrerequisitesValidator.getConfigurationList();
 
         if (log.isEnabledFor(Level.TRACE)) {
-            log.trace("Preset response:" + presetsResult);
-            log.trace("Configurations response:" + configsResult);
+            log.trace("Succeeded get Presets from server");
+            log.trace("Succeeded get Configurations from server");
         }
-        if (params.getLocationType() == null) {
+        if (params.getCliSharedParameters().getLocationType() == null) {
             int getStatusInterval = ConfigMgr.getCfgMgr().getIntProperty(
                     ConfigMgr.KEY_PROGRESS_INTERVAL);
 
-            while ((getPrjsResult == null || !getPrjsResult.isSuccesfullResponce())
+            while ((getPrjsResult == null || !getPrjsResult.isSuccessfulResponse())
                     && count < retriesNum) {
                 if (projectName.contains("/")) {
                     projectName = projectName.replace('/', '\\');
@@ -333,31 +351,31 @@ public class CxCLIScanJob extends CxScanJob {
                     }
                 }
                 try {
-                    getPrjsResult = wsMgr.getProjectsDisplayData(sessionId);
+                    getPrjsResult = cxSoapSASTClient.getProjectsDisplayData(sessionId);
                 } catch (Throwable e) {
                     errMsg = e.getMessage();
                     count++;
                     if (log.isEnabledFor(Level.TRACE)) {
-                        log.trace("Error during fetching existing projects data.", e);
+                        log.trace("Error during fetching existing projects dto.", e);
                     }
 
                     if (log.isEnabledFor(Level.INFO)) {
-                        log.info("Error occurred during fetching existing projects data: " + errMsg + ". Operation retry " + count);
+                        log.info("Error occurred during fetching existing projects dto: " + errMsg + ". Operation retry " + count);
                     }
                 }
 
-                if ((getPrjsResult != null) && !getPrjsResult.isSuccesfullResponce()) {
+                if ((getPrjsResult != null) && !getPrjsResult.isSuccessfulResponse()) {
                     errMsg = getPrjsResult.getErrorMessage();
                     if (log.isEnabledFor(Level.ERROR)) {
-                        log.error("Existing projects data fetching was unsuccessful.");
+                        log.error("Existing projects dto fetching was unsuccessful.");
                     }
                     count++;
                     if (log.isEnabledFor(Level.INFO)) {
-                        log.info("Existing projects data fetching unsuccessful: " + getPrjsResult.getErrorMessage() + ". Operation retry " + count);
+                        log.info("Existing projects dto fetching unsuccessful: " + getPrjsResult.getErrorMessage() + ". Operation retry " + count);
                     }
                 }
 
-                if ((getPrjsResult == null || !getPrjsResult.isSuccesfullResponce())
+                if ((getPrjsResult == null || !getPrjsResult.isSuccessfulResponse())
                         && count < retriesNum) {
                     try {
                         Thread.sleep(getStatusInterval * 1000);
@@ -367,10 +385,10 @@ public class CxCLIScanJob extends CxScanJob {
                 }
             }
 
-            if ((getPrjsResult != null) && !getPrjsResult.isSuccesfullResponce()) {
-                throw new Exception("Existing projects data fetching was unsuccessful. " + (errMsg == null ? "" : errMsg));
+            if ((getPrjsResult != null) && !getPrjsResult.isSuccessfulResponse()) {
+                throw new Exception("Existing projects dto fetching was unsuccessful. " + (errMsg == null ? "" : errMsg));
             } else if (getPrjsResult == null) {
-                throw new Exception("Error occurred during existing projects data fetching. " + errMsg);
+                throw new Exception("Error occurred during existing projects dto fetching. " + errMsg);
             } else {
                 List<ProjectDisplayData> prjData = getPrjsResult.getProjectData();
                 for (ProjectDisplayData projectData : prjData) {
@@ -410,46 +428,47 @@ public class CxCLIScanJob extends CxScanJob {
                 }
             }
 
-            projectConfig = wsMgr.getProjectConfiguration(sessionId, projectId);
-            if ((projectConfig != null) && !projectConfig.isSuccesfullResponce()) {
+            projectConfig = cxSoapSASTClient.getProjectConfiguration(sessionId, projectId);
+            if ((projectConfig != null) && !projectConfig.isSuccessfulResponse()) {
                 throw new Exception("Project configuration fetching was unsuccessful. "
                         + (projectConfig.getErrorMessage() == null ? "" : projectConfig.getErrorMessage()));
             }
 
             if (log.isEnabledFor(Level.TRACE)) {
-                log.trace("Existing projects data response:" + getPrjsResult);
+                log.trace("Existing projects dto response:" + getPrjsResult);
             }
         }
     }
 
     private void checkProjectType(String sessionId, long projectId) throws Exception {
 
-        if (params.getPresetName() != null) {
+        if (params.getCliSastParameters().getPresetName() != null) {
             selectedPreset = null;
             if (presets != null) {
-                for (Preset preset : presets) {
-                    if (preset.getPresetName().equals(params.getPresetName())) {
+                for (PresetDTO preset : presets) {
+                    if (preset.getName().equals(params.getCliSastParameters().getPresetName())) {
                         selectedPreset = preset;
                         break;
                     }
                 }
 
                 if (selectedPreset == null) {
-                    throw new Exception("Preset [" + params.getPresetName() + "] is not found");
+                    throw new Exception("Preset [" + params.getCliSastParameters().getPresetName() + "] is not found");
                 }
             }
         } else {
-            if (presets != null && presets.size() > 0) {
-                selectedPreset = new Preset(); // Zero preset will be send. Server will decide what preset to use.
+            if (presets != null && !presets.isEmpty()) {
+                // Zero preset will be send. Server will decide what preset to use.
+                selectedPreset = new PresetDTO(0, null);
             }
         }
 
-        if (params.getConfiguration() != null) {
+        if (params.getCliSastParameters().getConfiguration() != null) {
             selectedConfig = null;
             if (configs != null) {
-                for (ConfigurationSet config : configs) {
-                    if (config.getConfigSetName().equals(
-                            params.getConfiguration())) {
+                for (ConfigurationDTO config : configs) {
+                    if (config.getName().equals(
+                            params.getCliSastParameters().getConfiguration())) {
                         selectedConfig = config;
                         break;
                     }
@@ -457,13 +476,13 @@ public class CxCLIScanJob extends CxScanJob {
 
                 if (selectedConfig == null) {
                     throw new Exception("Configuration ["
-                            + params.getConfiguration() + "] is not found");
+                            + params.getCliSastParameters().getConfiguration() + "] is not found");
                 }
             }
         } else {
             if (configs != null) {
-                for (ConfigurationSet config : configs) {
-                    if (config.getConfigSetName().equals("Default Configuration")) {
+                for (ConfigurationDTO config : configs) {
+                    if (config.getName().equals("Default Configuration")) {
                         selectedConfig = config;
                         break;
                     }
@@ -481,8 +500,8 @@ public class CxCLIScanJob extends CxScanJob {
 
         SourceLocationType locationType = null;
         RepositoryType repoType = null;
-        if (params.getLocationType() != null) {
-            switch (params.getLocationType()) {
+        if (params.getCliSharedParameters().getLocationType() != null) {
+            switch (params.getCliSharedParameters().getLocationType()) {
                 case folder:
                     locationType = SourceLocationType.LOCAL;
                     break;
@@ -518,41 +537,41 @@ public class CxCLIScanJob extends CxScanJob {
         // Start scan
         int getStatusInterval = ConfigMgr.getCfgMgr().getIntProperty(ConfigMgr.KEY_PROGRESS_INTERVAL);
 
-        while ((runScanResult == null || !runScanResult.isSuccesfullResponce()) && count < retriesNum) {
+        while ((runScanResult == null || !runScanResult.isSuccessfulResponse()) && count < retriesNum) {
 
             try {
-                if (params.getLocationType() == null) {
+                if (params.getCliSharedParameters().getLocationType() == null) {
                     ProjectSettings prjSett = projectConfig.getProjectConfig().getProjectSettings();
                     SourceCodeSettings srcCodeSett = projectConfig.getProjectConfig().getSourceCodeSettings();
-                    if (params.getLocationUser() != null && params.getLocationPassword() != null) {
+                    if (params.getCliSastParameters().getLocationUser() != null && params.getCliSastParameters().getLocationPassword() != null) {
                         Credentials creds = new Credentials();
-                        creds.setUser(params.getLocationUser());
-                        creds.setPass(params.getLocationPassword());
+                        creds.setUser(params.getCliSastParameters().getLocationUser());
+                        creds.setPass(params.getCliSastParameters().getLocationPassword());
                         srcCodeSett.setUserCredentials(creds);
                     }
 
-                    if (params.getLocationBranch() != null) {
-                        srcCodeSett.getSourceControlSetting().setGITBranch(params.getLocationBranch());
+                    if (params.getCliSastParameters().getLocationBranch() != null) {
+                        srcCodeSett.getSourceControlSetting().setGITBranch(params.getCliSastParameters().getLocationBranch());
                     }
 
                     SourceFilterPatterns filterPatterns = new SourceFilterPatterns();
-                    filterPatterns.setExcludeFilesPatterns(StringUtils.join(params.getExcludedFiles(), ','));
-                    filterPatterns.setExcludeFoldersPatterns(StringUtils.join(params.getExcludedFolders(), ','));
+                    filterPatterns.setExcludeFilesPatterns(StringUtils.join(params.getCliSastParameters().getExcludedFiles(), ','));
+                    filterPatterns.setExcludeFoldersPatterns(StringUtils.join(params.getCliSastParameters().getExcludedFolders(), ','));
                     srcCodeSett.setSourceFilterLists(filterPatterns);
 
-                    runScanResult = wsMgr.cliScan(sessionId, prjSett, srcCodeSett, params.isValidateFix(), params.isVisibleOthers(), params.isIgnoreScanWithUnchangedSource());
+                    runScanResult = cxSoapSASTClient.cliScan(sessionId, prjSett, srcCodeSett, params.getCliSastParameters().isIncrementalScan(), params.getCliSharedParameters().isVisibleOthers(), params.getCliSastParameters().isForceScan());
                 } else {
-                    runScanResult = wsMgr.cliScan(sessionId, /*"CxServer\\" +*/ params.getFullProjName(),
-                            (selectedPreset == null ? 0 : selectedPreset.getID()),
-                            (selectedConfig == null ? 0 : selectedConfig.getID()),
-                            locationType, params.getLocationPath(), zippedSourcesBytes,
-                            params.getLocationUser(), params.getLocationPassword(),
-                            repoType, params.getLocationURL(),
-                            params.getLocationPort(), params.getLocationBranch(),
-                            params.getPrivateKey(),
-                            params.isValidateFix(), params.isVisibleOthers(),
-                            params.getExcludedFiles(), params.getExcludedFolders(), params.isIgnoreScanWithUnchangedSource(),
-                            params.getIsPerforceWorkspaceMode());
+                    runScanResult = cxSoapSASTClient.cliScan(sessionId, params.getCliMandatoryParameters().getProjectNameWithPath(),
+                            (selectedPreset == null ? null : selectedPreset.getId()),
+                            (selectedConfig == null ? null : selectedConfig.getId()),
+                            locationType, params.getCliSharedParameters().getLocationPath(), zippedSourcesBytes,
+                            params.getCliSastParameters().getLocationUser(), params.getCliSastParameters().getLocationPassword(),
+                            repoType, params.getCliSastParameters().getLocationURL(),
+                            params.getCliSastParameters().getLocationPort(), params.getCliSastParameters().getLocationBranch(),
+                            params.getCliSastParameters().getPrivateKey(),
+                            params.getCliSastParameters().isIncrementalScan(), params.getCliSharedParameters().isVisibleOthers(),
+                            params.getCliSastParameters().getExcludedFiles(), params.getCliSastParameters().getExcludedFolders(), params.getCliSastParameters().isForceScan(),
+                            params.getCliSastParameters().isPerforceWorkspaceMode());
                 }
             } catch (Throwable e) {
                 errMsg = e.getMessage();
@@ -566,7 +585,7 @@ public class CxCLIScanJob extends CxScanJob {
                 }
             }
 
-            if ((runScanResult != null) && !runScanResult.isSuccesfullResponce()) {
+            if ((runScanResult != null) && !runScanResult.isSuccessfulResponse()) {
                 errMsg = runScanResult.getErrorMessage();
                 if (log.isEnabledFor(Level.ERROR)) {
                     log.error("Existing project scan request was unsuccessful.");
@@ -577,7 +596,7 @@ public class CxCLIScanJob extends CxScanJob {
                 }
             }
 
-            if ((runScanResult == null || !runScanResult.isSuccesfullResponce()) && count < retriesNum) {
+            if ((runScanResult == null || !runScanResult.isSuccessfulResponse()) && count < retriesNum) {
                 try {
                     Thread.sleep(getStatusInterval * 1000);
                 } catch (InterruptedException ex) {
@@ -586,7 +605,7 @@ public class CxCLIScanJob extends CxScanJob {
             }
         }
 
-        if ((runScanResult != null) && !runScanResult.isSuccesfullResponce()) {
+        if ((runScanResult != null) && !runScanResult.isSuccessfulResponse()) {
             throw new Exception("Existing project scan request was unsuccessful. " + (errMsg == null ? "" : errMsg));
         } else if (runScanResult == null) {
             throw new Exception("Error occurred during existing project scan. " + errMsg);
@@ -616,7 +635,7 @@ public class CxCLIScanJob extends CxScanJob {
             Zipper zipper = new Zipper();
             String[] excludePatterns = createExcludePatternsArray();
             String[] includeAllPatterns = new String[]{"**/*"};//the default is to include all files
-            zippedSourcesBytes = zipper.zip(new File(params.getLocationPath()), excludePatterns, includeAllPatterns, maxZipSize, listener);
+            zippedSourcesBytes = zipper.zip(new File(params.getCliSharedParameters().getLocationPath()), excludePatterns, includeAllPatterns, maxZipSize, listener);
 
         } catch (Exception e) {
             log.trace(e);
@@ -647,8 +666,8 @@ public class CxCLIScanJob extends CxScanJob {
                 }
             }
 
-            if (params.hasExcludedFoldersParam()) {
-                for (String folder : params.getExcludedFolders()) {
+            if (params.getCliSastParameters().isHasExcludedFoldersParam()) {
+                for (String folder : params.getCliSastParameters().getExcludedFolders()) {
                     String trimmedPattern = folder.trim();
                     if (trimmedPattern != "") {
                         excludePatterns.add("**/" + trimmedPattern.replace('\\', '/') + "/**/*");
@@ -656,8 +675,8 @@ public class CxCLIScanJob extends CxScanJob {
                 }
             }
 
-            if (params.hasExcludedFilesParam()) {
-                for (String file : params.getExcludedFiles()) {
+            if (params.getCliSastParameters().isHasExcludedFilesParam()) {
+                for (String file : params.getCliSastParameters().getExcludedFiles()) {
                     String trimmedPattern = file.trim();
                     if (trimmedPattern != "") {
                         excludePatterns.add("**/" + trimmedPattern.replace('\\', '/'));
@@ -669,10 +688,5 @@ public class CxCLIScanJob extends CxScanJob {
         }
         return excludePatterns.toArray(new String[]{});
 
-    }
-
-    @Override
-    protected String getProjectName() {
-        return params.getFullProjName();
     }
 }

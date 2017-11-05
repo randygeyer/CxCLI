@@ -7,7 +7,7 @@ public enum SeverityEnum {
 	Medium(2),
 	High(3),
 	Undefined(-1);
-	
+
 	private int code;
 
 	SeverityEnum(int code) {
@@ -27,7 +27,7 @@ public enum SeverityEnum {
 		}
 		return null;
 	}
-	
+
 	public static SeverityEnum byLabel(String constLabel) {
 		SeverityEnum[] values = SeverityEnum.values();
 		for (SeverityEnum enConst : values) {

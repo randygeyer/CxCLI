@@ -1,18 +1,20 @@
 package com.checkmarx.cxconsole.commands.job;
 
 import com.checkmarx.cxconsole.utils.ConfigMgr;
-import com.checkmarx.cxconsole.utils.ScanParams;
 import com.checkmarx.cxosa.OSAConsoleScanWaitHandler;
 import com.checkmarx.cxosa.dto.CreateOSAScanResponse;
 import com.checkmarx.cxosa.dto.OSAScanStatus;
 import com.checkmarx.cxosa.dto.OSASummaryResults;
 import com.checkmarx.cxosa.utils.OsaUtils;
-import com.checkmarx.cxviewer.ws.WSMgr;
 import com.checkmarx.cxviewer.ws.generated.ProjectDisplayData;
 import com.checkmarx.cxviewer.ws.results.GetProjectDataResult;
 import com.checkmarx.login.rest.CxRestLoginClient;
 import com.checkmarx.login.rest.CxRestOSAClient;
 import com.checkmarx.login.rest.dto.RestLoginResponseDTO;
+import com.checkmarx.login.soap.CxSoapLoginClient;
+import com.checkmarx.login.soap.CxSoapSASTClient;
+import com.checkmarx.login.soap.utils.SoapClientUtils;
+import com.checkmarx.parameters.CLIScanParameters;
 import com.checkmarx.thresholds.dto.ThresholdDto;
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,6 +26,7 @@ import static com.checkmarx.cxosa.dto.OSAScanStatusEnum.QUEUED;
 import static com.checkmarx.exitcodes.Constants.ExitCodes.GENERAL_ERROR_EXIT_CODE;
 import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED_EXIT_CODE;
 import static com.checkmarx.exitcodes.ErrorHandler.errorCodeResolver;
+import static com.checkmarx.login.soap.utils.SoapClientUtils.resolveServerProtocol;
 import static com.checkmarx.thresholds.ThresholdResolver.resolveThresholdExitCode;
 
 public class CxCLIOsaScanJob extends CxScanJob {
@@ -36,16 +39,16 @@ public class CxCLIOsaScanJob extends CxScanJob {
     private static final String OSA_REPORT_NAME = "CxOSAReport";
     private boolean isAsyncOsaScan = false;
 
-    public CxCLIOsaScanJob(ScanParams params, WSMgr wsMgr, String sessionId, long projectId, boolean isAsnycOsaScan) {
+    public CxCLIOsaScanJob(CLIScanParameters params, CxSoapLoginClient cxSoapLoginClient, String sessionId, long projectId, boolean isAsnycOsaScan) {
         super(params);
-        this.wsMgr = wsMgr;
+        this.cxSoapLoginClient = cxSoapLoginClient;
         this.sessionId = sessionId;
         this.projectId = projectId;
         this.scanOsaOnly = false;
         this.isAsyncOsaScan = isAsnycOsaScan;
     }
 
-    public CxCLIOsaScanJob(ScanParams params, boolean isAsyncOsaScan) {
+    public CxCLIOsaScanJob(CLIScanParameters params, boolean isAsyncOsaScan) {
         super(params);
         this.scanOsaOnly = true;
         this.isAsyncOsaScan = isAsyncOsaScan;
@@ -56,25 +59,18 @@ public class CxCLIOsaScanJob extends CxScanJob {
         OSASummaryResults osaSummaryResults;
         int exitCode = GENERAL_ERROR_EXIT_CODE;
         try {
-            log.info("Project name is \"" + params.getProjName() + "\"");
+            log.info("Project name is \"" + params.getCliMandatoryParameters().getProjectName() + "\"");
             // Connect to Checkmarx service.
             String generatedHost = null;
-            wsMgr = ConfigMgr.getWSMgr();
-            try {
-                generatedHost = wsMgr.resolveServiceLocation(params.getHost());
-            } catch (Exception e) {
-                throw e;
-            }
-            if (!params.getOriginHost().contains("http")) {
-                if (generatedHost.contains("https://")) {
-                    params.setOriginHost("https://" + params.getOriginHost());
-                } else {
-                    params.setOriginHost("http://" + params.getOriginHost());
-                }
-            }
-            params.setHost(generatedHost);
+            cxSoapLoginClient = ConfigMgr.getWSMgr();
+//            String hostWithProtocol = resolveServerProtocol(params.getCliMandatoryParameters().getOriginalHost());
+//            if (hostWithProtocol != null) {
+//                params.getCliMandatoryParameters().setOriginalHost(hostWithProtocol);
+//            } else {
+//                throw new Exception("Failed to validate server connectivity");
+//            }
             if (scanOsaOnly) {
-                URL wsdlLocation = wsMgr.makeWsdlLocation(params.getHost());
+                URL wsdlLocation = new URL(SoapClientUtils.buildHostWithWSDL(params.getCliMandatoryParameters().getOriginalHost()));
                 // Logging into the Checkmarx service.
                 login(wsdlLocation);
             }
@@ -86,28 +82,28 @@ public class CxCLIOsaScanJob extends CxScanJob {
             log.info("");
             log.info("Request OSA scan");
             RestLoginResponseDTO restLoginResponseDTO;
-            if (params.hasUserParam() && params.hasPasswordParam()) {
-                cxRestLoginClient = new CxRestLoginClient(params.getOriginHost(), params.getUser(), params.getPassword(), log);
+            if (params.getCliMandatoryParameters().isHasUserParam() && params.getCliMandatoryParameters().isHasPasswordParam()) {
+                cxRestLoginClient = new CxRestLoginClient(params.getCliMandatoryParameters().getOriginalHost(), params.getCliMandatoryParameters().getUsername(), params.getCliMandatoryParameters().getPassword());
                 // Logging into the OSA service.
                 restLoginResponseDTO = cxRestLoginClient.credentialsLogin();
             } else {
-                cxRestLoginClient = new CxRestLoginClient(params.getOriginHost(), params.getToken(), log);
+                cxRestLoginClient = new CxRestLoginClient(params.getCliMandatoryParameters().getOriginalHost(), params.getCliMandatoryParameters().getToken());
                 restLoginResponseDTO = cxRestLoginClient.tokenLogin();
             }
-            cxRestOSAClient = new CxRestOSAClient(params.getOriginHost(), restLoginResponseDTO, log);
+            cxRestOSAClient = new CxRestOSAClient(params.getCliMandatoryParameters().getOriginalHost(), restLoginResponseDTO, log);
 
             if (projectId == -1) {
                 projectId = locateProjectOnServer();
             }
 
             OsaUtils.setLogger(log);
-            String[] osaLocationPath = params.getOsaLocationPath() != null ? params.getOsaLocationPath() : new String[]{params.getLocationPath()};
+            String[] osaLocationPath = params.getCliOsaParameters().getOsaLocationPath() != null ? params.getCliOsaParameters().getOsaLocationPath() : new String[]{params.getCliSharedParameters().getLocationPath()};
             log.info("OSA source location: " + StringUtils.join(osaLocationPath, ", "));
             log.info("Zipping dependencies");
-            File zipForOSA = OsaUtils.zipWorkspaceFolder(params.getOsaExcludedFiles(), params.getOsaExcludedFolders(), params.getOsaIncludedFiles(), maxZipSize, osaLocationPath, log);
+            File zipForOSA = OsaUtils.zipWorkspaceFolder(params.getCliOsaParameters().getOsaExcludedFiles(), params.getCliOsaParameters().getOsaExcludedFolders(), params.getCliOsaParameters().getOsaIncludedFiles(), maxZipSize, osaLocationPath, log);
             log.info("Sending OSA scan request");
             CreateOSAScanResponse osaScan = cxRestOSAClient.createOSAScan(projectId, zipForOSA);
-            osaProjectSummaryLink = OsaUtils.composeProjectOSASummaryLink(params.getOriginHost(), projectId);
+            osaProjectSummaryLink = OsaUtils.composeProjectOSASummaryLink(params.getCliMandatoryParameters().getOriginalHost(), projectId);
             log.info("OSA scan created successfully");
 
             if (zipForOSA.exists() && !zipForOSA.delete()) {
@@ -135,17 +131,17 @@ public class CxCLIOsaScanJob extends CxScanJob {
                 printOSAResultsToConsole(osaSummaryResults, osaProjectSummaryLink);
 
                 //Osa threshold calculation
-                if (params.isOsaThresholdEnabled()) {
-                    ThresholdDto thresholdDto = new ThresholdDto(ThresholdDto.ScanType.OSA_SCAN, params.getOsaHighThresholdValue(), params.getOsaMediumThresholdValue(),
-                            params.getOsaLowThresholdValue(), osaSummaryResults.getTotalHighVulnerabilities(),
+                if (params.getCliOsaParameters().isOsaThresholdEnabled()) {
+                    ThresholdDto thresholdDto = new ThresholdDto(ThresholdDto.ScanType.OSA_SCAN, params.getCliOsaParameters().getOsaHighThresholdValue(), params.getCliOsaParameters().getOsaMediumThresholdValue(),
+                            params.getCliOsaParameters().getOsaLowThresholdValue(), osaSummaryResults.getTotalHighVulnerabilities(),
                             osaSummaryResults.getTotalMediumVulnerabilities(), osaSummaryResults.getTotalLowVulnerabilities());
                     exitCode = resolveThresholdExitCode(thresholdDto, log);
                 }
 
                 //OSA reports
-                String htmlFile = params.getOsaReportHTML();
-                String pdfFile = params.getOsaReportPDF();
-                String jsonFile = params.getOsaJson();
+                String htmlFile = params.getCliOsaParameters().getOsaReportHTML();
+                String pdfFile = params.getCliOsaParameters().getOsaReportPDF();
+                String jsonFile = params.getCliOsaParameters().getOsaJson();
                 try {
                     if (htmlFile != null || pdfFile != null || jsonFile != null) {
                         log.info("Creating CxOSA Reports");
@@ -215,20 +211,21 @@ public class CxCLIOsaScanJob extends CxScanJob {
     }
 
     private long locateProjectOnServer() throws Exception {
-        GetProjectDataResult projectData = wsMgr.getProjectsDisplayData(sessionId);
+        CxSoapSASTClient cxSoapSASTClient = new CxSoapSASTClient(cxSoapLoginClient.getCxSoapClient());
+        GetProjectDataResult projectData = cxSoapSASTClient.getProjectsDisplayData(sessionId);
         for (ProjectDisplayData data : projectData.getProjectData()) {
             String projectFullName = data.getGroup() + "\\" + data.getProjectName();
-            if (projectFullName.equalsIgnoreCase(params.getFullProjName())) {
+            if (projectFullName.equalsIgnoreCase(params.getCliMandatoryParameters().getProjectNameWithPath())) {
                 return data.getProjectID();
             }
         }
-        throw new Exception("The project: " + params.getFullProjName() + " was not found on the server. OSA scan requires an existing project on the server");
+        throw new Exception("The project: " + params.getCliMandatoryParameters().getProjectNameWithPath() + " was not found on the server. OSA scan requires an existing project on the server");
 
     }
 
     @Override
     protected String getProjectName() {
-        return params.getFullProjName();
+        return params.getCliMandatoryParameters().getProjectNameWithPath();
     }
 
     private void printOSAResultsToConsole(OSASummaryResults osaSummaryResults, String osaProjectSummaryLink) {

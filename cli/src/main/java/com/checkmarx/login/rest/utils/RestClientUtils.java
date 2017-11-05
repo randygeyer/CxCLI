@@ -1,6 +1,6 @@
 package com.checkmarx.login.rest.utils;
 
-import com.checkmarx.login.rest.exception.CxRestClientValidatorException;
+import com.checkmarx.login.rest.exceptions.CxRestClientValidatorException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import org.apache.commons.io.IOUtils;

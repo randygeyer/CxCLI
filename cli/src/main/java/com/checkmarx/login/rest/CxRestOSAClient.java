@@ -4,8 +4,8 @@ import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxosa.ScanWaitHandler;
 import com.checkmarx.cxosa.dto.*;
 import com.checkmarx.login.rest.dto.RestLoginResponseDTO;
-import com.checkmarx.login.rest.exception.CxOSAClientException;
-import com.checkmarx.login.rest.exception.CxRestClientValidatorException;
+import com.checkmarx.login.rest.exceptions.CxRestOSAClientException;
+import com.checkmarx.login.rest.exceptions.CxRestClientValidatorException;
 import com.checkmarx.login.rest.utils.RestResourcesURIBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -72,7 +72,7 @@ public class CxRestOSAClient {
         this.log = log;
     }
 
-    public CreateOSAScanResponse createOSAScan(long projectId, File zipFile) throws CxOSAClientException {
+    public CreateOSAScanResponse createOSAScan(long projectId, File zipFile) throws CxRestOSAClientException {
         HttpPost post = null;
         HttpResponse response = null;
         FileInputStream fileInputStream = null;
@@ -104,7 +104,7 @@ public class CxRestOSAClient {
             return parseJsonFromResponse(response, CreateOSAScanResponse.class);
         } catch (IOException | CxRestClientValidatorException e) {
             log.error("Failed to create OSA scan: " + e.getMessage());
-            throw new CxOSAClientException("Failed to create OSA scan: " + e.getMessage());
+            throw new CxRestOSAClientException("Failed to create OSA scan: " + e.getMessage());
         } finally {
             if (post != null) {
                 post.releaseConnection();
@@ -114,7 +114,7 @@ public class CxRestOSAClient {
         }
     }
 
-    public OSASummaryResults getOSAScanSummaryResults(String scanId) throws CxOSAClientException {
+    public OSASummaryResults getOSAScanSummaryResults(String scanId) throws CxRestOSAClientException {
         HttpGet getRequest = null;
         HttpResponse response = null;
 
@@ -126,7 +126,7 @@ public class CxRestOSAClient {
             return parseJsonFromResponse(response, OSASummaryResults.class);
         } catch (IOException | CxRestClientValidatorException e) {
             log.error("Failed to get OSA scan summary results: " + e.getMessage());
-            throw new CxOSAClientException("Failed to get OSA scan summary results: " + e.getMessage());
+            throw new CxRestOSAClientException("Failed to get OSA scan summary results: " + e.getMessage());
         } finally {
             if (getRequest != null) {
                 getRequest.releaseConnection();
@@ -135,25 +135,25 @@ public class CxRestOSAClient {
         }
     }
 
-    public void createOsaHtmlReport(String scanId, String filePath) throws CxOSAClientException {
+    public void createOsaHtmlReport(String scanId, String filePath) throws CxRestOSAClientException {
         try {
             String osaHtml = getOSAScanHTMLResults(scanId);
             writeReport(osaHtml, filePath, "HTML report");
         } catch (IOException | CxRestClientValidatorException e) {
-            throw new CxOSAClientException("Failed to create OSA HTML report: " + e.getMessage());
+            throw new CxRestOSAClientException("Failed to create OSA HTML report: " + e.getMessage());
         }
     }
 
-    public void createOsaPdfReport(String scanId, String filePath) throws CxOSAClientException {
+    public void createOsaPdfReport(String scanId, String filePath) throws CxRestOSAClientException {
         try {
             byte[] osaPDF = getOSAScanPDFResults(scanId);
             writeReport(osaPDF, filePath, "PDF report");
         } catch (IOException | CxRestClientValidatorException e) {
-            throw new CxOSAClientException("Failed to create OSA PDF report: " + e.getMessage());
+            throw new CxRestOSAClientException("Failed to create OSA PDF report: " + e.getMessage());
         }
     }
 
-    public void createOsaJson(String scanId, String filePath, OSASummaryResults osaSummaryResults) throws CxOSAClientException {
+    public void createOsaJson(String scanId, String filePath, OSASummaryResults osaSummaryResults) throws CxRestOSAClientException {
         try {
             String specificFilePath = filePath.replace(JSON_FILE, "_" + OSA_SUMMARY_NAME + JSON_FILE);
             writeReport(osaSummaryResults, specificFilePath, "summary json");
@@ -166,7 +166,7 @@ public class CxRestOSAClient {
             specificFilePath = filePath.replace(JSON_FILE, "_" + OSA_VULNERABILITIES_NAME + JSON_FILE);
             writeReport(osaVulnerabilities, specificFilePath, "vulnerabilities json");
         } catch (IOException | CxRestClientValidatorException e) {
-            throw new CxOSAClientException("Failed to create OSA JSON report: " + e.getMessage());
+            throw new CxRestOSAClientException("Failed to create OSA JSON report: " + e.getMessage());
         }
     }
 
@@ -258,7 +258,7 @@ public class CxRestOSAClient {
         return getRequest;
     }
 
-    private OSAScanStatus getOSAScanStatus(String scanId) throws CxOSAClientException, CxRestClientValidatorException {
+    private OSAScanStatus getOSAScanStatus(String scanId) throws CxRestOSAClientException, CxRestClientValidatorException {
         HttpResponse response = null;
         HttpGet getRequest = null;
 
@@ -269,7 +269,7 @@ public class CxRestOSAClient {
 
             return parseJsonFromResponse(response, OSAScanStatus.class);
         } catch (IOException e) {
-            throw new CxOSAClientException("Failed to get OSA scan status: " + e.getMessage());
+            throw new CxRestOSAClientException("Failed to get OSA scan status: " + e.getMessage());
         } finally {
             if (getRequest != null) {
                 getRequest.releaseConnection();
@@ -278,7 +278,7 @@ public class CxRestOSAClient {
         }
     }
 
-    public OSAScanStatus waitForOSAScanToFinish(String scanId, long scanTimeoutInMin, ScanWaitHandler<OSAScanStatus> waitHandler, boolean isAsyncOsaScan) throws CxOSAClientException {
+    public OSAScanStatus waitForOSAScanToFinish(String scanId, long scanTimeoutInMin, ScanWaitHandler<OSAScanStatus> waitHandler, boolean isAsyncOsaScan) throws CxRestOSAClientException {
         long timeToStop = (System.currentTimeMillis() / 60000) + scanTimeoutInMin;
 
         long startTime = System.currentTimeMillis();
@@ -295,7 +295,7 @@ public class CxRestOSAClient {
                 try {
                     Thread.sleep(10000); //Get status every 10 sec
                 } catch (InterruptedException e) {
-                    log.debug("caught exception during sleep: " + e.getMessage());
+                    log.debug("caught exceptions during sleep: " + e.getMessage());
                 }
             }
 
@@ -312,7 +312,7 @@ public class CxRestOSAClient {
 
             if (OSAScanStatusEnum.FAILED.equals(status)) {
                 waitHandler.onFail(scanStatus);
-                throw new CxOSAClientException("OSA scan cannot be completed. status: [" + status.uiValue() + "]. message: [" + StringUtils.defaultString(scanStatus.getMessage()) + "]");
+                throw new CxRestOSAClientException("OSA scan cannot be completed. status: [" + status.uiValue() + "]. message: [" + StringUtils.defaultString(scanStatus.getMessage()) + "]");
             }
 
             if (isAsyncOsaScan && (OSAScanStatusEnum.QUEUED.equals(status) || OSAScanStatusEnum.IN_PROGRESS.equals(status))) {
@@ -330,18 +330,18 @@ public class CxRestOSAClient {
         if (!OSAScanStatusEnum.FINISHED.equals(status)) {
             waitHandler.onTimeout(scanStatus);
             log.error("OSA scan has reached the time limit. (" + scanTimeoutInMin + " minutes).");
-            throw new CxOSAClientException("OSA scan has reached the time limit. (" + scanTimeoutInMin + " minutes).");
+            throw new CxRestOSAClientException("OSA scan has reached the time limit. (" + scanTimeoutInMin + " minutes).");
         }
 
         return scanStatus;
     }
 
-    private int checkRetry(int retry, String errorMessage) throws CxOSAClientException {
+    private int checkRetry(int retry, String errorMessage) throws CxRestOSAClientException {
         log.debug("fail to get status from scan. retrying (" + (retry - 1) + " tries left). error message: " + errorMessage);
         retry--;
         if (retry <= 0) {
             log.error("fail to get status from scan. error message: " + errorMessage);
-            throw new CxOSAClientException("fail to get status from scan. error message: " + errorMessage);
+            throw new CxRestOSAClientException("fail to get status from scan. error message: " + errorMessage);
         }
 
         return retry;

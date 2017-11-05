@@ -1,6 +1,6 @@
 package com.checkmarx.cxconsole.utils;
 
-import com.checkmarx.cxviewer.ws.WSMgr;
+import com.checkmarx.login.soap.CxSoapLoginClient;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
@@ -11,18 +11,12 @@ import java.nio.file.FileSystems;
 import java.nio.file.Paths;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
-
-import com.checkmarx.cxviewer.ws.WSMgr;
-import com.checkmarx.cxviewer.ws.resolver.CxClientType;
-
 /**
- * Class responsible for loading CxConsole properties from corresponding 
+ * Class responsible for loading CxConsole properties from corresponding
  * config folder <br>
  * Properties should be stored in file {user.dir}/config/cx_console.properties
- * 
- * @author Oleksiy Mysnyk
  *
+ * @author Oleksiy Mysnyk
  */
 public class ConfigMgr {
 
@@ -57,7 +51,7 @@ public class ConfigMgr {
 
     private String defaultPath = userDir + separator + CONFIG_DIR_RELATIVE_PATH + separator + CONFIG_FILE;
     private Properties applicationProperties;
-    protected static WSMgr wsMgr;
+    protected static CxSoapLoginClient cxSoapLoginClient;
 
     public static ConfigMgr mgr;
 
@@ -130,7 +124,7 @@ public class ConfigMgr {
         applicationProperties.put(KEY_OSA_MAX_ZIP_SIZE, "2000");
         applicationProperties.put(KEY_DEF_LOG_NAME, "cx_scan.log");
         applicationProperties.put(KEY_DEF_PROJECT_NAME, "console.project");
-        applicationProperties.put(KEY_VERSION, BuildVersion.getBuildVersion());
+        applicationProperties.put(KEY_VERSION, CommandUtils.getBuildVersion());
         applicationProperties.put(KEY_USE_KERBEROS_AUTH, "false");
         applicationProperties.put(KEY_KERBEROS_USERNAME, "");
         applicationProperties.put(KEY_KERBEROS_PASSWORD, "");
@@ -209,11 +203,11 @@ public class ConfigMgr {
         mgr = new ConfigMgr(defConfig);
     }
 
-    public static WSMgr getWSMgr() {
-        if (wsMgr == null) {
-            wsMgr = new WSMgr();
+    public static CxSoapLoginClient getWSMgr() {
+        if (cxSoapLoginClient == null) {
+            cxSoapLoginClient = new CxSoapLoginClient();
         }
 
-        return wsMgr;
+        return cxSoapLoginClient;
     }
 }

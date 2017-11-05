@@ -1,10 +1,10 @@
 package com.checkmarx.cxviewer.ws.results;
 
+import com.checkmarx.cxviewer.ws.generated.CxWSBasicRepsonse;
 import org.jdom.Element;
 
 import com.checkmarx.cxviewer.ws.generated.CurrentStatusEnum;
 import com.checkmarx.cxviewer.ws.generated.CxDateTime;
-import com.checkmarx.cxviewer.ws.generated.CxWSBasicRepsonse;
 import com.checkmarx.cxviewer.ws.generated.CxWSResponseScanStatus;
 
 public class GetStatusOfScanResult extends SimpleResult {
@@ -32,15 +32,15 @@ public class GetStatusOfScanResult extends SimpleResult {
 	private String queuePosition;
 
 	private String details;
-	
+
 	private long projectId;
-	
+
 	private long scanId;
-	
+
 	private long resultId;
-	
+
 	private long taskId;
-	
+
 	private CxWSResponseScanStatus statusResponse;
 
 	public String getRunId() {
@@ -90,19 +90,19 @@ public class GetStatusOfScanResult extends SimpleResult {
 	public String getDetails() {
 		return details == null ? "" : details;
 	}
-	
+
 	public long getProjectId() {
 		return projectId;
 	}
-	
+
 	public long getScanId() {
 		return scanId;
 	}
-	
+
 	public long getTaskId() {
 		return taskId;
 	}
-	
+
 	public long getResultId() {
 		return resultId;
 	}
@@ -186,16 +186,16 @@ public class GetStatusOfScanResult extends SimpleResult {
 	public boolean isStatusFinished() {
 		return (runStatus != null && runStatus == CurrentStatusEnum.FINISHED);
 	}
-	
-	public boolean isRunStatusCanceled() {		
-		return (runStatus != null && ((runStatus == CurrentStatusEnum.CANCELED) 
+
+	public boolean isRunStatusCanceled() {
+		return (runStatus != null && ((runStatus == CurrentStatusEnum.CANCELED)
 				|| (runStatus == CurrentStatusEnum.DELETED)));
 	}
 
 	public boolean isStatusFailed() {
 		return (runStatus != null && (runStatus == CurrentStatusEnum.FAILED));
 	}
-	
+
 	public boolean isStatusUnknown() {
 		return (runStatus != null && (runStatus == CurrentStatusEnum.UNKNOWN));
 	}
@@ -203,7 +203,7 @@ public class GetStatusOfScanResult extends SimpleResult {
 	@Override
 	public String toString() {
 		String result;
-		if (isSuccesfullResponce()) {
+		if (isSuccessfulResponse()) {
 			result = "" + this.getClass().getSimpleName() + "(" + getResponseXmlString() + ")";
 		} else {
 			result = "" + this.getClass().getSimpleName() + "(Message=" + getErrorMessage() + ")";
@@ -212,7 +212,7 @@ public class GetStatusOfScanResult extends SimpleResult {
 	}
 
 	@Override
-	protected void parseReturnValue(CxWSBasicRepsonse responseObject) {
+        protected void parseReturnValue(CxWSBasicRepsonse responseObject) {
 
 		if (responseObject instanceof CxWSResponseScanStatus) {
 			statusResponse = (CxWSResponseScanStatus) responseObject;
@@ -224,7 +224,7 @@ public class GetStatusOfScanResult extends SimpleResult {
 			this.currentStagePercent = statusResponse.getCurrentStagePercent();
 			this.stageMessage = statusResponse.getStageMessage();
 			this.stepMessage = statusResponse.getStepMessage();
-			this.timeStarted = convertTime(statusResponse.getTimeScheduled());			
+			this.timeStarted = convertTime(statusResponse.getTimeScheduled());
 			this.timeFinished = convertTime(statusResponse.getTimeFinished());
 			this.queuePosition = statusResponse.getQueuePosition() + "";
 			this.details = statusResponse.getStepDetails();
@@ -236,19 +236,19 @@ public class GetStatusOfScanResult extends SimpleResult {
 			throw new IllegalArgumentException(getInvalidTypeErrMsg(responseObject));
 		}
 	}
-	
+
 	private String convertTime(CxDateTime time) {
-		return time.getYear() + "-" + 	time.getMonth() + "-" + time.getDay() + " " + 
+		return time.getYear() + "-" + 	time.getMonth() + "-" + time.getDay() + " " +
 				time.getHour() + ":" + time.getMinute() + ":" + time.getSecond();
 	}
-	
+
 	public CxWSResponseScanStatus getStatusResponse() {
 		return statusResponse;
 	}
-	
+
 	@Override
 	public String getResponseXmlString() {
-		return "{ " + runId + " | " 
+		return "{ " + runId + " | "
 				+ runStatus + " | "
 				+ totalPercent + " | "
 				+ currentStage + " | "

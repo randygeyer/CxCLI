@@ -252,17 +252,17 @@ public class ScanResultParser {
 					result.setSeverity(resSeverity);
 					result.setState(state);
 					result.setAssignedUser(assignedUser);
-//					result.setPathId(data.getPathId());
-//					result.setSrcFileName(data.getSourceFile());
-//					result.setSrcDirectory(data.getSourceFolder());
-//					result.setSrcLine(data.getSourceLine());
-//					result.setSrcObject(data.getSourceObject());
+//					result.setPathId(dto.getPathId());
+//					result.setSrcFileName(dto.getSourceFile());
+//					result.setSrcDirectory(dto.getSourceFolder());
+//					result.setSrcLine(dto.getSourceLine());
+//					result.setSrcObject(dto.getSourceObject());
 //					
-//					result.setDestFileName(data.getDestFile());
-//					result.setDestDirectory(data.getDestFolder());
-//					result.setDestLine(data.getDestLine());
-//					result.setDestObject(data.getDestObject());
-//					result.setAssignedUser(data.getAssignedUser());
+//					result.setDestFileName(dto.getDestFile());
+//					result.setDestDirectory(dto.getDestFolder());
+//					result.setDestLine(dto.getDestLine());
+//					result.setDestObject(dto.getDestObject());
+//					result.setAssignedUser(dto.getAssignedUser());
 					
 					queryResults.add(result);
 					if (resultNode.getChildren().size() > 1) {
