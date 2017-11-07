@@ -9,6 +9,10 @@ import static com.checkmarx.exitcodes.Constants.ExitCodes.*;
 
 public class ErrorHandler {
 
+    private ErrorHandler() {
+        throw new IllegalStateException("Utility class");
+    }
+
     private static Map<String, Integer> errorMsgToCodeMap = createMessageToCodeMap();
     private static Map<Integer, String> errorCodeToMsgMap = createCodeToMessageMap();
 

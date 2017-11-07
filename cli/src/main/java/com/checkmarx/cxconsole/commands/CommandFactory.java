@@ -28,9 +28,9 @@ public class CommandFactory {
             case (REVOKE_TOKEN_COMMAND):
                 return new RevokeTokenCommand(parameters);
             case (OSA_SCAN_COMMAND):
-                return new OSAScanCommand(parameters, false);
+                return new OSAScanCommandNew(parameters, false);
             case (ASYNC_OSA_SCAN_COMMAND):
-                return new OSAScanCommand(parameters, true);
+                return new OSAScanCommandNew(parameters, true);
             case (SAST_SCAN_COMMAND):
                 return new SASTScanCommand(parameters, false);
             case (ASYNC_SAST_SCAN_COMMAND):

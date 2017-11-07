@@ -16,9 +16,9 @@ import java.util.concurrent.TimeoutException;
 /**
  * Created by nirli on 31/10/2017.
  */
-public class OSAScanCommand extends CLICommand {
+class OSAScanCommandNew extends CLICommand {
 
-    public OSAScanCommand(CLIScanParameters params, boolean isAsyncScan) {
+    OSAScanCommandNew(CLIScanParameters params, boolean isAsyncScan) {
         super(params);
         this.isAsyncScan = isAsyncScan;
         if (isAsyncScan) {
