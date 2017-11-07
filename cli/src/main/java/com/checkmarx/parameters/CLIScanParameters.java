@@ -29,6 +29,9 @@ public class CLIScanParameters {
         cliSharedParameters.initSharedParams(parsedCommandLineArguments);
         cliSastParameters.initSastParams(parsedCommandLineArguments, cliSharedParameters.getLocationType());
         cliOsaParameters.initOsaParams(parsedCommandLineArguments);
+        if (parsedCommandLineArguments.getArgs().length > 0) {
+            throw new CLIParameterParsingException("Error complete parse all parameters from the command.");
+        }
 
     }
 

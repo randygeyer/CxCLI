@@ -1,34 +1,33 @@
 package com.checkmarx.cxconsole.commands.job;
 
-import com.checkmarx.login.rest.CxRestTokenClient;
+import com.checkmarx.cxconsole.commands.job.exceptions.CLITokenJobException;
+import com.checkmarx.login.rest.exceptions.CxRestClientException;
+import com.checkmarx.parameters.CLIMandatoryParameters;
 import com.checkmarx.parameters.CLIScanParameters;
-import org.apache.log4j.Logger;
 
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.concurrent.Callable;
 
 import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED_EXIT_CODE;
 
+public class CxRevokeTokenJob extends CLITokenJob {
 
-public class CxRevokeTokenJob implements Callable<Integer> {
+    private CLIMandatoryParameters mandatoryParamsContainer;
 
-    private Logger log;
-
-    private CLIScanParameters params;
-
-    private CxRestTokenClient cxRestTokenClient;
-
-    public CxRevokeTokenJob(CLIScanParameters params, Logger log) {
-        this.params = params;
-        this.log = log;
-        cxRestTokenClient = new CxRestTokenClient();
+    public CxRevokeTokenJob(CLIScanParameters params) {
+        super(params);
+        mandatoryParamsContainer = params.getCliMandatoryParameters();
     }
 
     @Override
-    public Integer call() throws Exception {
+    public Integer call() throws CLITokenJobException {
         log.info("Trying to login to server: " + params.getCliMandatoryParameters().getOriginalHost());
-        cxRestTokenClient.revokeToken(new URL(params.getCliMandatoryParameters().getOriginalHost()), params.getCliMandatoryParameters().getToken());
-        log.info("The request to revoke token: " + params.getCliMandatoryParameters().getToken() + " , was completed successfully");
+        try {
+            cxRestTokenClient.revokeToken(new URL(mandatoryParamsContainer.getOriginalHost()), mandatoryParamsContainer.getToken());
+        } catch (CxRestClientException | MalformedURLException e) {
+            throw new CLITokenJobException("Fail to revoke login token(" + mandatoryParamsContainer.getToken() + "): " + e.getMessage());
+        }
+        log.info("The request to revoke token: " + mandatoryParamsContainer.getToken() + " , was completed successfully");
 
         return SCAN_SUCCEEDED_EXIT_CODE;
     }

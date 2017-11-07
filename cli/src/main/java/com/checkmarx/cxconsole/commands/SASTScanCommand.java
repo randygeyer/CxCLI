@@ -3,15 +3,19 @@ package com.checkmarx.cxconsole.commands;
 import com.checkmarx.cxconsole.commands.constants.Commands;
 import com.checkmarx.cxconsole.commands.exceptions.CLICommandException;
 import com.checkmarx.cxconsole.commands.exceptions.CLICommandParameterValidatorException;
-import com.checkmarx.cxconsole.commands.job.CxCLIScanJob;
-import com.checkmarx.cxconsole.commands.job.CxScanJob;
-import com.checkmarx.cxconsole.utils.CommandParametersValidator;
+import com.checkmarx.cxconsole.commands.job.CLISASTScanJob;
+import com.checkmarx.cxconsole.commands.job.CLIScanJob;
+import com.checkmarx.cxconsole.commands.utils.CommandParametersValidator;
 import com.checkmarx.parameters.CLIScanParameters;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import static com.checkmarx.cxconsole.commands.constants.Commands.ASYNC_OSA_SCAN;
+import static com.checkmarx.cxconsole.commands.constants.Commands.OSA_SCAN;
+import static com.checkmarx.exitcodes.Constants.ExitCodes.*;
 
 /**
  * Created by nirli on 31/10/2017.
@@ -29,14 +33,13 @@ public class SASTScanCommand extends CLICommand {
     }
 
     @Override
-    protected void executeCommand() throws CLICommandException {
-        CxScanJob job = null;
+    protected int executeCommand() throws CLICommandException {
+        CLIScanJob job = null;
         if (!isAsyncScan) {
-            job = new CxCLIScanJob(params, false);
+            job = new CLISASTScanJob(params, false);
         } else {
-            job = new CxCLIScanJob(params, true);
+            job = new CLISASTScanJob(params, true);
         }
-        job.setLog(log);
 
         Future<Integer> future = executor.submit(job);
         try {
@@ -45,13 +48,25 @@ public class SASTScanCommand extends CLICommand {
             } else {
                 exitCode = future.get();
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            e.printStackTrace();
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            log.error("Error executing SAST scan command: " + e.getMessage());
+            throw new CLICommandException("Error executing SAST scan command: " + e.getMessage());
         }
+        if (params.getCliSastParameters().isOsaEnabled()) {
+            CLICommand osaCommand;
+            if (isAsyncScan) {
+                osaCommand = CommandFactory.getCommand(ASYNC_OSA_SCAN.value(), params);
+            } else {
+                osaCommand = CommandFactory.getCommand(OSA_SCAN.value(), params);
+            }
+            int osaScanExitCode = osaCommand.execute();
+            if (osaScanExitCode >= OSA_HIGH_THRESHOLD_ERROR_EXIT_CODE && exitCode >= SAST_HIGH_THRESHOLD_ERROR_EXIT_CODE) {
+                return GENERIC_THRESHOLD_FAILURE_ERROR_EXIT_CODE;
+            } else if (osaScanExitCode != SCAN_SUCCEEDED_EXIT_CODE) {
+                return osaScanExitCode;
+            }
+        }
+        return exitCode;
     }
 
     @Override

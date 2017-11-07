@@ -62,6 +62,7 @@ public class ErrorHandler {
         Map<String, Integer> messageToCodeMap = new HashMap<>();
 
         messageToCodeMap.put(LOGIN_ERROR_MSG, LOGIN_FAILED_ERROR_EXIT_CODE);
+        messageToCodeMap.put(UNSUCCESSFUL_LOGIN_ERROR_MSG, LOGIN_FAILED_ERROR_EXIT_CODE);
         messageToCodeMap.put(SDLC_ERROR_MSG, SDLC_ERROR_EXIT_CODE);
         messageToCodeMap.put(NO_OSA_LICENSE_ERROR_MSG, NO_OSA_LICENSE_ERROR_EXIT_CODE);
         messageToCodeMap.put(NO_PROJECT_PRIOR_TO_OSA_SCAN_ERROR_MSG, NO_PROJECT_PRIOR_TO_OSA_SCAN_ERROR_EXIT_CODE);

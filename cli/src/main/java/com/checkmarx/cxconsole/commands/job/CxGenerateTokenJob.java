@@ -1,33 +1,34 @@
 package com.checkmarx.cxconsole.commands.job;
 
-import com.checkmarx.login.rest.CxRestTokenClient;
+import com.checkmarx.cxconsole.commands.job.exceptions.CLITokenJobException;
+import com.checkmarx.login.rest.exceptions.CxRestClientException;
+import com.checkmarx.parameters.CLIMandatoryParameters;
 import com.checkmarx.parameters.CLIScanParameters;
-import org.apache.log4j.Logger;
 
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.concurrent.Callable;
 
 import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED_EXIT_CODE;
 
-public class CxGenerateTokenJob implements Callable<Integer> {
+public class CxGenerateTokenJob extends CLITokenJob {
 
-    private Logger log;
+    private CLIMandatoryParameters mandatoryParamsContainer;
 
-    private CLIScanParameters params;
-
-    private CxRestTokenClient cxRestTokenClient;
-
-    public CxGenerateTokenJob(CLIScanParameters params, Logger log) {
-        this.params = params;
-        this.log = log;
-        cxRestTokenClient = new CxRestTokenClient();
+    public CxGenerateTokenJob(CLIScanParameters parameters) {
+        super(parameters);
+        mandatoryParamsContainer = params.getCliMandatoryParameters();
     }
 
     @Override
-    public Integer call() throws Exception {
+    public Integer call() throws CLITokenJobException {
         log.info("Trying to login to server: " + params.getCliMandatoryParameters().getOriginalHost());
-        String token = cxRestTokenClient.generateToken(new URL(params.getCliMandatoryParameters().getOriginalHost()), params.getCliMandatoryParameters().getUsername(), params.getCliMandatoryParameters().getPassword());
-        log.info("The requested token is: " + token);
+        String token = null;
+        try {
+            token = cxRestTokenClient.generateToken(new URL(mandatoryParamsContainer.getOriginalHost()), mandatoryParamsContainer.getUsername(), mandatoryParamsContainer.getPassword());
+        } catch (MalformedURLException | CxRestClientException e) {
+            throw new CLITokenJobException("Fail to generate login token: " + e.getMessage());
+        }
+        log.info("The login token is: " + token);
 
         return SCAN_SUCCEEDED_EXIT_CODE;
     }

@@ -1,15 +1,14 @@
 package com.checkmarx.login.soap;
 
 import com.checkmarx.cxconsole.utils.ConfigMgr;
-import com.checkmarx.cxviewer.CxLogger;
 import com.checkmarx.cxviewer.ws.generated.*;
-import com.checkmarx.cxviewer.ws.results.*;
+import com.checkmarx.login.soap.exceptions.CxSoapClientValidatorException;
+import com.checkmarx.login.soap.exceptions.CxSoapSASTClientException;
+import com.checkmarx.login.soap.utils.SoapClientUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -24,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 public class CxSoapSASTClient {
 
     private CxCLIWebServiceV1Soap cxSoapClient;
+    private Logger log = Logger.getLogger("com.checkmarx.cxconsole.CxConsoleLauncher");
 
     private static final String SOAP_ACTION_URL = "http://Checkmarx.com/v7/GetScanSummary";
     private static final String SDK_URL = "/Cxwebinterface/sdk/cxsdkwebservice.asmx";
@@ -32,40 +32,51 @@ public class CxSoapSASTClient {
         this.cxSoapClient = cxSoapClient;
     }
 
-    public UpdateScanCommentResult updateScanComment(String sessionID, long scanID, String comment) {
+    public CxWSBasicRepsonse updateScanComment(String sessionID, long scanID, String comment) throws CxSoapClientValidatorException {
         CxWSBasicRepsonse response = cxSoapClient.updateScanComment(sessionID, scanID, comment);
 
-        UpdateScanCommentResult responseObj = new UpdateScanCommentResult();
-        responseObj.parseResponseObject(response);
-        CxLogger.getLogger().trace("UpdateScanComment response: " + responseObj);
+        try {
+            SoapClientUtils.validateResponse(response);
+        } catch (CxSoapClientValidatorException e) {
+            throw new CxSoapClientValidatorException("Error retrieve comment update response from server: " + e.getMessage());
+        }
 
-        return responseObj;
+        log.trace("UpdateScanComment response: " + response);
+        return response;
     }
 
-    public GetProjectDataResult getProjectsDisplayData(String sessionId) {
-        GetProjectDataResult responseObj = new GetProjectDataResult();
-        CxWSBasicRepsonse responce = cxSoapClient.getProjectsDisplayData(sessionId);
-        responseObj.parseResponseObject(responce);
-        CxLogger.getLogger().trace("ProjectsData response: " + responseObj);
+    public CxWSResponseProjectsDisplayData getProjectsDisplayData(String sessionId) throws CxSoapClientValidatorException {
+        CxWSResponseProjectsDisplayData response = cxSoapClient.getProjectsDisplayData(sessionId);
 
-        return responseObj;
+        try {
+            SoapClientUtils.validateResponse(response);
+        } catch (CxSoapClientValidatorException e) {
+            throw new CxSoapClientValidatorException("Error retrieve project display data from server: " + e.getMessage());
+        }
+
+        log.trace("ProjectsData response: " + response);
+        return response;
     }
 
-    public GetProjectConfigResult getProjectConfiguration(String sessionId, long projectId) {
-        GetProjectConfigResult responseObj = new GetProjectConfigResult();
-        CxWSBasicRepsonse responce = cxSoapClient.getProjectConfiguration(sessionId, projectId);
-        responseObj.parseResponseObject(responce);
-        CxLogger.getLogger().trace("ProjectsConfig response: " + responseObj);
-        return responseObj;
+    public CxWSResponseProjectConfig getProjectConfiguration(String sessionId, long projectId) throws CxSoapClientValidatorException {
+        CxWSResponseProjectConfig response = cxSoapClient.getProjectConfiguration(sessionId, projectId);
+
+        try {
+            SoapClientUtils.validateResponse(response);
+        } catch (CxSoapClientValidatorException e) {
+            log.error("Error retrieve configuration from server: " + e.getMessage());
+            throw new CxSoapClientValidatorException("Error retrieve configuration from server: " + e.getMessage());
+        }
+
+        log.trace("ProjectsConfig response: " + response.getProjectConfig());
+        return response;
     }
 
-    public RunScanResult cliScan(String sessionId, String fullProjectName, long presetId, long configId,
-                                 SourceLocationType locationType, String locationpath, byte[] fileBytes, String user, String password,
-                                 RepositoryType repositoryType, String locationURL, Integer locationport, String locationBrach,
-                                 String privateKey, boolean incremental, boolean visibleToOther, String[] excludeFilesPatterns,
-                                 String[] excludeFoldersPatterns, boolean ignoreScanWithUnchangedSource, boolean isPerforceWorkspaceMode) {
-
-        RunScanResult responseObj = new RunScanResult();
+    public CxWSResponseRunID cliScan(String sessionId, String fullProjectName, long presetId, long configId,
+                                     SourceLocationType locationType, String locationpath, byte[] fileBytes, String user, String password,
+                                     RepositoryType repositoryType, String locationURL, Integer locationport, String locationBrach,
+                                     String privateKey, boolean incremental, boolean visibleToOther, String[] excludeFilesPatterns,
+                                     String[] excludeFoldersPatterns, boolean ignoreScanWithUnchangedSource, boolean isPerforceWorkspaceMode) throws CxSoapSASTClientException {
 
         CliScanArgs args = new CliScanArgs();
         args.setIsIncremental(incremental);
@@ -166,17 +177,19 @@ public class CxSoapSASTClient {
         args.setPrjSettings(projectSettings);
         args.setSrcCodeSettings(srcCodeSettings);
 
-        CxWSBasicRepsonse responce = cxSoapClient.scan(sessionId, args);
-        responseObj.parseResponseObject(responce);
-        CxLogger.getLogger().trace("cliScan response: " + responseObj);
+        CxWSResponseRunID response = cxSoapClient.scan(sessionId, args);
+        try {
+            SoapClientUtils.validateResponse(response);
+        } catch (CxSoapClientValidatorException e) {
+            throw new CxSoapSASTClientException("Error scanning project: " + e.getMessage());
+        }
 
-        return responseObj;
+        log.trace("cliScan response: " + response);
+        return response;
     }
 
-    public RunScanResult cliScan(String sessionId, ProjectSettings projectSettings, SourceCodeSettings srcCodeSettings,
-                                 boolean incremental, boolean visibleToOther, boolean ignoreScanWithUnchangedSource) {
-
-        RunScanResult responseObj = new RunScanResult();
+    public CxWSResponseRunID cliScan(String sessionId, ProjectSettings projectSettings, SourceCodeSettings srcCodeSettings,
+                                     boolean incremental, boolean visibleToOther, boolean ignoreScanWithUnchangedSource) throws CxSoapSASTClientException {
 
         CliScanArgs args = new CliScanArgs();
         args.setIsIncremental(incremental);
@@ -186,34 +199,41 @@ public class CxSoapSASTClient {
         args.setPrjSettings(projectSettings);
         args.setSrcCodeSettings(srcCodeSettings);
 
-        CxWSBasicRepsonse responce = cxSoapClient.scan(sessionId, args);
-        responseObj.parseResponseObject(responce);
-        CxLogger.getLogger().trace("cliScan response: " + responseObj);
+        CxWSResponseRunID response = cxSoapClient.scan(sessionId, args);
+        try {
+            SoapClientUtils.validateResponse(response);
+        } catch (CxSoapClientValidatorException e) {
+            log.error("cliScan response: " + response.getErrorMessage());
+            throw new CxSoapSASTClientException("cliScan response: " + response.getErrorMessage());
+        }
 
-        return responseObj;
+        return response;
     }
 
-    public GetStatusOfScanResult getStatusOfScan(String runId, String sessionId) {
-        CxWSBasicRepsonse responce = cxSoapClient.getStatusOfSingleScan(sessionId, runId);
+    public CxWSResponseScanStatus getStatusOfScan(String runId, String sessionId) throws CxSoapSASTClientException {
+        CxWSResponseScanStatus response = cxSoapClient.getStatusOfSingleScan(sessionId, runId);
 
-        GetStatusOfScanResult responseObj = new GetStatusOfScanResult();
-        responseObj.parseResponseObject(responce);
-        CxLogger.getLogger().trace("ScanStatus response: " + responseObj);
+        try {
+            SoapClientUtils.validateResponse(response);
+        } catch (CxSoapClientValidatorException e) {
+            throw new CxSoapSASTClientException("Error retrieving scan status from server: " + e.getMessage());
+        }
 
-        return responseObj;
+        log.trace("ScanStatus response: " + response);
+        return response;
     }
 
-    public byte[] getScanReport(final String sessionId, final long scanId, final String type) throws Exception {
+    public byte[] getScanReport(final String sessionId, final long scanId, final String type) throws CxSoapSASTClientException {
         // create status report
         CxWSReportRequest reportRequest = new CxWSReportRequest();
         reportRequest.setScanID(scanId);
         reportRequest.setType(CxWSReportType.fromValue(type));
         CxWSCreateReportResponse resp = cxSoapClient.createScanReport(sessionId, reportRequest);
-        CxLogger.getLogger().trace("ScanStatus response: " + resp);
+        log.trace("ScanStatus response: " + resp);
         if (!resp.isIsSuccesfull()) {
             String err = "Cannot create scan(" + scanId + ") " + type + " report: " + resp.getErrorMessage();
-            CxLogger.getLogger().error(err);
-            throw new Exception(err);
+            log.error(err);
+            throw new CxSoapSASTClientException(err);
         }
 
         final long repoId = resp.getID();
@@ -241,68 +261,75 @@ public class CxSoapSASTClient {
             statusResp = checkRepoStatusTask.get(reportTimeout, TimeUnit.MINUTES);
         } catch (Exception e) {
             String err = "Timeout to get scan(" + scanId + ") " + type + " report(" + repoId + ")";
-            CxLogger.getLogger().error(err);
-            throw new Exception(err);
+            log.error(err);
+            throw new CxSoapSASTClientException(err);
         }
         if (statusResp.isIsFailed()) {
             String err = "Cannot get scan(" + scanId + ") " + type + " report(" + repoId + ") status: " + statusResp.getErrorMessage();
-            CxLogger.getLogger().error(err);
-            throw new Exception(err);
+            log.error(err);
+            throw new CxSoapSASTClientException(err);
         }
         // get status report dto
         CxWSResponseScanResults repoResp = cxSoapClient.getScanReport(sessionId, repoId);
         if (!repoResp.isIsSuccesfull()) {
             String err = "Cannot get dto of scan(" + scanId + ") " + type + " report(" + repoId + "): " + resp.getErrorMessage();
-            CxLogger.getLogger().error(err);
-            throw new Exception(err);
+            log.error(err);
+            throw new CxSoapSASTClientException(err);
         }
         return repoResp.getScanResults();
     }
 
-    public String getScanSummary(String cliServer, String sessionId, long scanId) throws Exception {
+    public String getScanSummary(String cliServer, String sessionId, long scanId) throws CxSoapSASTClientException {
         String sdkServer = cliServer.concat(SDK_URL);
-        URL wsURL = new URL(sdkServer);
-        URLConnection connection = wsURL.openConnection();
-        HttpURLConnection httpConn = (HttpURLConnection) connection;
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        String xmlInput =
-                "<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:v7=\"http://Checkmarx.com/v7\">\n" +
-                        "   <soap:Header/>\n" +
-                        "   <soap:Body>\n" +
-                        "      <v7:GetScanSummary>\n" +
-                        "         <!--Optional:-->\n" +
-                        "         <v7:SessionID>" + sessionId + "</v7:SessionID>\n" +
-                        "         <v7:ScanID>" + Long.toString(scanId) + "</v7:ScanID>\n" +
-                        "      </v7:GetScanSummary>\n" +
-                        "   </soap:Body>\n" +
-                        "</soap:Envelope>\n";
+        URL wsURL = null;
+        URLConnection connection;
+        try {
+            wsURL = new URL(sdkServer);
+            connection = wsURL.openConnection();
 
-        bout.write(xmlInput.getBytes());
-        byte[] b = bout.toByteArray();
-        httpConn.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
-        httpConn.setRequestProperty("SOAPAction", SOAP_ACTION_URL);
-        httpConn.setRequestMethod("POST");
-        httpConn.setDoOutput(true);
-        httpConn.setDoInput(true);
-        OutputStream out = httpConn.getOutputStream();
-        //Write the content of the request to the outputstream of the HTTP Connection.
-        out.write(b);
-        out.close();
+            HttpURLConnection httpConn = (HttpURLConnection) connection;
+            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            String xmlInput =
+                    "<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:v7=\"http://Checkmarx.com/v7\">\n" +
+                            "   <soap:Header/>\n" +
+                            "   <soap:Body>\n" +
+                            "      <v7:GetScanSummary>\n" +
+                            "         <!--Optional:-->\n" +
+                            "         <v7:SessionID>" + sessionId + "</v7:SessionID>\n" +
+                            "         <v7:ScanID>" + Long.toString(scanId) + "</v7:ScanID>\n" +
+                            "      </v7:GetScanSummary>\n" +
+                            "   </soap:Body>\n" +
+                            "</soap:Envelope>\n";
 
-        //Read the response.
-        InputStreamReader isr =
-                new InputStreamReader(httpConn.getInputStream());
-        BufferedReader in = new BufferedReader(isr);
+            bout.write(xmlInput.getBytes());
+            byte[] b = bout.toByteArray();
+            httpConn.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
+            httpConn.setRequestProperty("SOAPAction", SOAP_ACTION_URL);
+            httpConn.setRequestMethod("POST");
+            httpConn.setDoOutput(true);
+            httpConn.setDoInput(true);
+            OutputStream out = httpConn.getOutputStream();
+            //Write the content of the request to the outputstream of the HTTP Connection.
+            out.write(b);
+            out.close();
 
-        //Write the SOAP message response to a String.
-        String outputString = "";
-        String responseString = "";
-        StringBuilder sb = new StringBuilder();
-        while ((responseString = in.readLine()) != null) {
-            sb.append(responseString);
+            //Read the response.
+            InputStreamReader isr =
+                    new InputStreamReader(httpConn.getInputStream());
+            BufferedReader in = new BufferedReader(isr);
+
+            //Write the SOAP message response to a String.
+            String outputString = "";
+            String responseString = "";
+            StringBuilder sb = new StringBuilder();
+            while ((responseString = in.readLine()) != null) {
+                sb.append(responseString);
+            }
+            outputString = sb.toString();
+
+            return outputString;
+        } catch (IOException e) {
+            throw new CxSoapSASTClientException("Error retrieve SAST scan results: " + e.getMessage());
         }
-        outputString = sb.toString();
-
-        return outputString;
     }
 }

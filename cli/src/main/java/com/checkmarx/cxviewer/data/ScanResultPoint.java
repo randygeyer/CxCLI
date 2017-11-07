@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import com.checkmarx.cxviewer.annotation.PersisentCompoundField;
 import com.checkmarx.cxviewer.annotation.PersistentField;
-import com.checkmarx.cxviewer.ws.results.SeverityEnum;
+import com.checkmarx.cxviewer.constants.SeverityEnum;
 
 public class ScanResultPoint implements Serializable {
 

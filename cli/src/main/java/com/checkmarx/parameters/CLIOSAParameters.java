@@ -37,9 +37,9 @@ public class CLIOSAParameters extends AbstractCLIScanParameters {
     private static final Option PARAM_OSA_LOCATION_PATH = Option.builder("osalocationpath").hasArgs().argName("folders list").desc("Comma separated list of folder path patterns(Local or shared path ) to OSA sources.")
             .valueSeparator(',').build();
 
-    private static final Option PARAM_OSA_PDF_FILE = Option.builder("osareportpdf").optionalArg(true).argName("file").desc("Name or path to OSA PDF report . Optional.").build();
-    private static final Option PARAM_OSA_HTML_FILE = Option.builder("osareporthtml").optionalArg(true).argName("file").desc("Name or path to OSA HTML report. Optional.").build();
-    private static final Option PARAM_OSA_JSON = Option.builder("osajson").optionalArg(true).argName("file").desc("Name or path to OSA scan results (libraries and vulnerabilities) in Json format. Optional.").build();
+    private static final Option PARAM_OSA_PDF_FILE = Option.builder("osareportpdf").hasArg(true).optionalArg(true).argName("file").desc("Name or path to OSA PDF report . Optional.").build();
+    private static final Option PARAM_OSA_HTML_FILE = Option.builder("osareporthtml").hasArg(true).optionalArg(true).argName("file").desc("Name or path to OSA HTML report. Optional.").build();
+    private static final Option PARAM_OSA_JSON = Option.builder("osajson").hasArg(true).optionalArg(true).argName("file").desc("Name or path to OSA scan results (libraries and vulnerabilities) in Json format. Optional.").build();
 
     private static final Option PARAM_OSA_EXCLUDE_FILES = Option.builder("osafilesexclude").hasArgs().argName("files list").desc("Comma separated list of file name patterns to exclude from OSA scan. Example: '-OsaFilesExclude *.class' excludes all files with '.class' extension. Optional.")
             .valueSeparator(',').build();
@@ -48,9 +48,9 @@ public class CLIOSAParameters extends AbstractCLIScanParameters {
     private static final Option PARAM_OSA_EXCLUDE_FOLDERS = Option.builder("osapathexclude").hasArgs().argName("folders list").desc("Comma separated list of folder path patterns to exclude from OSA scan. Example: '-OsaPathExclude test' excludes all folders which start with 'test' prefix. Optional.")
             .valueSeparator(',').build();
 
-    private static final Option PARAM_OSA_LOW_THRESHOLD = Option.builder("osalow").hasArgs().argName("number of low OSA vulnerabilities").desc("OSA low severity vulnerability threshold. If the number of low vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").build();
-    private static final Option PARAM_OSA_MEDIUM_THRESHOLD = Option.builder("osamedium").hasArgs().argName("number of medium OSA vulnerabilities").desc("OSA medium severity vulnerability threshold. If the number of medium vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").build();
-    private static final Option PARAM_OSA_HIGH_THRESHOLD = Option.builder("osahigh").hasArgs().argName("number of high OSA vulnerabilities").desc("OSA high severity vulnerability threshold. If the number of high vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").build();
+    private static final Option PARAM_OSA_LOW_THRESHOLD = Option.builder("osalow").hasArg(true).argName("number of low OSA vulnerabilities").desc("OSA low severity vulnerability threshold. If the number of low vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").build();
+    private static final Option PARAM_OSA_MEDIUM_THRESHOLD = Option.builder("osamedium").hasArg(true).argName("number of medium OSA vulnerabilities").desc("OSA medium severity vulnerability threshold. If the number of medium vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").build();
+    private static final Option PARAM_OSA_HIGH_THRESHOLD = Option.builder("osahigh").hasArg(true).argName("number of high OSA vulnerabilities").desc("OSA high severity vulnerability threshold. If the number of high vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").build();
 
 
     CLIOSAParameters() throws CLIParameterParsingException {
@@ -76,9 +76,9 @@ public class CLIOSAParameters extends AbstractCLIScanParameters {
             osaExcludedFiles = parsedCommandLineArguments.getOptionValues(PARAM_OSA_EXCLUDE_FILES.getOpt());
         }
 
-        String osaLowThresholdStr = ParametersUtils.getOptionalValue(parsedCommandLineArguments, PARAM_OSA_LOW_THRESHOLD.getOpt());
-        String osaMediumThresholdStr = ParametersUtils.getOptionalValue(parsedCommandLineArguments, PARAM_OSA_MEDIUM_THRESHOLD.getOpt());
-        String osaHighThresholdStr = ParametersUtils.getOptionalValue(parsedCommandLineArguments, PARAM_OSA_HIGH_THRESHOLD.getOpt());
+        String osaLowThresholdStr = parsedCommandLineArguments.getOptionValue(PARAM_OSA_LOW_THRESHOLD.getOpt());
+        String osaMediumThresholdStr = parsedCommandLineArguments.getOptionValue(PARAM_OSA_MEDIUM_THRESHOLD.getOpt());
+        String osaHighThresholdStr = parsedCommandLineArguments.getOptionValue(PARAM_OSA_HIGH_THRESHOLD.getOpt());
         if (osaLowThresholdStr != null || osaMediumThresholdStr != null || osaHighThresholdStr != null) {
             isOsaThresholdEnabled = true;
             if (osaLowThresholdStr != null) {

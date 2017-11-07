@@ -1,12 +1,14 @@
 package com.checkmarx.cxconsole.utils;
 
+import com.checkmarx.login.rest.CxRestLoginClient;
 import com.checkmarx.login.soap.CxSoapLoginClient;
-import org.apache.commons.io.IOUtils;
+import com.checkmarx.parameters.CLIScanParameters;
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Paths;
 import java.util.Properties;
@@ -23,37 +25,38 @@ public class ConfigMgr {
     /*
      * Property keys
      */
-    public static String KEY_PROGRESS_INTERVAL = "scan.job.progress.interval";
-    public static String KEY_OSA_PROGRESS_INTERVAL = "scan.osa.job.progress.interval";
-    public static String KEY_RETIRES = "scan.job.connection.retries";
-    public static String REPORT_TIMEOUT = "scan.job.report.timeout";
-    public static String KEY_EXCLUDED_FOLDERS = "scan.zip.ignored.folders";
-    public static String KEY_EXCLUDED_FILES = "scan.zip.ignored.files";
-    public static String KEY_OSA_INCLUDED_FILES = "scan.zip.osa.include.files";
-    public static String KEY_MAX_ZIP_SIZE = "scan.zip.max_size";
-    public static String KEY_OSA_MAX_ZIP_SIZE = "scan.osa.zip.max_size";
-    public static String KEY_DEF_LOG_NAME = "scan.log.default.filename";
-    public static String KEY_DEF_PROJECT_NAME = "scan.default.projectname";
-    public static String KEY_FILE_APP_PATTERN = "scan.log.appender.file.pattern";
-    public static String KEY_FILE_APP_MAX_SIZE = "scan.log.appender.file.max_size";
-    public static String KEY_FILE_APP_MAX_ROLLS = "scan.log.appender.file.max_rolls";
-    public static String KEY_CLI_APP_PATTERN = "scan.log.appender.console.pattern";
-    public static String KEY_VERSION = "cxconsole.version";
-    public static String KEY_USE_KERBEROS_AUTH = "use_kerberos_authentication";
-    public static String KEY_KERBEROS_USERNAME = "kerberos.username";
-    public static String KEY_KERBEROS_PASSWORD = "kerberos.password";
+    public static final String KEY_PROGRESS_INTERVAL = "scan.job.progress.interval";
+    public static final String KEY_OSA_PROGRESS_INTERVAL = "scan.osa.job.progress.interval";
+    public static final String KEY_RETIRES = "scan.job.connection.retries";
+    public static final String REPORT_TIMEOUT = "scan.job.report.timeout";
+    public static final String KEY_EXCLUDED_FOLDERS = "scan.zip.ignored.folders";
+    public static final String KEY_EXCLUDED_FILES = "scan.zip.ignored.files";
+    public static final String KEY_OSA_INCLUDED_FILES = "scan.zip.osa.include.files";
+    public static final String KEY_MAX_ZIP_SIZE = "scan.zip.max_size";
+    public static final String KEY_OSA_MAX_ZIP_SIZE = "scan.osa.zip.max_size";
+    public static final String KEY_DEF_LOG_NAME = "scan.log.default.filename";
+    public static final String KEY_DEF_PROJECT_NAME = "scan.default.projectname";
+    public static final String KEY_FILE_APP_PATTERN = "scan.log.appender.file.pattern";
+    public static final String KEY_FILE_APP_MAX_SIZE = "scan.log.appender.file.max_size";
+    public static final String KEY_FILE_APP_MAX_ROLLS = "scan.log.appender.file.max_rolls";
+    public static final String KEY_CLI_APP_PATTERN = "scan.log.appender.console.pattern";
+    public static final String KEY_VERSION = "cxconsole.version";
+    public static final String KEY_USE_KERBEROS_AUTH = "use_kerberos_authentication";
+    public static final String KEY_KERBEROS_USERNAME = "kerberos.username";
+    public static final String KEY_KERBEROS_PASSWORD = "kerberos.password";
 
     private String separator = FileSystems.getDefault().getSeparator();
     private String userDir = System.getProperty("user.dir");
 
-    private String CONFIG_DIR_RELATIVE_PATH = "config";
-    private String CONFIG_FILE = "cx_console.properties";
+    private String configDirRelativePath = "config";
+    private String configFile = "cx_console.properties";
 
-    private String defaultPath = userDir + separator + CONFIG_DIR_RELATIVE_PATH + separator + CONFIG_FILE;
+    private String defaultPath = userDir + separator + configDirRelativePath + separator + configFile;
     private Properties applicationProperties;
-    protected static CxSoapLoginClient cxSoapLoginClient;
+    private static CxSoapLoginClient cxSoapLoginClient;
+    private static CxRestLoginClient cxRestLoginClient;
 
-    public static ConfigMgr mgr;
+    private static ConfigMgr mgr;
 
     private ConfigMgr(String defConfig) {
         applicationProperties = new Properties();
@@ -93,17 +96,13 @@ public class ConfigMgr {
 
     private boolean loadConfigFromFile(String path) {
         boolean ret = false;
-        FileInputStream in = null;
         if (new File(path).exists()) {
-            try {
-                in = new FileInputStream(path);
+            try (FileInputStream in = new FileInputStream(path)) {
                 applicationProperties.load(in);
 
                 ret = true;
             } catch (Exception e) {
                 Logger.getRootLogger().error("Error occurred during loading CxConsole properties.");
-            } finally {
-                IOUtils.closeQuietly(in);
             }
         } else {
             Logger.getRootLogger().error("The specified configuration path: [" + path + "] does not exist.");
@@ -124,7 +123,7 @@ public class ConfigMgr {
         applicationProperties.put(KEY_OSA_MAX_ZIP_SIZE, "2000");
         applicationProperties.put(KEY_DEF_LOG_NAME, "cx_scan.log");
         applicationProperties.put(KEY_DEF_PROJECT_NAME, "console.project");
-        applicationProperties.put(KEY_VERSION, CommandUtils.getBuildVersion());
+        applicationProperties.put(KEY_VERSION, ConsoleUtils.getBuildVersion());
         applicationProperties.put(KEY_USE_KERBEROS_AUTH, "false");
         applicationProperties.put(KEY_KERBEROS_USERNAME, "");
         applicationProperties.put(KEY_KERBEROS_PASSWORD, "");
@@ -133,36 +132,20 @@ public class ConfigMgr {
         applicationProperties.put(KEY_FILE_APP_MAX_SIZE, "10MB");
         applicationProperties.put(KEY_FILE_APP_MAX_ROLLS, "10");
 
-        try {
-            File propsFile = new File(defaultPath);
-
-            if (!propsFile.exists()) {
-                File configDir = new File(userDir + separator + CONFIG_DIR_RELATIVE_PATH);
-                if (!configDir.exists()) {
-                    configDir.mkdir();
-                }
-
-
-                FileOutputStream fOut = null;
-                try {
-                    fOut = new FileOutputStream(propsFile);
-                    applicationProperties.store(fOut, "");
-                } catch (Exception e) {
-                    // ignore
-                } finally {
-                    if (fOut != null) {
-                        try {
-                            fOut.close();
-                        } catch (Exception e) {
-                            // ignore
-                        }
-                    }
-                }
+        File propsFile = new File(defaultPath);
+        if (!propsFile.exists()) {
+            File configDir = new File(userDir + separator + configDirRelativePath);
+            if (!configDir.exists()) {
+                configDir.mkdir();
             }
-        } catch (Exception ex) {
-            Logger.getRootLogger().warn("Cannot create configuration file");
+            try (FileOutputStream fOut = new FileOutputStream(propsFile)) {
+                applicationProperties.store(fOut, "");
+            } catch (IOException e) {
+                Logger.getRootLogger().warn("Cannot create configuration file");
+            }
         }
     }
+
 
     public String getProperty(String key) {
         Object value = applicationProperties.get(key);
@@ -209,5 +192,17 @@ public class ConfigMgr {
         }
 
         return cxSoapLoginClient;
+    }
+
+    public static CxRestLoginClient getRestWSMgr(CLIScanParameters parameters) {
+        if (cxRestLoginClient == null) {
+            if (parameters.getCliMandatoryParameters().isHasUserParam() && parameters.getCliMandatoryParameters().isHasPasswordParam()) {
+                return new CxRestLoginClient(parameters.getCliMandatoryParameters().getOriginalHost(), parameters.getCliMandatoryParameters().getUsername(), parameters.getCliMandatoryParameters().getPassword());
+            } else if (parameters.getCliMandatoryParameters().isHasTokenParam()) {
+                return new CxRestLoginClient(parameters.getCliMandatoryParameters().getOriginalHost(), parameters.getCliMandatoryParameters().getToken());
+            }
+        }
+
+        return cxRestLoginClient;
     }
 }

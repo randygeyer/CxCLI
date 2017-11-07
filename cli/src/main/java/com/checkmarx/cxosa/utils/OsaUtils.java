@@ -6,7 +6,6 @@ import com.checkmarx.cxconsole.utils.ConfigMgr;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -20,6 +19,7 @@ import java.util.List;
  * Created by Galn on 06/04/2017.
  */
 public abstract class OsaUtils {
+
     private static int numOfZippedFiles = 0;
     private static Logger log;
     private static final String TEMP_FILE_NAME_TO_ZIP = "CxZippedSource";
@@ -40,8 +40,6 @@ public abstract class OsaUtils {
 
 
         File tempFile = File.createTempFile(TEMP_FILE_NAME_TO_ZIP, ".bin");
-        OutputStream fileOutputStream = new FileOutputStream(tempFile);
-
         File tmpFolder = createTempDirectory();
         for (String dirPath : path) {
             File dir = new File(dirPath);
@@ -49,7 +47,7 @@ public abstract class OsaUtils {
                 FileUtils.copyDirectory(dir, tmpFolder);
             }
         }
-        try {
+        try(OutputStream fileOutputStream = new FileOutputStream(tempFile)) {
             new Zipper().zip(tmpFolder, combinedExcludePattern, includeFilesPattern, fileOutputStream, maxZipSizeInBytes, zipListener);
         } catch (Zipper.MaxZipSizeReached e) {
             tempFile.delete();
@@ -58,11 +56,9 @@ public abstract class OsaUtils {
             throw new IOException("No files to zip");
         }
 
-        if (log.isEnabledFor(Level.DEBUG)) {
-            log.debug("Zipping complete with " + numOfZippedFiles + " files, total compressed size: " +
-                    FileUtils.byteCountToDisplaySize(tempFile.length() / 8 * 6)); // We print here the size of compressed sources before encoding to base 64
-            log.debug("Temporary file with zipped sources was created at: '" + tempFile.getAbsolutePath() + "'");
-        }
+        log.debug("Zipping complete with " + numOfZippedFiles + " files, total compressed size: " +
+                FileUtils.byteCountToDisplaySize(tempFile.length() / 8 * 6)); // We print here the size of compressed sources before encoding to base 64
+        log.debug("Temporary file with zipped sources was created at: '" + tempFile.getAbsolutePath() + "'");
 
         try {
             FileUtils.deleteDirectory(tmpFolder);
@@ -95,7 +91,7 @@ public abstract class OsaUtils {
         return (temp);
     }
 
-    private static String[] generateExcludePattern(String[] folderExclusions, String[] filterPattern) throws IOException, InterruptedException {
+    private static String[] generateExcludePattern(String[] folderExclusions, String[] filterPattern) {
 
         String[] excludeFoldersPattern = processExcludeFolders(folderExclusions);
         String[] excludeFilesPattern = processPatternFiles(filterPattern);

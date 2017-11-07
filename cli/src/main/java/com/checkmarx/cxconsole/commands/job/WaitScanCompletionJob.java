@@ -1,31 +1,28 @@
 package com.checkmarx.cxconsole.commands.job;
 
+import com.checkmarx.cxconsole.commands.job.exceptions.CLIJobException;
+import com.checkmarx.cxconsole.commands.job.exceptions.CLIJobUtilException;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxviewer.ws.generated.CurrentStatusEnum;
-import com.checkmarx.cxviewer.ws.results.GetStatusOfScanResult;
+import com.checkmarx.cxviewer.ws.generated.CxWSResponseScanStatus;
 import com.checkmarx.login.soap.CxSoapSASTClient;
-import org.apache.log4j.Level;
+import com.checkmarx.login.soap.exceptions.CxSoapSASTClientException;
 import org.apache.log4j.Logger;
 
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
-public class WaitScanCompletionJob implements Callable<Boolean> {
-
-    public int totalPercentScanned;
+class WaitScanCompletionJob implements Callable<Boolean> {
 
     private CxSoapSASTClient cxSoapSASTClient;
     private String sessionId;
     private String runId;
-    private String finalMessage;
-    private CurrentStatusEnum currentStatusEnum;
     private long scanId;
-    private long resultId;
     private boolean isAsyncScan = false;
 
-    private Logger log;
+    private Logger log = Logger.getLogger("com.checkmarx.cxconsole.CxConsoleLauncher");
 
-    public WaitScanCompletionJob(CxSoapSASTClient cxSoapSASTClient, String sessionId, String scanId, boolean isAsyncScan) {
+    WaitScanCompletionJob(CxSoapSASTClient cxSoapSASTClient, String sessionId, String scanId, boolean isAsyncScan) {
         super();
         this.cxSoapSASTClient = cxSoapSASTClient;
         this.sessionId = sessionId;
@@ -34,14 +31,8 @@ public class WaitScanCompletionJob implements Callable<Boolean> {
     }
 
     @Override
-    public Boolean call() throws Exception {
-
-        finalMessage = "";
+    public Boolean call() throws CLIJobException {
         int retriesNum = ConfigMgr.getCfgMgr().getIntProperty(ConfigMgr.KEY_RETIRES);
-
-        if (log == null) {
-            log = Logger.getRootLogger();
-        }
 
         int getStatusInterval = ConfigMgr.getCfgMgr()
                 .getIntProperty(ConfigMgr.KEY_PROGRESS_INTERVAL);
@@ -51,47 +42,32 @@ public class WaitScanCompletionJob implements Callable<Boolean> {
         long exceededTime;
         boolean scanComplete = false;
         int progressRequestAttempt = 0;
-        String lastMessage;
 
         try {
             do {
-                lastMessage = "";
                 currTime = System.currentTimeMillis();
-                GetStatusOfScanResult statusOfScanResult = null;
-                try {
-                    statusOfScanResult = cxSoapSASTClient.getStatusOfScan(runId, sessionId);
-                    if (log.isEnabledFor(Level.TRACE)) {
-                        log.trace("getScanStatus: " + statusOfScanResult);
-                    }
-                } catch (Throwable e) {
-                    if (log.isEnabledFor(Level.TRACE)) {
-                        log.trace("Error occurred during invoking webservice mehtod \"getStatusOfScan\"", e);
-                    }
-                    lastMessage = e.getMessage();
-                }
-
-                if (statusOfScanResult != null && statusOfScanResult.isSuccessfulResponse()) {
+                CxWSResponseScanStatus statusOfScanResult = cxSoapSASTClient.getStatusOfScan(runId, sessionId);
+                log.trace("getScanStatus: " + statusOfScanResult);
+                if (statusOfScanResult != null) {
                     // Update progress bar
-                    totalPercentScanned = statusOfScanResult.getTotalPercent();
-                    currentStatusEnum = statusOfScanResult.getRunStatus();
+                    int totalPercentScanned = statusOfScanResult.getTotalPercent();
+                    CurrentStatusEnum currentStatusEnum = statusOfScanResult.getCurrentStatus();
                     log.info("Total scan worked: " + totalPercentScanned + "%");
-                    if (statusOfScanResult.isStatusFailed()) {
+
+                    if (currentStatusEnum.equals(CurrentStatusEnum.FAILED)) {
                         // Scan failed
-                        String errorMsg;
-                        log.error(errorMsg = parseScanFault(statusOfScanResult));
-                        throw new Exception(errorMsg);
+                        log.error(statusOfScanResult.getErrorMessage());
+                        throw new CLIJobUtilException(statusOfScanResult.getErrorMessage());
                     }
 
-                    if (statusOfScanResult.isRunStatusCanceled()) {
-                        String errorMsg;
-                        log.error(errorMsg = "Project scan was cancelled on server side.");
-                        throw new Exception(errorMsg);
+                    if (currentStatusEnum.equals(CurrentStatusEnum.CANCELED)) {
+                        log.error("Project scan was cancelled on server side.");
+                        throw new CLIJobUtilException("Project scan was cancelled on server side.");
                     }
 
-                    if (statusOfScanResult.getRunStatus() == CurrentStatusEnum.DELETED) {
-                        String errorMsg;
-                        log.error(errorMsg = "Project scan was deleted/postponed.");
-                        throw new Exception(errorMsg);
+                    if (currentStatusEnum.equals(CurrentStatusEnum.DELETED)) {
+                        log.error("Project scan was deleted/postponed.");
+                        throw new CLIJobUtilException("Project scan was deleted/postponed.");
                     }
 
                     String stageName = statusOfScanResult.getStageName();
@@ -100,59 +76,46 @@ public class WaitScanCompletionJob implements Callable<Boolean> {
                         log.info("Current stage: " + stageName + " - " + statusOfScanResult.getStageMessage());
                     } else if (!stageName.isEmpty()) {
                         log.info("Current stage: " + stageName);
-                        if (isAsyncScan && Objects.equals(statusOfScanResult.getStageName(), "Queued")) {
+                        if (isAsyncScan && Objects.equals(currentStatusEnum, CurrentStatusEnum.QUEUED)) {
                             return true;
                         }
                     } else if (!statusOfScanResult.getStageMessage().isEmpty()) {
                         log.info("Current stage: " + statusOfScanResult.getStageMessage());
                     } else {
-                        log.info("Scan state: " + statusOfScanResult.getRunStatus());
+                        log.info("Scan state: " + statusOfScanResult.getCurrentStatus());
                     }
 
-                    if (log.isEnabledFor(Level.TRACE)) {
-                        log.trace(statusOfScanResult.getRunStatus() + stageName
-                                + "\n" + statusOfScanResult.getStageMessage()
-                                + " ("
-                                + statusOfScanResult.getCurrentStagePercent()
-                                + "%)" + " "
-                                + statusOfScanResult.getStepMessage());
-                    }
-                    scanComplete = statusOfScanResult.isStatusFinished();
+                    log.trace(statusOfScanResult.getCurrentStatus() + stageName
+                            + "\n" + statusOfScanResult.getStageMessage()
+                            + " ("
+                            + statusOfScanResult.getCurrentStagePercent()
+                            + "%)" + " "
+                            + statusOfScanResult.getStepMessage());
+                    scanComplete = statusOfScanResult.getCurrentStatus().equals(CurrentStatusEnum.FINISHED);
                     scanId = statusOfScanResult.getScanId();
-                    resultId = statusOfScanResult.getResultId();
                     if (scanComplete && !statusOfScanResult.getStageMessage().isEmpty()) {
-                        if (log.isEnabledFor(Level.INFO)) {
-                            log.info(statusOfScanResult.getStageMessage());
-                        }
-                        finalMessage = statusOfScanResult.getStageMessage();
+                        log.info(statusOfScanResult.getStageMessage());
                     }
                 } else {
-                    // Ignore possible problem with scan step result
-                    // retrieving, just try another attempt to get step
-                    // results
-                    log.error("Scan status request failed. " + (statusOfScanResult == null ? "" : statusOfScanResult));
+                    log.error("Scan status request failed. ");
                     progressRequestAttempt++;
                 }
 
                 if (progressRequestAttempt > retriesNum) {
-                    if (statusOfScanResult != null && !statusOfScanResult.isSuccessfulResponse()) {
+                    if (statusOfScanResult != null && !statusOfScanResult.isIsSuccesfull()) {
                         String errorMsg = "Scan service error: progress request have not succeeded.";
                         String responseErrMsg = statusOfScanResult.getErrorMessage();
                         if (responseErrMsg != null && !responseErrMsg.isEmpty()) {
                             errorMsg += " " + responseErrMsg;
                         }
                         log.error(errorMsg);
-                        throw new Exception(errorMsg);
+                        throw new CLIJobException(errorMsg);
                     } else {
-                        String errorMsg = "Scan progress request failure.";
-                        if (lastMessage != null && !lastMessage.isEmpty()) {
-                            errorMsg += " Error message: " + lastMessage;
-                        }
-                        log.error(errorMsg);
-                        throw new Exception(errorMsg);
+                        log.error("Scan progress request failure.");
+                        throw new CLIJobException("Scan progress request failure.");
                     }
                 } else {
-                    if ((statusOfScanResult != null && !statusOfScanResult.isSuccessfulResponse()) ||
+                    if ((statusOfScanResult != null && !statusOfScanResult.isIsSuccesfull()) ||
                             (statusOfScanResult == null)) {
                         log.error("Performing another request. Attempt#" + progressRequestAttempt);
                     }
@@ -166,41 +129,23 @@ public class WaitScanCompletionJob implements Callable<Boolean> {
                     Thread.sleep(500);
                     currTime = System.currentTimeMillis();
                     exceededTime = (currTime - prevTime) / 1000;
-                }//while (exceededTime < timeGetStatusOfScan)
+                }
             } while (!scanComplete);
         } catch (InterruptedException e) {
             log.trace(e);
+        } catch (CxSoapSASTClientException e) {
+            log.error("Error occurred during retrieving scan status: " + e.getMessage());
+            throw new CLIJobException("Error occurred during retrieving scan status: " + e.getMessage());
         }
 
         return scanComplete;
-    }
-
-    protected String parseScanFault(GetStatusOfScanResult statusOfScanResult) {
-        String stageMessage = statusOfScanResult.getStageMessage();
-        if (stageMessage != null && stageMessage.equalsIgnoreCase("There is no License for a source code language you are trying to scan.")) {
-            return "You are not authorized to scan projects in this selected language.";
-        }
-        return "Error during scan: " + statusOfScanResult.getStageMessage();
     }
 
     public void setLog(Logger log) {
         this.log = log;
     }
 
-    public String getFinalMessage() {
-        return finalMessage;
-    }
-
-    public long getResultId() {
-        return resultId;
-    }
-
     public long getScanId() {
         return scanId;
     }
-
-    public CurrentStatusEnum getCurrentStatusEnum() {
-        return currentStatusEnum;
-    }
 }
-

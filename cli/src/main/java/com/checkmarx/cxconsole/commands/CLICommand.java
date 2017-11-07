@@ -13,12 +13,12 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static com.checkmarx.exitcodes.Constants.ErrorMassages.SERVER_CONNECTIVITY_VALIDATION_ERROR;
+import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED_EXIT_CODE;
 import static com.checkmarx.exitcodes.ErrorHandler.errorCodeResolver;
 import static com.checkmarx.login.soap.utils.SoapClientUtils.resolveServerProtocol;
 
@@ -75,8 +75,7 @@ public abstract class CLICommand {
 
         printCommandsDebug();
         try {
-            executeCommand();
-            return 0;
+            return executeCommand();
         } catch (CLICommandException e) {
             return errorCodeResolver(e.getMessage());
         } finally {
@@ -89,7 +88,7 @@ public abstract class CLICommand {
      * Command specific operations. Should be implemented by every
      * complete executable command.
      */
-    protected abstract void executeCommand() throws CLICommandException;
+    protected abstract int executeCommand() throws CLICommandException;
 
     public abstract void checkParameters() throws CLICommandParameterValidatorException;
 
@@ -100,7 +99,7 @@ public abstract class CLICommand {
             String option = opt.getOpt();
             if (!Objects.equals(option, "cxpassword")) {
                 if (opt.getValue() == null) {
-                    log.debug("Option: " + StringUtils.capitalize(opt.getOpt()) + "   Value: true");
+                    log.debug("Option: " + StringUtils.capitalize(opt.getOpt()) + "   Value: True");
                 } else {
                     log.debug("Option: " + StringUtils.capitalize(opt.getOpt()) + "   Value: " + opt.getValue());
                 }
@@ -124,10 +123,6 @@ public abstract class CLICommand {
     public abstract String getUsageExamples();
 
     public abstract void printHelp();
-
-    public void setTimeoutInSeconds(Integer timeoutInSeconds) {
-        this.timeoutInSeconds = timeoutInSeconds;
-    }
 
     private void initLogging() throws IOException {
         String logPath = "";

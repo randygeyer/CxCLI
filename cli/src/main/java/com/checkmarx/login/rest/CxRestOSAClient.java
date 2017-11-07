@@ -4,8 +4,8 @@ import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxosa.ScanWaitHandler;
 import com.checkmarx.cxosa.dto.*;
 import com.checkmarx.login.rest.dto.RestLoginResponseDTO;
-import com.checkmarx.login.rest.exceptions.CxRestOSAClientException;
 import com.checkmarx.login.rest.exceptions.CxRestClientValidatorException;
+import com.checkmarx.login.rest.exceptions.CxRestOSAClientException;
 import com.checkmarx.login.rest.utils.RestResourcesURIBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -46,7 +46,7 @@ import static com.checkmarx.login.rest.utils.RestClientUtils.*;
  */
 public class CxRestOSAClient {
 
-    private Logger log;
+    private static Logger log = Logger.getLogger("com.checkmarx.cxconsole.CxConsoleLauncher");
 
     private String hostName;
     private HttpClient apacheClient;
@@ -65,11 +65,10 @@ public class CxRestOSAClient {
     private static final String JSON_FILE = ".json";
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public CxRestOSAClient(String hostName, RestLoginResponseDTO restLoginResponseDTO, Logger log) {
+    public CxRestOSAClient(String hostName, RestLoginResponseDTO restLoginResponseDTO) {
         this.hostName = hostName;
         this.restLoginResponseDTO = restLoginResponseDTO;
         this.loginType = restLoginResponseDTO.getLoginType();
-        this.log = log;
     }
 
     public CreateOSAScanResponse createOSAScan(long projectId, File zipFile) throws CxRestOSAClientException {
@@ -205,7 +204,6 @@ public class CxRestOSAClient {
 
     private void writeReport(Object data, String filePath, String toLog) throws IOException {
         File file = new File(filePath);
-
         switch (FilenameUtils.getExtension(filePath)) {
             case ("html"):
                 FileUtils.writeStringToFile(file, (String) data, Charset.defaultCharset());

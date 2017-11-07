@@ -9,6 +9,8 @@ import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by nirli on 29/10/2017.
@@ -27,8 +29,8 @@ public class CLISASTParameters extends AbstractCLIScanParameters {
     private String configuration;
     private boolean isIncrementalScan = false;
     private boolean forceScan = true;
-    private String reportType;
-    private String reportFile;
+    private List<String> reportType = new ArrayList<>();
+    private List<String> reportFile = new ArrayList<>();
     private String xmlFile;
     private boolean isOsaEnabled = false;
 
@@ -103,21 +105,21 @@ public class CLISASTParameters extends AbstractCLIScanParameters {
         isOsaEnabled = parsedCommandLineArguments.hasOption(PARAM_ENABLE_OSA.getOpt());
         this.locationType = locationType;
 
-        this.xmlFile = parsedCommandLineArguments.getOptionValue(PARAM_XML_FILE.getOpt());
+        xmlFile = parsedCommandLineArguments.getOptionValue(PARAM_XML_FILE.getOpt());
 
         if (parsedCommandLineArguments.hasOption(PARAM_PDF_FILE.getOpt())) {
-            this.reportType = "PDF";
-            this.reportFile = parsedCommandLineArguments.getOptionValue(PARAM_PDF_FILE.getOpt());
+            reportType.add("PDF");
+            reportFile.add(parsedCommandLineArguments.getOptionValue(PARAM_PDF_FILE.getOpt()));
         }
 
         if (parsedCommandLineArguments.hasOption(PARAM_CSV_FILE.getOpt())) {
-            this.reportType = "CSV";
-            this.reportFile = parsedCommandLineArguments.getOptionValue(PARAM_CSV_FILE.getOpt());
+            reportType.add("CSV");
+            reportFile.add(parsedCommandLineArguments.getOptionValue(PARAM_CSV_FILE.getOpt()));
         }
 
         if (parsedCommandLineArguments.hasOption(PARAM_RTF_FILE.getOpt())) {
-            this.reportType = "RTF";
-            this.reportFile = parsedCommandLineArguments.getOptionValue(PARAM_RTF_FILE.getOpt());
+            reportType.add("RTF");
+            reportFile.add(parsedCommandLineArguments.getOptionValue(PARAM_RTF_FILE.getOpt()));
         }
 
         if (parsedCommandLineArguments.hasOption(PARAM_EXCLUDE_FOLDERS.getOpt())) {
@@ -174,8 +176,8 @@ public class CLISASTParameters extends AbstractCLIScanParameters {
 
 
         String sastLowThresholdStr = parsedCommandLineArguments.getOptionValue(PARAM_SAST_LOW_THRESHOLD.getOpt());
-        String sastMediumThresholdStr = ParametersUtils.getOptionalValue(parsedCommandLineArguments, PARAM_SAST_MEDIUM_THRESHOLD.getOpt());
-        String sastHighThresholdStr = ParametersUtils.getOptionalValue(parsedCommandLineArguments, PARAM_SAST_HIGH_THRESHOLD.getOpt());
+        String sastMediumThresholdStr = parsedCommandLineArguments.getOptionValue(PARAM_SAST_MEDIUM_THRESHOLD.getOpt());
+        String sastHighThresholdStr = parsedCommandLineArguments.getOptionValue(PARAM_SAST_HIGH_THRESHOLD.getOpt());
         if (sastLowThresholdStr != null || sastMediumThresholdStr != null || sastHighThresholdStr != null) {
             isSastThresholdEnabled = true;
             if (sastLowThresholdStr != null) {
@@ -233,11 +235,11 @@ public class CLISASTParameters extends AbstractCLIScanParameters {
         isOsaEnabled = osaEnabled;
     }
 
-    public String getReportType() {
+    public List<String> getReportType() {
         return reportType;
     }
 
-    public String getReportFile() {
+    public List<String> getReportFile() {
         return reportFile;
     }
 

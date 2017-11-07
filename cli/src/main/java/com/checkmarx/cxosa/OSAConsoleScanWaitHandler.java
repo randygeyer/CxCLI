@@ -16,7 +16,7 @@ import static com.checkmarx.cxosa.dto.OSAScanStatusEnum.QUEUED;
  */
 public class OSAConsoleScanWaitHandler implements ScanWaitHandler<OSAScanStatus> {
 
-    private static Logger log;
+    private static Logger log = Logger.getLogger("com.checkmarx.cxconsole.CxConsoleLauncher");
     private long startTime;
     private long scanTimeoutInMin;
 
@@ -33,7 +33,6 @@ public class OSAConsoleScanWaitHandler implements ScanWaitHandler<OSAScanStatus>
     }
 
     public void onIdle(OSAScanStatus scanStatus) {
-
         long hours = (System.currentTimeMillis() - startTime) / 3600000;
         long minutes = ((System.currentTimeMillis() - startTime) % 3600000) / 60000;
         long seconds = ((System.currentTimeMillis() - startTime) % 60000) / 1000;
@@ -63,10 +62,5 @@ public class OSAConsoleScanWaitHandler implements ScanWaitHandler<OSAScanStatus>
         this.startTime = startTime;
         this.scanTimeoutInMin = scanTimeoutInMin;
     }
-
-    public void setLogger(Logger log) {
-        OSAConsoleScanWaitHandler.log = log;
-    }
-
 
 }

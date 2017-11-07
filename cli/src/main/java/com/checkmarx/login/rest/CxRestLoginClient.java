@@ -52,6 +52,7 @@ public class CxRestLoginClient {
     private Header authorizationHeader;
     private String cookies;
     private String csrfToken;
+    private RestLoginResponseDTO restLoginResponseDTO;
 
     private static final String CX_ORIGIN_HEADER_KEY = "cxOrigin";
     private static final String CX_ORIGIN_HEADER_VALUE = "cx-CLI";
@@ -113,7 +114,7 @@ public class CxRestLoginClient {
         }
     };
 
-    public RestLoginResponseDTO credentialsLogin() throws CxRestLoginClientException {
+    public void credentialsLogin() throws CxRestLoginClientException {
         cookies = null;
         csrfToken = null;
         HttpResponse loginResponse = null;
@@ -126,7 +127,6 @@ public class CxRestLoginClient {
 
             //validate login response
             validateResponse(loginResponse, 200, "Fail to authenticate");
-            log.info("Logged in successfully to: " + hostName);
         } catch (IOException | CxRestClientValidatorException e) {
             log.error("Fail to login with credentials: " + e.getMessage());
             throw new CxRestLoginClientException("Fail to login with credentials: " + e.getMessage());
@@ -137,11 +137,11 @@ public class CxRestLoginClient {
             HttpClientUtils.closeQuietly(loginResponse);
         }
 
-        return new RestLoginResponseDTO(cxcsrfTokenHeader, cookieStore);
+        restLoginResponseDTO = new RestLoginResponseDTO(cxcsrfTokenHeader, cookieStore);
     }
 
-    public RestLoginResponseDTO tokenLogin() throws CxRestLoginClientException {
-        return new RestLoginResponseDTO(authorizationHeader, getSessionIdFromToken(token));
+    public void tokenLogin() throws CxRestLoginClientException {
+        restLoginResponseDTO = new RestLoginResponseDTO(authorizationHeader, getSessionIdFromToken(token));
     }
 
     private String getSessionIdFromToken(String token) throws CxRestLoginClientException {
@@ -156,7 +156,6 @@ public class CxRestLoginClient {
             throw new CxRestLoginClientException("Failed to get session ID from token: " + e.getMessage());
         }
 
-        log.info("Logged in successfully to: " + hostName);
         return jwtAccessTokenDto.getSessionId();
     }
 
@@ -185,5 +184,9 @@ public class CxRestLoginClient {
         }
 
         return accessToken;
+    }
+
+    public RestLoginResponseDTO getRestLoginResponseDTO() {
+        return restLoginResponseDTO;
     }
 }

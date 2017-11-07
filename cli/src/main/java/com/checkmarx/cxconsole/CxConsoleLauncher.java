@@ -5,7 +5,7 @@ import com.checkmarx.cxconsole.commands.CommandFactory;
 import com.checkmarx.cxconsole.commands.exceptions.CLICommandException;
 import com.checkmarx.cxconsole.commands.exceptions.CLICommandFactoryException;
 import com.checkmarx.cxconsole.commands.exceptions.CLICommandParameterValidatorException;
-import com.checkmarx.cxconsole.utils.CommandUtils;
+import com.checkmarx.cxconsole.utils.ConsoleUtils;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxconsole.utils.CustomStringList;
 import com.checkmarx.login.soap.utils.SSLUtilities;
@@ -58,7 +58,7 @@ public class CxConsoleLauncher {
      */
     public static int runCli(String[] args) {
 
-        log.info("CxConsole version " + CommandUtils.getBuildVersion());
+        log.info("CxConsole version " + ConsoleUtils.getBuildVersion());
         log.info("CxConsole scan session started");
         log.info("");
 

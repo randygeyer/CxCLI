@@ -4,7 +4,7 @@ import com.checkmarx.cxconsole.commands.constants.Commands;
 import com.checkmarx.cxconsole.commands.exceptions.CLICommandException;
 import com.checkmarx.cxconsole.commands.exceptions.CLICommandParameterValidatorException;
 import com.checkmarx.cxconsole.commands.job.CxGenerateTokenJob;
-import com.checkmarx.cxconsole.utils.CommandParametersValidator;
+import com.checkmarx.cxconsole.commands.utils.CommandParametersValidator;
 import com.checkmarx.parameters.CLIScanParameters;
 import org.apache.commons.cli.Options;
 
@@ -24,8 +24,8 @@ public class GenerateTokenCommand extends CLICommand {
     }
 
     @Override
-    protected void executeCommand() throws CLICommandException {
-        CxGenerateTokenJob job = new CxGenerateTokenJob(params, log);
+    protected int executeCommand() throws CLICommandException {
+        CxGenerateTokenJob job = new CxGenerateTokenJob(params);
 
         Future<Integer> future = executor.submit(job);
         try {
@@ -37,6 +37,7 @@ public class GenerateTokenCommand extends CLICommand {
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw new CLICommandException("Error executing GenerateToken command, due to: " + e.getMessage());
         }
+        return exitCode;
     }
 
     @Override

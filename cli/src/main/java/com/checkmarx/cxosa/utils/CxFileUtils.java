@@ -11,10 +11,9 @@ import java.io.IOException;
 /**
  * Created by Galn on 28/02/2017.
  */
-public abstract class CxFileUtils {
+abstract class CxFileUtils {
 
-    public static void deleteTempPath(String folder, String prefix, Logger log) {
-
+    static void deleteTempPath(String folder, String prefix, Logger log) {
         GenericPrefixFilter filter = new GenericPrefixFilter(prefix);
         File dir = new File(folder);
 
@@ -26,13 +25,13 @@ public abstract class CxFileUtils {
         File toDelete;
 
         for (String file : list) {
-            toDelete = new File( folder + file);
-            String type ="File: ";
+            toDelete = new File(folder + file);
+            String type = "File: ";
 
             boolean isDeleted = false;
             if (toDelete.isDirectory()) {
                 try {
-                    type ="Folder: ";
+                    type = "Folder: ";
                     FileUtils.deleteDirectory(dir);
                     isDeleted = true;
                 } catch (IOException e) {
@@ -48,11 +47,10 @@ public abstract class CxFileUtils {
     }
 
     //inner class, generic prefix filter
-    public static class GenericPrefixFilter implements FilenameFilter {
-
+    private static class GenericPrefixFilter implements FilenameFilter {
         private String prefix;
 
-        public GenericPrefixFilter(String prefix) {
+        GenericPrefixFilter(String prefix) {
             this.prefix = prefix;
         }
 

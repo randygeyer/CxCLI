@@ -6,7 +6,7 @@ package com.checkmarx.cxconsole.commands.constants;
 public enum Commands {
     SCAN("Scan"),
     ASYNC_SCAN("AsyncScan"),
-    OSASCAN("OsaScan"),
+    OSA_SCAN("OsaScan"),
     ASYNC_OSA_SCAN("AsyncOsaScan"),
     GENERATE_TOKEN("GenerateToken"),
     REVOKE_TOKEN("RevokeToken");

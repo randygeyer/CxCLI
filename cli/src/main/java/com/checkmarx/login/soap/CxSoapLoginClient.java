@@ -1,15 +1,15 @@
 package com.checkmarx.login.soap;
 
 import com.checkmarx.cxconsole.utils.ConfigMgr;
-import com.checkmarx.cxviewer.CxLogger;
-import com.checkmarx.login.soap.exceptions.CxSoapLoginClientException;
-import com.checkmarx.login.soap.utils.CXFConfigurationUtils;
 import com.checkmarx.cxviewer.ws.generated.Credentials;
 import com.checkmarx.cxviewer.ws.generated.CxCLIWebServiceV1;
 import com.checkmarx.cxviewer.ws.generated.CxCLIWebServiceV1Soap;
 import com.checkmarx.cxviewer.ws.generated.CxWSResponseLoginData;
 import com.checkmarx.login.soap.exceptions.CxSoapClientValidatorException;
+import com.checkmarx.login.soap.exceptions.CxSoapLoginClientException;
+import com.checkmarx.login.soap.utils.CXFConfigurationUtils;
 import com.checkmarx.login.soap.utils.SoapClientUtils;
+import org.apache.log4j.Logger;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -19,7 +19,11 @@ import java.net.URL;
  */
 public class CxSoapLoginClient {
 
+    private Logger log = Logger.getLogger("com.checkmarx.cxconsole.CxConsoleLauncher");
+
     private CxCLIWebServiceV1Soap cxSoapClient;
+
+    private String sessionId;
 
     public void initSoapClient(URL wsdlLocation) throws CxSoapLoginClientException {
         try {
@@ -37,9 +41,9 @@ public class CxSoapLoginClient {
                 SoapClientUtils.initKerberos();
             }
 
-
+            log.trace("SOAP client was initiated successfully");
         } catch (MalformedURLException e) {
-            CxLogger.getLogger().fatal("Error initiate the SOAP client: " + e.getMessage());
+            log.fatal("Error initiate the SOAP client: " + e.getMessage());
             throw new CxSoapLoginClientException("Error initiate the SOAP client: " + e.getMessage());
         }
     }
@@ -53,10 +57,11 @@ public class CxSoapLoginClient {
         try {
             SoapClientUtils.validateResponse(response);
         } catch (CxSoapClientValidatorException e) {
-            CxLogger.getLogger().fatal("Failed to login :" + response.getErrorMessage());
+            log.fatal("Failed to login :" + response.getErrorMessage());
             throw new CxSoapLoginClientException("Failed to login: " + response.getErrorMessage());
         }
 
+        sessionId = response.getSessionId();
         return response;
     }
 
@@ -69,14 +74,23 @@ public class CxSoapLoginClient {
         try {
             SoapClientUtils.validateResponse(response);
         } catch (CxSoapClientValidatorException e) {
-            CxLogger.getLogger().fatal("Failed to login :" + response.getErrorMessage());
+            log.fatal("Failed to login :" + response.getErrorMessage());
             throw new CxSoapLoginClientException("Failed to login: " + response.getErrorMessage());
         }
 
+        sessionId = response.getSessionId();
         return response;
     }
 
     public CxCLIWebServiceV1Soap getCxSoapClient() {
         return cxSoapClient;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 }
