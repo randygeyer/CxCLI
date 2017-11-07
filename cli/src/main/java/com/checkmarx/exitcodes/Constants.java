@@ -4,6 +4,10 @@ public class Constants {
 
     public class ExitCodes {
 
+        private ExitCodes() {
+            throw new IllegalStateException("Utility class");
+        }
+
         public static final int SCAN_SUCCEEDED_EXIT_CODE = 0;
         public static final int GENERAL_ERROR_EXIT_CODE = 1;
         public static final int SDLC_ERROR_EXIT_CODE = 2;
@@ -21,6 +25,10 @@ public class Constants {
     }
 
     public class ErrorMassages {
+
+        private ErrorMassages() {
+            throw new IllegalStateException("Utility class");
+        }
 
         public static final String GENERAL_ERROR_MSG = "General error occurred";
         public static final String SDLC_ERROR_MSG = "This feature is available only on SDLC edition";
