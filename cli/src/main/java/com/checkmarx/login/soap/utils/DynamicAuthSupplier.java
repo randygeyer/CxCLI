@@ -5,6 +5,7 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.transport.http.auth.SpnegoAuthSupplier;
 
 import java.net.URI;
+
 ;
 
 /**
@@ -15,12 +16,12 @@ import java.net.URI;
  * Description: This class dynamically replaces all occurrences of ${var_name} in cxf.xml by values of System.getProperty("var_name")
  */
 public class DynamicAuthSupplier extends SpnegoAuthSupplier {
-    public static final String PROPERTY_PATTERN = "^\\$\\{.*\\}$";
-    public static final String CLEAN_PROPERTY_NAME = "(\\$)|(\\{)|(\\})";
+    private static final String PROPERTY_PATTERN = "^\\$\\{.*\\}$";
+    private static final String CLEAN_PROPERTY_NAME = "(\\$)|(\\{)|(\\})";
 
     private static boolean isKerberosActive = false;
 
-    public static void setKerberosActive(boolean isActive){
+    static void setKerberosActive(boolean isActive){
         isKerberosActive = isActive;
     }
 

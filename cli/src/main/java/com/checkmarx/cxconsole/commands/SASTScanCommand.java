@@ -8,10 +8,8 @@ import com.checkmarx.cxconsole.commands.job.CLIScanJob;
 import com.checkmarx.cxconsole.commands.utils.CommandParametersValidator;
 import com.checkmarx.parameters.CLIScanParameters;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import static com.checkmarx.cxconsole.commands.constants.Commands.ASYNC_OSA_SCAN;
 import static com.checkmarx.cxconsole.commands.constants.Commands.OSA_SCAN;
@@ -48,7 +46,7 @@ public class SASTScanCommand extends CLICommand {
             } else {
                 exitCode = future.get();
             }
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (Exception e) {
             log.error("Error executing SAST scan command: " + e.getMessage());
             throw new CLICommandException("Error executing SAST scan command: " + e.getMessage());
         }

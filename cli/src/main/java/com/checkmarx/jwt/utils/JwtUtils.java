@@ -12,6 +12,10 @@ import java.io.UnsupportedEncodingException;
  */
 public class JwtUtils {
 
+    private JwtUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static String getPayloadSectionFromAccessJWT(String accessJWT) throws JWTException {
         String[] accessJWTDividedToSection = accessJWT.split("\\.");
         if (accessJWTDividedToSection.length != 3) {
@@ -34,7 +38,7 @@ public class JwtUtils {
         return decodedString;
     }
 
-    public static  <ResponseObj> ResponseObj parseJsonFromString(String jsonInString, Class<ResponseObj> dtoClass) throws JWTException {
+    public static <ResponseObj> ResponseObj parseJsonFromString(String jsonInString, Class<ResponseObj> dtoClass) throws JWTException {
         ObjectMapper mapper = new ObjectMapper();
 
         try {

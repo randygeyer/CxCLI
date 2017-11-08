@@ -5,8 +5,8 @@ import com.checkmarx.cxconsole.commands.CommandFactory;
 import com.checkmarx.cxconsole.commands.exceptions.CLICommandException;
 import com.checkmarx.cxconsole.commands.exceptions.CLICommandFactoryException;
 import com.checkmarx.cxconsole.commands.exceptions.CLICommandParameterValidatorException;
-import com.checkmarx.cxconsole.utils.ConsoleUtils;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
+import com.checkmarx.cxconsole.utils.ConsoleUtils;
 import com.checkmarx.cxconsole.utils.CustomStringList;
 import com.checkmarx.login.soap.utils.SSLUtilities;
 import com.checkmarx.parameters.CLIScanParameters;
@@ -86,7 +86,9 @@ public class CxConsoleLauncher {
             log.trace("Parameters were checked successfully");
         } catch (CLIParameterParsingException | CLICommandFactoryException | CLICommandParameterValidatorException e) {
             if (e instanceof CLICommandParameterValidatorException) {
-                command.printHelp();
+                if (command != null) {
+                    command.printHelp();
+                }
                 log.fatal(INVALID_COMMAND_PARAMETERS_MSG + e.getMessage() + "\n");
             } else {
                 log.fatal(e.getMessage());

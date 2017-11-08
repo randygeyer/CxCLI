@@ -97,7 +97,7 @@ public class CommandParametersValidator {
     public static void validatePrivateKeyLocationGITSVN(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliSastParameters().getLocationPrivateKey() != null
                 && parameters.getCliSharedParameters().getLocationType() != null
-                && (parameters.getCliSharedParameters().getLocationType() == LocationType.git || parameters.getCliSharedParameters().getLocationType() == LocationType.svn)) {
+                && (parameters.getCliSharedParameters().getLocationType() == LocationType.GIT || parameters.getCliSharedParameters().getLocationType() == LocationType.SVN)) {
             File keyFile = new File(parameters.getCliSastParameters().getLocationPrivateKey().trim());
             if (!keyFile.exists()) {
                 throw new CLICommandParameterValidatorException("Private key file is not found in: " +
@@ -112,8 +112,8 @@ public class CommandParametersValidator {
 
     public static void validateOSALocationType(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliOsaParameters().getOsaLocationPath() == null &&
-                (parameters.getCliSharedParameters().getLocationType() != LocationType.folder &&
-                        parameters.getCliSharedParameters().getLocationType() != LocationType.shared)) {
+                (parameters.getCliSharedParameters().getLocationType() != LocationType.FOLDER &&
+                        parameters.getCliSharedParameters().getLocationType() != LocationType.SHARED)) {
             throw new CLICommandParameterValidatorException("For OSA Scan (OsaScan), provide  OsaLocationPath  or locationType (values: folder/shared)");
         }
     }
@@ -171,7 +171,7 @@ public class CommandParametersValidator {
     public static void validateEnableOSA(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliSastParameters().isOsaEnabled() &&
                 (parameters.getCliSharedParameters().getLocationPath() == null ||
-                        (parameters.getCliSharedParameters().getLocationType() != LocationType.folder && parameters.getCliSharedParameters().getLocationType() != LocationType.shared))) {
+                        (parameters.getCliSharedParameters().getLocationType() != LocationType.FOLDER && parameters.getCliSharedParameters().getLocationType() != LocationType.SHARED))) {
             throw new CLICommandParameterValidatorException("For OSA Scan with EnableOsa parameter, provide  locationPath  or locationType ( values: folder/shared)");
         }
     }
@@ -281,7 +281,7 @@ public class CommandParametersValidator {
 
     private static void validateWorkspaceParameterOnlyInPerforce(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliSharedParameters().getLocationType() != null &&
-                parameters.getCliSharedParameters().getLocationType() != LocationType.perforce && parameters.getCliSastParameters().isPerforceWorkspaceMode()) {
+                parameters.getCliSharedParameters().getLocationType() != LocationType.PERFORCE && parameters.getCliSastParameters().isPerforceWorkspaceMode()) {
             throw new CLICommandParameterValidatorException("WorkspaceMode parameter should be specified only when locationType is Perforce");
         }
     }

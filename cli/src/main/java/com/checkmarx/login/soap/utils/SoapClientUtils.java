@@ -22,7 +22,11 @@ public class SoapClientUtils {
 
     public static void validateResponse(CxWSBasicRepsonse responseObject) throws CxSoapClientValidatorException {
         if (responseObject == null || !responseObject.isIsSuccesfull()) {
-            throw new CxSoapClientValidatorException("Error validate response: " + responseObject.getErrorMessage());
+            if (responseObject != null && responseObject.getErrorMessage() != null) {
+                throw new CxSoapClientValidatorException("Error validate response: " + responseObject.getErrorMessage());
+            } else if (responseObject == null) {
+                throw new CxSoapClientValidatorException("Error validate response: no response was recieved from the server.");
+            }
         }
     }
 

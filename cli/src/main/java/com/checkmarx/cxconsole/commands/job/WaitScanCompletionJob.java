@@ -133,6 +133,7 @@ class WaitScanCompletionJob implements Callable<Boolean> {
             } while (!scanComplete);
         } catch (InterruptedException e) {
             log.trace(e);
+            Thread.currentThread().interrupt();
         } catch (CxSoapSASTClientException e) {
             log.error("Error occurred during retrieving scan status: " + e.getMessage());
             throw new CLIJobException("Error occurred during retrieving scan status: " + e.getMessage());

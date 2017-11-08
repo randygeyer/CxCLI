@@ -9,8 +9,11 @@ import static com.checkmarx.exitcodes.Constants.ExitCodes.*;
 public class ThresholdResolver {
 
     protected static Logger log = Logger.getLogger("com.checkmarx.cxconsole.CxConsoleLauncher");
-
     private static final int NO_THRESHOLD_EXCEEDED = 0;
+
+    private ThresholdResolver() {
+        throw new IllegalStateException("Utility class");
+    }
 
     public static int resolveThresholdExitCode(ThresholdDto thresholdDto) {
         int thresholdScore = NO_THRESHOLD_EXCEEDED;

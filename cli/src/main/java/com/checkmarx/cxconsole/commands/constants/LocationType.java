@@ -7,12 +7,12 @@ import java.util.ArrayList;
 
 public enum LocationType {
 
-	folder("folder"),
-	shared("shared"),
-	tfs("TFS"),
-	svn("SVN"),
-    perforce("Perforce"),
-	git("GIT");
+	FOLDER("folder"),
+	SHARED("shared"),
+	TFS("TFS"),
+	SVN("SVN"),
+    PERFORCE("Perforce"),
+	GIT("GIT");
 	
 	private String locationType;
 	
@@ -35,16 +35,16 @@ public enum LocationType {
 		return locationType;
 	}
 	
-	public SourceLocationType getCorrespondingType() {
-		switch (this) {
-			case folder:
+	public static SourceLocationType getCorrespondingType(LocationType locationType) {
+		switch (locationType) {
+			case FOLDER:
 				return SourceLocationType.LOCAL;
-			case shared:
+			case SHARED:
 				return SourceLocationType.SHARED;
-			case tfs:
-			case svn:
-			case git:
-            case perforce:
+			case TFS:
+			case SVN:
+			case GIT:
+			case PERFORCE:
 				return SourceLocationType.SOURCE_CONTROL;
 		}
 		

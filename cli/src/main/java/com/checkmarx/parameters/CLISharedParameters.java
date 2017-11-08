@@ -59,7 +59,7 @@ public class CLISharedParameters extends AbstractCLIScanParameters {
         }
 
         locationPath = parsedCommandLineArguments.getOptionValue(PARAM_LOCATION_PATH.getOpt());
-        if (locationType == LocationType.folder && locationPath != null) {
+        if (locationType == LocationType.FOLDER && locationPath != null) {
             File resultFile = new File(locationPath);
             if (!resultFile.isAbsolute()) {
                 String path = System.getProperty("user.dir");

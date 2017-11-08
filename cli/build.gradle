@@ -20,9 +20,8 @@ repositories {
 group = 'com.checkmarx'
 version = '8.6.0' + "-" + getDate()
 compileJava.options.encoding = 'UTF-8'
-
-sourceCompatibility = 7
-targetCompatibility = 7
+compileJava.sourceCompatibility = 7
+compileJava.targetCompatibility = 7
 
 jar.doFirst {
     manifest {
@@ -49,7 +48,8 @@ tasks.withType(Tar) {
 dependencies {
     compile 'commons-collections:commons-collections:3.2.2',
             'org.apache.commons:commons-lang3:3.4',
-            'log4j:log4j:1.2.14',
+            'org.apache.logging.log4j:log4j-api:2.9.1',
+            'org.apache.logging.log4j:log4j-core:2.9.1',
             'org.jdom:jdom:1.1.3',
             'com.checkmarx.components:zipper:1.+',
             'org.apache.cxf:cxf-rt-frontend-jaxws:3.1.9',
@@ -58,7 +58,8 @@ dependencies {
             'javax.ws.rs:javax.ws.rs-api:2.0.1',
             'com.fasterxml.jackson.core:jackson-databind:2.8.7',
             'commons-io:commons-io:2.5',
-            'commons-cli:commons-cli:1.4'
+            'commons-cli:commons-cli:1.4',
+            'org.apache.ant:ant:1.9.4'
 }
 
 wsdl2java {
@@ -110,7 +111,7 @@ distributions {
     }
 }
 
-def getDate() {
+static def getDate() {
     def date = new Date()
     def formattedDate = date.format('yyyyMMdd-HHmm')
     return formattedDate

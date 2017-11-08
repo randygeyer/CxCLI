@@ -1,10 +1,8 @@
 package com.checkmarx.cxconsole.commands.job.retriableoperation;
 
-import com.checkmarx.cxconsole.commands.job.exceptions.CLIScanJobException;
+import com.checkmarx.cxconsole.commands.job.exceptions.CLIJobException;
 import com.checkmarx.cxconsole.commands.job.utils.JobUtils;
 import com.checkmarx.cxviewer.ws.generated.CxWSResponseLoginData;
-import com.checkmarx.login.rest.CxRestLoginClient;
-import com.checkmarx.login.rest.exceptions.CxRestLoginClientException;
 import com.checkmarx.login.soap.CxSoapLoginClient;
 import com.checkmarx.login.soap.exceptions.CxSoapLoginClientException;
 import com.checkmarx.login.soap.utils.SoapClientUtils;
@@ -27,12 +25,12 @@ public class RetryableSOAPLogin extends RetryableOperation {
     }
 
     @Override
-    protected void operation() throws CLIScanJobException {
+    protected void operation() throws CLIJobException {
         try {
             URL wsdlLocation = new URL(SoapClientUtils.buildHostWithWSDL(params.getCliMandatoryParameters().getOriginalHost()));
             cxSoapLoginClient.initSoapClient(wsdlLocation);
         } catch (CxSoapLoginClientException | MalformedURLException e) {
-            throw new CLIScanJobException(e.getMessage());
+            throw new CLIJobException(e.getMessage());
         }
 
         log.trace("");
@@ -53,7 +51,7 @@ public class RetryableSOAPLogin extends RetryableOperation {
         } catch (CxSoapLoginClientException e) {
             error = "Unsuccessful login.\\n" + e.getMessage();
             log.trace(error);
-            throw new CLIScanJobException(error);
+            throw new CLIJobException(error);
         }
 
         if (sessionId == null) {
@@ -61,7 +59,7 @@ public class RetryableSOAPLogin extends RetryableOperation {
             if (responseLoginData != null) {
                 message += ((responseLoginData.getErrorMessage() != null && !responseLoginData.getErrorMessage().isEmpty()) ? " Error message:" + responseLoginData.getErrorMessage() : "Login or password might be incorrect.");
             }
-            throw new CLIScanJobException(message);
+            throw new CLIJobException(message);
         }
 
         log.info("SOAP login was completed successfully");

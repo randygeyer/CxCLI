@@ -3,7 +3,6 @@ package com.checkmarx.login.soap.providers;
 import com.checkmarx.cxviewer.ws.generated.CxCLIWebServiceV1Soap;
 import com.checkmarx.login.soap.dto.ConfigurationDTO;
 import com.checkmarx.login.soap.dto.PresetDTO;
-import com.checkmarx.login.soap.dto.TeamDTO;
 import com.checkmarx.login.soap.providers.exceptions.CLISoapProvidersException;
 import org.apache.log4j.Logger;
 
@@ -18,7 +17,6 @@ public class ScanPrerequisitesValidator {
 
     private List<PresetDTO> presetsList;
     private List<ConfigurationDTO> configurationsList;
-    private List<TeamDTO> teamsList;
 
     public ScanPrerequisitesValidator(CxCLIWebServiceV1Soap cxSoapClient, String sessionId) throws CLISoapProvidersException {
         PresetProvider presetProvider = new PresetProvider(cxSoapClient, sessionId);
@@ -48,37 +46,32 @@ public class ScanPrerequisitesValidator {
             }
         }
 
-        log.trace("Preset [" + selectedPreset.getName() + "] is selected");
+        if (selectedPreset != null && selectedPreset.getName() != null) {
+            log.trace("Preset [" + selectedPreset.getName() + "] is selected");
+        }
         return selectedPreset;
     }
 
     public ConfigurationDTO validateJobConfiguration(String configurationName) {
         ConfigurationDTO selectedConfig = null;
-        if (configurationName != null) {
-            if (configurationsList != null) {
-                for (ConfigurationDTO config : configurationsList) {
-                    if (config.getName().equals(configurationName)) {
-                        selectedConfig = config;
-                        break;
-                    }
+        if (configurationName != null && configurationsList != null) {
+            for (ConfigurationDTO config : configurationsList) {
+                if (config.getName().equals(configurationName)) {
+                    selectedConfig = config;
+                    break;
                 }
+            }
 
-                if (selectedConfig == null) {
-                    log.trace("Configuration [" + configurationName + "] is not found");
-                }
+            if (selectedConfig == null) {
+                log.trace("Configuration [" + configurationName + "] is not found");
             }
         } else {
-            if (configurationsList != null) {
-                for (ConfigurationDTO config : configurationsList) {
-                    if (config.getName().equals("Default Configuration")) {
-                        selectedConfig = config;
-                        break;
-                    }
-                }
-            }
+            selectedConfig = validateJobConfiguration("Default Configuration");
         }
 
-        log.trace("Configuration [" + selectedConfig.getName() + "] is selected");
+        if (selectedConfig != null && selectedConfig.getName() != null) {
+            log.trace("Configuration [" + selectedConfig.getName() + "] is selected");
+        }
         return selectedConfig;
     }
 

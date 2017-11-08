@@ -1,7 +1,6 @@
 package com.checkmarx.cxconsole.commands.job;
 
 import com.checkmarx.cxconsole.commands.job.exceptions.CLIJobException;
-import com.checkmarx.cxconsole.commands.job.exceptions.CLIScanJobException;
 import com.checkmarx.cxconsole.commands.job.retriableoperation.RetryableOperation;
 import com.checkmarx.cxconsole.commands.job.retriableoperation.RetryableRESTLogin;
 import com.checkmarx.cxconsole.commands.job.retriableoperation.RetryableSOAPLogin;
@@ -42,17 +41,17 @@ public abstract class CLIScanJob implements Callable<Integer> {
         cxRestLoginClient = ConfigMgr.getRestWSMgr(this.params);
     }
 
-    void soapLogin() throws CLIScanJobException {
+    void soapLogin() throws CLIJobException {
         final RetryableOperation login = new RetryableSOAPLogin(params, cxSoapLoginClient);
         login.run();
         sessionId = cxSoapLoginClient.getSessionId();
         errorMsg = login.getError();
         if (errorMsg != null) {
-            throw new CLIScanJobException(errorMsg);
+            throw new CLIJobException(errorMsg);
         }
     }
 
-    void restLogin() throws CLIScanJobException {
+    void restLogin() throws CLIJobException {
         final RetryableOperation login = new RetryableRESTLogin(params, cxRestLoginClient);
         login.run();
         if (cxRestLoginClient.getRestLoginResponseDTO().getSessionId() != null) {
@@ -68,7 +67,7 @@ public abstract class CLIScanJob implements Callable<Integer> {
                 cxSoapLoginClient.initSoapClient(wsdlLocation);
             } catch (MalformedURLException | CxSoapLoginClientException e) {
                 log.error("Error initialize SOAP SAST client: " + e.getMessage());
-                throw new CLIScanJobException("Error initialize SOAP SAST client: " + e.getMessage());
+                throw new CLIJobException("Error initialize SOAP SAST client: " + e.getMessage());
             }
         }
     }
@@ -118,7 +117,7 @@ public abstract class CLIScanJob implements Callable<Integer> {
     }
 
     @Override
-    public abstract Integer call() throws Exception;
+    public abstract Integer call() throws CLIJobException;
 
     String getErrorMsg() {
         return errorMsg;

@@ -2,7 +2,7 @@ package com.checkmarx.cxconsole.commands;
 
 import com.checkmarx.cxconsole.commands.exceptions.CLICommandException;
 import com.checkmarx.cxconsole.commands.exceptions.CLICommandParameterValidatorException;
-import com.checkmarx.cxconsole.logging.CxConsoleLoggerFactory;
+import com.checkmarx.cxconsole.logger.CxConsoleLoggerFactory;
 import com.checkmarx.login.soap.exceptions.CxSoapLoginClientException;
 import com.checkmarx.parameters.CLIScanParameters;
 import org.apache.commons.cli.HelpFormatter;
@@ -18,7 +18,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static com.checkmarx.exitcodes.Constants.ErrorMassages.SERVER_CONNECTIVITY_VALIDATION_ERROR;
-import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED_EXIT_CODE;
 import static com.checkmarx.exitcodes.ErrorHandler.errorCodeResolver;
 import static com.checkmarx.login.soap.utils.SoapClientUtils.resolveServerProtocol;
 
@@ -31,22 +30,22 @@ public abstract class CLICommand {
 
     protected CLIScanParameters params;
 
-    protected int exitCode;
+    int exitCode;
 
-    protected String commandName;
+    String commandName;
 
-    protected Integer timeoutInSeconds;
+    Integer timeoutInSeconds;
 
-    protected ExecutorService executor = Executors.newSingleThreadExecutor();
+    ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    protected HelpFormatter helpFormatter = new HelpFormatter();
+    HelpFormatter helpFormatter = new HelpFormatter();
 
-    protected boolean isAsyncScan = false;
+    boolean isAsyncScan = false;
 
     private static final int UNASSIGNED_EXIT_CODE = -1;
-    protected static final String HELP_HEADER = "\nThe \"Scan\" command allows to scan new and existing projects. It accepts all project settings as an arguments, similar to Web interface.";
+    static final String HELP_HEADER = "\nThe \"Scan\" command allows to scan new and existing projects. It accepts all project settings as an arguments, similar to Web interface.";
 
-    public CLICommand(CLIScanParameters params) {
+    CLICommand(CLIScanParameters params) {
         this.params = params;
         exitCode = UNASSIGNED_EXIT_CODE;
         initHelpMessage();
@@ -141,10 +140,11 @@ public abstract class CLICommand {
     private String getLogFileLocation(String logPath, String projectNameFromParam) {
         String logFileLocation = logPath;
         String projectName = projectNameFromParam;
+        String[] parts = new String[0];
         if (projectName != null) {
             projectName = projectName.replaceAll("/", "\\\\");
+            parts = projectName.split("\\\\");
         }
-        String[] parts = projectName.split("\\\\");
         String usrDir = System.getProperty("user.dir") + File.separator + normalizeLogPath(parts[parts.length - 1]) + File.separator;
 
         if (logFileLocation == null) {

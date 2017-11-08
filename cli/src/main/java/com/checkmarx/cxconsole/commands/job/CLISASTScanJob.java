@@ -4,7 +4,6 @@ import com.checkmarx.components.zipper.ZipListener;
 import com.checkmarx.components.zipper.Zipper;
 import com.checkmarx.cxconsole.commands.constants.LocationType;
 import com.checkmarx.cxconsole.commands.job.exceptions.CLIJobException;
-import com.checkmarx.cxconsole.commands.job.exceptions.CLIScanJobException;
 import com.checkmarx.cxconsole.commands.job.utils.JobUtils;
 import com.checkmarx.cxconsole.commands.job.utils.PathHandler;
 import com.checkmarx.cxconsole.commands.job.utils.PrintResultsUtil;
@@ -35,7 +34,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import static com.checkmarx.cxconsole.commands.constants.LocationType.folder;
+import static com.checkmarx.cxconsole.commands.constants.LocationType.FOLDER;
+import static com.checkmarx.cxconsole.commands.constants.LocationType.getCorrespondingType;
 import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED_EXIT_CODE;
 import static com.checkmarx.thresholds.ThresholdResolver.resolveThresholdExitCode;
 
@@ -96,13 +96,13 @@ public class CLISASTScanJob extends CLIScanJob {
 
         if (projectConfig != null && !projectConfig.getProjectConfig().getSourceCodeSettings().getSourceOrigin().equals(SourceLocationType.LOCAL)) {
             params.getCliSharedParameters().setLocationType(getLocationType(projectConfig.getProjectConfig().getSourceCodeSettings()));
-            if (params.getCliSharedParameters().getLocationType() == LocationType.perforce) {
+            if (params.getCliSharedParameters().getLocationType() == LocationType.PERFORCE) {
                 boolean isWorkspace = (this.projectConfig.getProjectConfig().getSourceCodeSettings().getSourceControlSetting().getPerforceBrowsingMode() == CxWSPerforceBrowsingMode.WORKSPACE);
                 params.getCliSastParameters().setPerforceWorkspaceMode(isWorkspace);
             }
         }
 
-        if (params.getCliSharedParameters().getLocationType() == folder) {
+        if (params.getCliSharedParameters().getLocationType() == FOLDER) {
             long maxZipSize = ConfigMgr.getCfgMgr().getLongProperty(ConfigMgr.KEY_MAX_ZIP_SIZE);
             maxZipSize *= (1024 * 1024);
             if (!packFolder(maxZipSize)) {
@@ -168,8 +168,9 @@ public class CLISASTScanJob extends CLIScanJob {
             try {
                 result = cxSoapSASTClient.updateScanComment(sessionId, scanId, comment);
             } catch (CxSoapClientValidatorException e) {
-                if (result.getErrorMessage() != null)
+                if (result != null && result.getErrorMessage() != null) {
                     log.warn("Cannot update the scan comment: " + result.getErrorMessage());
+                }
             }
         }
 
@@ -224,7 +225,7 @@ public class CLISASTScanJob extends CLIScanJob {
         sourceLocationTypeResolver();
 
         // Start scan
-        int getStatusInterval = ConfigMgr.getCfgMgr().getIntProperty(ConfigMgr.KEY_PROGRESS_INTERVAL);
+        long getStatusInterval = ConfigMgr.getCfgMgr().getIntProperty(ConfigMgr.KEY_PROGRESS_INTERVAL);
         while ((runScanResult == null || !runScanResult.isIsSuccesfull()) && count < retriesNum) {
             try {
 //                if (params.getCliSharedParameters().getLocationType() == null) {
@@ -275,15 +276,15 @@ public class CLISASTScanJob extends CLIScanJob {
                 try {
                     Thread.sleep(getStatusInterval * 1000);
                 } catch (InterruptedException ex) {
-                    // no-op
+                    Thread.currentThread().interrupt();
                 }
             }
         }
 
         if ((runScanResult != null) && !runScanResult.isIsSuccesfull()) {
-            throw new CLIScanJobException("Existing project scan request was unsuccessful. " + (errMsg == null ? "" : errMsg));
+            throw new CLIJobException("Existing project scan request was unsuccessful. " + (errMsg == null ? "" : errMsg));
         } else if (runScanResult == null) {
-            throw new CLIScanJobException("Error occurred during existing project scan. " + errMsg);
+            throw new CLIJobException("Error occurred during existing project scan. " + errMsg);
         }
 
         log.trace("Existing project scan request response: runId:" + runScanResult.getRunId());
@@ -292,30 +293,32 @@ public class CLISASTScanJob extends CLIScanJob {
 
     private void sourceLocationTypeResolver() throws CLIJobException {
         if (params.getCliSharedParameters().getLocationType() != null) {
-            switch (params.getCliSharedParameters().getLocationType()) {
-                case folder:
-                    sourceLocationType = SourceLocationType.LOCAL;
-                    break;
-                case shared:
-                    sourceLocationType = SourceLocationType.SHARED;
-                    break;
-                case tfs:
-                    repoType = RepositoryType.TFS;
-                    sourceLocationType = SourceLocationType.SOURCE_CONTROL;
-                    break;
-                case svn:
-                    repoType = RepositoryType.SVN;
-                    sourceLocationType = SourceLocationType.SOURCE_CONTROL;
-                    break;
-                case perforce:
-                    repoType = RepositoryType.PERFORCE;
-                    sourceLocationType = SourceLocationType.SOURCE_CONTROL;
-                    break;
-                case git:
-                    repoType = RepositoryType.GIT;
-                    sourceLocationType = SourceLocationType.SOURCE_CONTROL;
-                    break;
-            }
+            sourceLocationType = getCorrespondingType(params.getCliSharedParameters().getLocationType());
+            repoType = RepositoryType.fromValue(params.getCliSharedParameters().getLocationType().toString());
+//            switch (params.getCliSharedParameters().getLocationType()) {
+//                case folder:
+//                    sourceLocationType = SourceLocationType.LOCAL;
+//                    break;
+//                case shared:
+//                    sourceLocationType = SourceLocationType.SHARED;
+//                    break;
+//                case tfs:
+//                    repoType = RepositoryType.TFS;
+//                    sourceLocationType = SourceLocationType.SOURCE_CONTROL;
+//                    break;
+//                case svn:
+//                    repoType = RepositoryType.SVN;
+//                    sourceLocationType = SourceLocationType.SOURCE_CONTROL;
+//                    break;
+//                case perforce:
+//                    repoType = RepositoryType.PERFORCE;
+//                    sourceLocationType = SourceLocationType.SOURCE_CONTROL;
+//                    break;
+//                case git:
+//                    repoType = RepositoryType.GIT;
+//                    sourceLocationType = SourceLocationType.SOURCE_CONTROL;
+//                    break;
+//            }
         } else {
             sourceLocationType = projectConfig.getProjectConfig().getSourceCodeSettings().getSourceOrigin();
             if (sourceLocationType == SourceLocationType.LOCAL) {
@@ -332,7 +335,7 @@ public class CLISASTScanJob extends CLIScanJob {
         int count = 0;
         String errMsg = "";
         if (params.getCliSharedParameters().getLocationType() == null) {
-            int getStatusInterval = ConfigMgr.getCfgMgr().getIntProperty(
+            long getStatusInterval = ConfigMgr.getCfgMgr().getIntProperty(
                     ConfigMgr.KEY_PROGRESS_INTERVAL);
 
             while ((getPrjsResult == null || !getPrjsResult.isIsSuccesfull())
@@ -368,7 +371,7 @@ public class CLISASTScanJob extends CLIScanJob {
                     try {
                         Thread.sleep(getStatusInterval * 1000);
                     } catch (InterruptedException ex) {
-                        // no-op
+                        Thread.currentThread().interrupt();
                     }
                 }
             }
@@ -415,19 +418,19 @@ public class CLISASTScanJob extends CLIScanJob {
     private LocationType getLocationType(SourceCodeSettings scSettings) {
         SourceLocationType slType = scSettings.getSourceOrigin();
         if (slType.equals(SourceLocationType.LOCAL)) {
-            return folder;
+            return FOLDER;
         } else if (slType.equals(SourceLocationType.SHARED)) {
-            return LocationType.shared;
+            return LocationType.SHARED;
         } else if (slType.equals(SourceLocationType.SOURCE_CONTROL)) {
             RepositoryType rType = scSettings.getSourceControlSetting().getRepository();
             if (rType.equals(RepositoryType.TFS)) {
-                return LocationType.tfs;
+                return LocationType.TFS;
             } else if (rType.equals(RepositoryType.GIT)) {
-                return LocationType.git;
+                return LocationType.GIT;
             } else if (rType.equals(RepositoryType.SVN)) {
-                return LocationType.svn;
+                return LocationType.SVN;
             } else if (rType.equals(RepositoryType.PERFORCE)) {
-                return LocationType.perforce;
+                return LocationType.PERFORCE;
             }
         }
 

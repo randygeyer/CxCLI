@@ -74,9 +74,8 @@ public class CxRestOSAClient {
     public CreateOSAScanResponse createOSAScan(long projectId, File zipFile) throws CxRestOSAClientException {
         HttpPost post = null;
         HttpResponse response = null;
-        FileInputStream fileInputStream = null;
 
-        try {
+        try (FileInputStream fileInputStream = new FileInputStream(zipFile)) {
             post = new HttpPost(String.valueOf(RestResourcesURIBuilder.buildCreateOSAScanURL(new URL(hostName), projectId)));
             List<Header> defaultHeaders = new ArrayList<>();
             if (loginType == USERNAME_AND_PASSWORD) {
@@ -87,7 +86,6 @@ public class CxRestOSAClient {
                 defaultHeaders.add(restLoginResponseDTO.getTokenAuthorizationHeader());
                 apacheClient = HttpClientBuilder.create().setDefaultHeaders(defaultHeaders).build();
             }
-            fileInputStream = new FileInputStream(zipFile);
             InputStreamBody streamBody = new InputStreamBody(fileInputStream, ContentType.APPLICATION_OCTET_STREAM, OSA_ZIPPED_FILE_KEY_NAME);
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
@@ -108,7 +106,6 @@ public class CxRestOSAClient {
             if (post != null) {
                 post.releaseConnection();
             }
-            IOUtils.closeQuietly(fileInputStream);
             HttpClientUtils.closeQuietly(response);
         }
     }
@@ -293,7 +290,8 @@ public class CxRestOSAClient {
                 try {
                     Thread.sleep(10000); //Get status every 10 sec
                 } catch (InterruptedException e) {
-                    log.debug("caught exceptions during sleep: " + e.getMessage());
+                    Thread.currentThread().interrupt();
+                    ;
                 }
             }
 

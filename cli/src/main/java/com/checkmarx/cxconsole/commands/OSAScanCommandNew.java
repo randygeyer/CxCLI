@@ -8,10 +8,8 @@ import com.checkmarx.cxconsole.commands.job.CLIScanJob;
 import com.checkmarx.cxconsole.commands.utils.CommandParametersValidator;
 import com.checkmarx.parameters.CLIScanParameters;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Created by nirli on 31/10/2017.
@@ -30,7 +28,7 @@ class OSAScanCommandNew extends CLICommand {
 
     @Override
     protected int executeCommand() throws CLICommandException {
-        CLIScanJob job = null;
+        CLIScanJob job;
         if (!isAsyncScan) {
             job = new CLIOSAScanJob(params, false);
         } else {
@@ -44,7 +42,7 @@ class OSAScanCommandNew extends CLICommand {
             } else {
                 exitCode = future.get();
             }
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (Exception e) {
             log.error("Error executing OSA scan command: " + e.getMessage());
             throw new CLICommandException("Error executing OSA scan command: " + e.getMessage());
         }

@@ -1,6 +1,6 @@
 package com.checkmarx.cxconsole.commands.job.retriableoperation;
 
-import com.checkmarx.cxconsole.commands.job.exceptions.CLIScanJobException;
+import com.checkmarx.cxconsole.commands.job.exceptions.CLIJobException;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import org.apache.log4j.Logger;
 
@@ -17,7 +17,7 @@ public abstract class RetryableOperation {
     protected RetryableOperation() {
     }
 
-    public void run() throws CLIScanJobException {
+    public void run() throws CLIJobException {
         int retries = ConfigMgr.getCfgMgr().getIntProperty(ConfigMgr.KEY_RETIRES);
         int count = 0;
         while (!finished) {
@@ -34,7 +34,7 @@ public abstract class RetryableOperation {
         }
     }
 
-    protected abstract void operation() throws CLIScanJobException;
+    protected abstract void operation() throws CLIJobException;
 
     public abstract String getOperationName();
 

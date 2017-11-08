@@ -135,7 +135,7 @@ public class CLISASTParameters extends AbstractCLIScanParameters {
         locationUser = parsedCommandLineArguments.getOptionValue(PARAM_LOCATION_USER.getOpt());
         locationPassword = parsedCommandLineArguments.getOptionValue(PARAM_LOCATION_PWD.getOpt());
 
-        if (locationType == LocationType.perforce && !parsedCommandLineArguments.hasOption(PARAM_LOCATION_PWD.getOpt())) {
+        if (locationType == LocationType.PERFORCE && !parsedCommandLineArguments.hasOption(PARAM_LOCATION_PWD.getOpt())) {
             // In Perforce the password is not mandatory in case of a new user
             locationPassword = "";
         }
@@ -154,21 +154,17 @@ public class CLISASTParameters extends AbstractCLIScanParameters {
 
         if (parsedCommandLineArguments.hasOption(PARAM_LOCATION_PORT.getOpt())) {
             String portStr = parsedCommandLineArguments.getOptionValue(PARAM_LOCATION_PORT.getOpt());
-            try {
-                locationPort = Integer.parseInt(portStr);
-            } catch (Exception e) {
-                // ignore
-            }
+            locationPort = Integer.parseInt(portStr);
         } else {
-            if (locationType == LocationType.svn) {
+            if (locationType == LocationType.SVN) {
                 if (locationURL.toLowerCase().startsWith("svn://")) {
                     locationPort = 3690;
                 } else {
                     locationPort = 80;
                 }
-            } else if (locationType == LocationType.tfs) {
+            } else if (locationType == LocationType.TFS) {
                 locationPort = 8080;
-            } else if (locationType == LocationType.perforce) {
+            } else if (locationType == LocationType.PERFORCE) {
                 locationPort = 1666;
             }
         }
@@ -355,14 +351,10 @@ public class CLISASTParameters extends AbstractCLIScanParameters {
     @Override
     public String getKeyDescriptions() {
         String leftSpacing = "  ";
-        StringBuilder keys = new StringBuilder(leftSpacing);
-
-        keys.append(cliMandatoryParameters.getKeyDescriptions());
-        keys.append(cliSharedParameters.getParamLocationType());
-        keys.append(KEY_DESCR_INTEND_SMALL);
-        keys.append("- Location type of files for scan. Mandatory\n");
-
-        return keys.toString();
+        return leftSpacing + cliMandatoryParameters.getKeyDescriptions() +
+                cliSharedParameters.getParamLocationType() +
+                KEY_DESCR_INTEND_SMALL +
+                "- Location type of files for scan. Mandatory\n";
     }
 
     public String getOptionalKeyDescriptions() {

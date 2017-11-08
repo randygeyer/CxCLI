@@ -1,6 +1,6 @@
 package com.checkmarx.cxconsole.commands.job.retriableoperation;
 
-import com.checkmarx.cxconsole.commands.job.exceptions.CLIScanJobException;
+import com.checkmarx.cxconsole.commands.job.exceptions.CLIJobException;
 import com.checkmarx.login.rest.CxRestLoginClient;
 import com.checkmarx.login.rest.exceptions.CxRestLoginClientException;
 import com.checkmarx.parameters.CLIScanParameters;
@@ -20,7 +20,7 @@ public class RetryableRESTLogin extends RetryableOperation {
 
 
     @Override
-    protected void operation() throws CLIScanJobException {
+    protected void operation() throws CLIJobException {
         log.trace("");
         log.info("Logging into the Checkmarx service.");
 
@@ -33,10 +33,10 @@ public class RetryableRESTLogin extends RetryableOperation {
             }
 
             if (cxRestLoginClient.getRestLoginResponseDTO() == null) {
-                throw new CLIScanJobException("Unsuccessful login.");
+                throw new CLIJobException("Unsuccessful login.");
             }
         } catch (CxRestLoginClientException e) {
-            throw new CLIScanJobException("Unsuccessful login.");
+            throw new CLIJobException("Unsuccessful login.");
         }
 
         log.info("REST login was completed successfully");

@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -47,7 +48,7 @@ public abstract class OsaUtils {
                 FileUtils.copyDirectory(dir, tmpFolder);
             }
         }
-        try(OutputStream fileOutputStream = new FileOutputStream(tempFile)) {
+        try (OutputStream fileOutputStream = new FileOutputStream(tempFile)) {
             new Zipper().zip(tmpFolder, combinedExcludePattern, includeFilesPattern, fileOutputStream, maxZipSizeInBytes, zipListener);
         } catch (Zipper.MaxZipSizeReached e) {
             tempFile.delete();
@@ -74,12 +75,8 @@ public abstract class OsaUtils {
         return String.format(url + "/CxWebClient/portal#/projectState/%s/OSA", projectId);
     }
 
-    private static File createTempDirectory()
-            throws IOException {
-        final File temp;
-
-        temp = File.createTempFile(TEMP_COPIED_FOLDER, Long.toString(System.nanoTime()));
-
+    private static File createTempDirectory() throws IOException {
+        final File temp = File.createTempFile(TEMP_COPIED_FOLDER, Long.toString(System.nanoTime()));
         if (!(temp.delete())) {
             throw new IOException("Could not delete temp file: " + temp.getAbsolutePath());
         }
@@ -113,12 +110,11 @@ public abstract class OsaUtils {
                 result.add("!**/" + p + "/**/*, ");
             }
         }
-        log.debug("Exclude folders converted to: '" + folderExclusions.toString() + "'");
+        log.debug("Exclude folders converted to: '" + Arrays.toString(folderExclusions) + "'");
         return folderExclusions;
     }
 
     private static String[] processPatternFiles(String[] filesExclusions) {
-
         if (filesExclusions == null) {
             return filesExclusions;
         }
@@ -132,7 +128,7 @@ public abstract class OsaUtils {
             }
         }
 
-        log.debug("Exclude files converted to: '" + filesExclusions.toString() + "'");
+        log.debug("Exclude files converted to: '" + Arrays.toString(filesExclusions) + "'");
         return result.toArray(new String[0]);
     }
 
