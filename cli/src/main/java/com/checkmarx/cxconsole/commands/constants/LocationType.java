@@ -14,25 +14,25 @@ public enum LocationType {
     PERFORCE("Perforce"),
 	GIT("GIT");
 	
-	private String locationType;
+	private String locationTypeStringValue;
 	
 	LocationType(String location) {
-		this.locationType = location;
+		this.locationTypeStringValue = location;
 	}
 	
 	public static LocationType byName(String name) {
 		LocationType[] vals = values();
 		
 		for (LocationType value : vals) {
-			if (value.locationType.equalsIgnoreCase(name)) {
+			if (value.locationTypeStringValue.equalsIgnoreCase(name)) {
 				return value;
 			}
 		}
 		return null;
 	}
 	
-	public String getLocationType() {
-		return locationType;
+	public String getLocationTypeStringValue() {
+		return locationTypeStringValue;
 	}
 	
 	public static SourceLocationType getCorrespondingType(LocationType locationType) {
@@ -56,7 +56,7 @@ public enum LocationType {
         ArrayList<String> locationTypeNames = new ArrayList<>(values().length);
         for (LocationType lt : values())
         {
-            locationTypeNames.add(lt.getLocationType());
+            locationTypeNames.add(lt.getLocationTypeStringValue());
         }
         return StringUtils.join(locationTypeNames,"|");
     }

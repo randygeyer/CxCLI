@@ -29,7 +29,6 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -89,7 +88,7 @@ public class CLISASTScanJob extends CLIScanJob {
             scanPrerequisitesValidator = new ScanPrerequisitesValidator(cxSoapLoginClient.getCxSoapClient(), sessionId);
             selectedPreset = scanPrerequisitesValidator.validateJobPreset(params.getCliSastParameters().getPresetName());
             selectedConfiguration = scanPrerequisitesValidator.validateJobConfiguration(params.getCliSastParameters().getConfiguration());
-            log.info("Scan prerequisite validated successfully");
+            log.info("Scan prerequisites validated successfully");
         } catch (CLISoapProvidersException e) {
             throw new CLIJobException("Error initialize project prerequisites: " + e.getMessage());
         }
@@ -136,7 +135,6 @@ public class CLISASTScanJob extends CLIScanJob {
         }
         ExecutorService executor = Executors.newSingleThreadExecutor();
         WaitScanCompletionJob waiterJob = new WaitScanCompletionJob(cxSoapSASTClient, sessionId, runId, isAsyncScan);
-        waiterJob.setLog(log);
         long scanId;
         try {
             Future<Boolean> furore = executor.submit(waiterJob);
@@ -150,13 +148,9 @@ public class CLISASTScanJob extends CLIScanJob {
                 log.info("SAST scan finished. Retrieving scan results");
             }
 
-        } catch (ExecutionException | InterruptedException e) {
-            log.trace("Error occurred during scan progress monitoring", e.getCause());
-            String causeMessage = e.getCause().getMessage();
-            if (causeMessage == null) {
-                causeMessage = "";
-            }
-            throw new CLIJobException(causeMessage);
+        } catch (Exception e) {
+            log.trace("Error occurred during scan progress monitoring: " + e.getMessage());
+            throw new CLIJobException("Error occurred during scan progress monitoring: " + e.getMessage());
         } finally {
             executor.shutdownNow();
         }
@@ -228,36 +222,7 @@ public class CLISASTScanJob extends CLIScanJob {
         long getStatusInterval = ConfigMgr.getCfgMgr().getIntProperty(ConfigMgr.KEY_PROGRESS_INTERVAL);
         while ((runScanResult == null || !runScanResult.isIsSuccesfull()) && count < retriesNum) {
             try {
-//                if (params.getCliSharedParameters().getLocationType() == null) {
-//                    ProjectSettings prjSett = projectConfig.getProjectConfig().getProjectSettings();
-//                    SourceCodeSettings srcCodeSett = projectConfig.getProjectConfig().getSourceCodeSettings();
-//                    if (params.getCliSastParameters().getLocationUser() != null && params.getCliSastParameters().getLocationPassword() != null) {
-//                        Credentials creds = new Credentials();
-//                        creds.setUser(params.getCliSastParameters().getLocationUser());
-//                        creds.setPass(params.getCliSastParameters().getLocationPassword());
-//                        srcCodeSett.setUserCredentials(creds);
-//                    }
-//
-//                    if (params.getCliSastParameters().getLocationBranch() != null) {
-//                        srcCodeSett.getSourceControlSetting().setGITBranch(params.getCliSastParameters().getLocationBranch());
-//                    }
-//
-//                    SourceFilterPatterns filterPatterns = new SourceFilterPatterns();
-//                    filterPatterns.setExcludeFilesPatterns(StringUtils.join(params.getCliSastParameters().getExcludedFiles(), ','));
-//                    filterPatterns.setExcludeFoldersPatterns(StringUtils.join(params.getCliSastParameters().getExcludedFolders(), ','));
-//                    srcCodeSett.setSourceFilterLists(filterPatterns);
-//
-//                    runScanResult = cxSoapSASTClient.cliScan(sessionId, prjSett, srcCodeSett, params.getCliSastParameters().isIncrementalScan(), params.getCliSharedParameters().isVisibleOthers(), params.getCliSastParameters().isForceScan());
-//                } else {
-                runScanResult = cxSoapSASTClient.cliScan(sessionId, params.getCliMandatoryParameters().getProjectNameWithPath(),
-                        selectedPreset.getId(), selectedConfiguration.getId(), sourceLocationType, params.getCliSharedParameters().getLocationPath(), zippedSourcesBytes,
-                        params.getCliSastParameters().getLocationUser(), params.getCliSastParameters().getLocationPassword(),
-                        repoType, params.getCliSastParameters().getLocationURL(),
-                        params.getCliSastParameters().getLocationPort(), params.getCliSastParameters().getLocationBranch(),
-                        params.getCliSastParameters().getPrivateKey(),
-                        params.getCliSastParameters().isIncrementalScan(), params.getCliSharedParameters().isVisibleOthers(),
-                        params.getCliSastParameters().getExcludedFiles(), params.getCliSastParameters().getExcludedFolders(), params.getCliSastParameters().isForceScan(),
-                        params.getCliSastParameters().isPerforceWorkspaceMode());
+                runScanResult = cxSoapSASTClient.cliScan(sessionId, selectedPreset.getId(), selectedConfiguration.getId(), sourceLocationType, zippedSourcesBytes, repoType, params);
             } catch (CxSoapSASTClientException e) {
                 errMsg = e.getMessage();
                 count++;
@@ -295,7 +260,7 @@ public class CLISASTScanJob extends CLIScanJob {
         if (params.getCliSharedParameters().getLocationType() != null) {
             sourceLocationType = getCorrespondingType(params.getCliSharedParameters().getLocationType());
             if (params.getCliSharedParameters().getLocationType() != LocationType.FOLDER && params.getCliSharedParameters().getLocationType() != LocationType.SHARED) {
-                repoType = RepositoryType.fromValue(params.getCliSharedParameters().getLocationType().toString());
+                repoType = RepositoryType.fromValue(params.getCliSharedParameters().getLocationType().getLocationTypeStringValue());
             }
         } else {
             sourceLocationType = projectConfig.getProjectConfig().getSourceCodeSettings().getSourceOrigin();

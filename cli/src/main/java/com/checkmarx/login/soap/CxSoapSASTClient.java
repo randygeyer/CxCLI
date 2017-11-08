@@ -5,6 +5,7 @@ import com.checkmarx.cxviewer.ws.generated.*;
 import com.checkmarx.login.soap.exceptions.CxSoapClientValidatorException;
 import com.checkmarx.login.soap.exceptions.CxSoapSASTClientException;
 import com.checkmarx.login.soap.utils.SoapClientUtils;
+import com.checkmarx.parameters.CLIScanParameters;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -74,18 +75,14 @@ public class CxSoapSASTClient {
         return response;
     }
 
-    public CxWSResponseRunID cliScan(String sessionId, String fullProjectName, long presetId, long configId,
-                                     SourceLocationType locationType, String locationpath, byte[] fileBytes, String user, String password,
-                                     RepositoryType repositoryType, String locationURL, Integer locationport, String locationBrach,
-                                     String privateKey, boolean incremental, boolean visibleToOther, String[] excludeFilesPatterns,
-                                     String[] excludeFoldersPatterns, boolean ignoreScanWithUnchangedSource, boolean isPerforceWorkspaceMode) throws CxSoapSASTClientException {
+    public CxWSResponseRunID cliScan(String sessionId, long presetId, long configId, SourceLocationType locationType, byte[] fileBytes, RepositoryType repositoryType, CLIScanParameters parameters) throws CxSoapSASTClientException {
 
         CliScanArgs args = new CliScanArgs();
-        args.setIsIncremental(incremental);
-        args.setIsPrivateScan(!visibleToOther);
-        args.setIgnoreScanWithUnchangedCode(ignoreScanWithUnchangedSource);
+        args.setIsIncremental(parameters.getCliSastParameters().isIncrementalScan());
+        args.setIsPrivateScan(!parameters.getCliSharedParameters().isVisibleOthers());
+        args.setIgnoreScanWithUnchangedCode(parameters.getCliSastParameters().isForceScan());
         ProjectSettings projectSettings = new ProjectSettings();
-        projectSettings.setProjectName(fullProjectName);
+        projectSettings.setProjectName(parameters.getCliMandatoryParameters().getProjectNameWithPath());
         projectSettings.setPresetID(presetId);
         projectSettings.setScanConfigurationID(configId);
 
@@ -95,20 +92,20 @@ public class CxSoapSASTClient {
         LocalCodeContainer localCodeContainer;
         srcCodeSettings.setSourceOrigin(locationType);
         SourceFilterPatterns filterPatterns = new SourceFilterPatterns();
-        filterPatterns.setExcludeFilesPatterns(StringUtils.join(excludeFilesPatterns, ','));
-        filterPatterns.setExcludeFoldersPatterns(StringUtils.join(excludeFoldersPatterns, ','));
+        filterPatterns.setExcludeFilesPatterns(StringUtils.join(parameters.getCliSastParameters().getExcludedFiles(), ','));
+        filterPatterns.setExcludeFoldersPatterns(StringUtils.join(parameters.getCliSastParameters().getExcludedFolders(), ','));
         srcCodeSettings.setSourceFilterLists(filterPatterns);
         boolean generateScanPaths = false;
 
         Credentials creds = new Credentials();
-        creds.setUser(user);
-        creds.setPass(password);
+        creds.setUser(parameters.getCliSastParameters().getLocationUser());
+        creds.setPass(parameters.getCliSastParameters().getLocationPassword());
         if (locationType != null) {
             switch (locationType) {
                 case LOCAL:
                     localCodeContainer = new LocalCodeContainer();
                     localCodeContainer.setZippedFile(fileBytes);
-                    localCodeContainer.setFileName(locationpath);
+                    localCodeContainer.setFileName(parameters.getCliSharedParameters().getLocationPath());
                     srcCodeSettings.setPackagedCode(localCodeContainer);
                     break;
                 case SHARED:
@@ -117,19 +114,19 @@ public class CxSoapSASTClient {
                     break;
                 case SOURCE_CONTROL:
                     SourceControlSettings sourceControlSetting = new SourceControlSettings();
-                    sourceControlSetting.setServerName(locationURL);
-                    if (locationport != null) {
-                        sourceControlSetting.setPort(locationport);
+                    sourceControlSetting.setServerName(parameters.getCliSastParameters().getLocationURL());
+                    if (parameters.getCliSastParameters().getLocationPort() != null) {
+                        sourceControlSetting.setPort(parameters.getCliSastParameters().getLocationPort());
                     }
                     sourceControlSetting.setRepository(repositoryType);
                     switch (repositoryType) {
                         case SVN:
                             sourceControlSetting.setUserCredentials(creds);
                             generateScanPaths = true;
-                            if (privateKey != null) {
+                            if (parameters.getCliSastParameters().getPrivateKey() != null) {
                                 sourceControlSetting.setUseSSH(true);
                                 sourceControlSetting.setProtocol(SourceControlProtocolType.SSH);
-                                sourceControlSetting.setSSHPrivateKey(privateKey);
+                                sourceControlSetting.setSSHPrivateKey(parameters.getCliSastParameters().getPrivateKey());
                                 sourceControlSetting.setSSHPublicKey("EmptyStab");
                             }
                             break;
@@ -137,18 +134,18 @@ public class CxSoapSASTClient {
                         case PERFORCE:
                             sourceControlSetting.setUserCredentials(creds);
                             generateScanPaths = true;
-                            if (isPerforceWorkspaceMode) {
+                            if (parameters.getCliSastParameters().isPerforceWorkspaceMode()) {
                                 sourceControlSetting.setPerforceBrowsingMode(CxWSPerforceBrowsingMode.WORKSPACE);
                             } else {
                                 sourceControlSetting.setPerforceBrowsingMode(CxWSPerforceBrowsingMode.DEPOT);
                             }
                             break;
                         case GIT:
-                            sourceControlSetting.setGITBranch(locationBrach);
-                            if (privateKey != null) {
+                            sourceControlSetting.setGITBranch(parameters.getCliSastParameters().getLocationBranch());
+                            if (parameters.getCliSastParameters().getPrivateKey() != null) {
                                 sourceControlSetting.setUseSSH(true);
                                 sourceControlSetting.setProtocol(SourceControlProtocolType.SSH);
-                                sourceControlSetting.setSSHPrivateKey(privateKey);
+                                sourceControlSetting.setSSHPrivateKey(parameters.getCliSastParameters().getPrivateKey());
                                 sourceControlSetting.setSSHPublicKey("EmptyStab");
                             }
                             break;
@@ -162,10 +159,10 @@ public class CxSoapSASTClient {
             }
         }
 
-        if (generateScanPaths && locationpath != null) {
+        if (generateScanPaths && parameters.getCliSharedParameters().getLocationPath() != null) {
             ArrayOfScanPath paths = new ArrayOfScanPath();
 
-            for (String lpath : locationpath.split(";")) {
+            for (String lpath : parameters.getCliSharedParameters().getLocationPath().split(";")) {
                 ScanPath lscanPath = new ScanPath();
                 lscanPath.setPath(lpath);
                 lscanPath.setIncludeSubTree(false);

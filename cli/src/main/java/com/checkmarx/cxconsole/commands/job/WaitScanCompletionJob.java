@@ -134,7 +134,6 @@ class WaitScanCompletionJob implements Callable<Boolean> {
                 }
             } while (!scanComplete);
         } catch (InterruptedException e) {
-            log.trace(e);
             Thread.currentThread().interrupt();
         } catch (CxSoapSASTClientException e) {
             log.error("Error occurred during retrieving scan status: " + e.getMessage());
@@ -142,10 +141,6 @@ class WaitScanCompletionJob implements Callable<Boolean> {
         }
 
         return scanComplete;
-    }
-
-    public void setLog(Logger log) {
-        this.log = log;
     }
 
     public long getScanId() {

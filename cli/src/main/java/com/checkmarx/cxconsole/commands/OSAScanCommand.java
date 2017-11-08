@@ -14,9 +14,9 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by nirli on 31/10/2017.
  */
-class OSAScanCommandNew extends CLICommand {
+class OSAScanCommand extends CLICommand {
 
-    OSAScanCommandNew(CLIScanParameters params, boolean isAsyncScan) {
+    OSAScanCommand(CLIScanParameters params, boolean isAsyncScan) {
         super(params);
         this.isAsyncScan = isAsyncScan;
         if (isAsyncScan) {
