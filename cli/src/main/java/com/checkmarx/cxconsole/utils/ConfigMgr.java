@@ -146,7 +146,6 @@ public class ConfigMgr {
         }
     }
 
-
     public String getProperty(String key) {
         Object value = applicationProperties.get(key);
         return value == null ? null : value.toString();

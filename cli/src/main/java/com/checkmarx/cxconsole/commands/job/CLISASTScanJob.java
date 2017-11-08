@@ -294,31 +294,9 @@ public class CLISASTScanJob extends CLIScanJob {
     private void sourceLocationTypeResolver() throws CLIJobException {
         if (params.getCliSharedParameters().getLocationType() != null) {
             sourceLocationType = getCorrespondingType(params.getCliSharedParameters().getLocationType());
-            repoType = RepositoryType.fromValue(params.getCliSharedParameters().getLocationType().toString());
-//            switch (params.getCliSharedParameters().getLocationType()) {
-//                case folder:
-//                    sourceLocationType = SourceLocationType.LOCAL;
-//                    break;
-//                case shared:
-//                    sourceLocationType = SourceLocationType.SHARED;
-//                    break;
-//                case tfs:
-//                    repoType = RepositoryType.TFS;
-//                    sourceLocationType = SourceLocationType.SOURCE_CONTROL;
-//                    break;
-//                case svn:
-//                    repoType = RepositoryType.SVN;
-//                    sourceLocationType = SourceLocationType.SOURCE_CONTROL;
-//                    break;
-//                case perforce:
-//                    repoType = RepositoryType.PERFORCE;
-//                    sourceLocationType = SourceLocationType.SOURCE_CONTROL;
-//                    break;
-//                case git:
-//                    repoType = RepositoryType.GIT;
-//                    sourceLocationType = SourceLocationType.SOURCE_CONTROL;
-//                    break;
-//            }
+            if (params.getCliSharedParameters().getLocationType() != LocationType.FOLDER && params.getCliSharedParameters().getLocationType() != LocationType.SHARED) {
+                repoType = RepositoryType.fromValue(params.getCliSharedParameters().getLocationType().toString());
+            }
         } else {
             sourceLocationType = projectConfig.getProjectConfig().getSourceCodeSettings().getSourceOrigin();
             if (sourceLocationType == SourceLocationType.LOCAL) {
@@ -326,7 +304,6 @@ public class CLISASTScanJob extends CLIScanJob {
                 throw new CLIJobException("Scan command failed since no source location was provided.");
             }
         }
-
     }
 
     private void locateProjectOnServer(String projectName, String sessionId) throws CLIJobException {

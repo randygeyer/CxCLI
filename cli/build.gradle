@@ -18,6 +18,7 @@ repositories {
 }
 
 group = 'com.checkmarx'
+cleanVersion = '8.6.0'
 version = '8.6.0' + "-" + getDate()
 compileJava.options.encoding = 'UTF-8'
 compileJava.sourceCompatibility = 7
@@ -100,7 +101,7 @@ distributions {
             from('src/main/resources') {
                 include 'cx_console.properties'
                 filter {
-                    it.replaceAll('\\$\\{pom\\.version}', version)
+                    it.replaceAll('\\$\\{pom\\.version}', cleanVersion)
                 }
                 into 'config'
             }
