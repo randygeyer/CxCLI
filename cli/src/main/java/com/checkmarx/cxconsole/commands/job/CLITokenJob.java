@@ -7,6 +7,8 @@ import org.apache.log4j.Logger;
 
 import java.util.concurrent.Callable;
 
+import static com.checkmarx.cxconsole.CxConsoleLauncher.LOG_NAME;
+
 /**
  * Created by nirli on 05/11/2017.
  */
@@ -14,7 +16,7 @@ abstract class CLITokenJob implements Callable<Integer> {
 
     protected CxRestTokenClient cxRestTokenClient;
 
-    protected Logger log = Logger.getLogger("com.checkmarx.cxconsole.CxConsoleLauncher");
+    protected Logger log = Logger.getLogger(LOG_NAME);
 
     protected CLIScanParameters params;
 

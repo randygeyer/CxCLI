@@ -1,4 +1,4 @@
-package com.checkmarx.cxosa.dto;
+package com.checkmarx.cxconsole.cxosa.dto;
 
 /**
  * Created by: Dorg.

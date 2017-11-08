@@ -31,6 +31,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.checkmarx.cxconsole.CxConsoleLauncher.LOG_NAME;
 import static com.checkmarx.login.rest.utils.RestClientUtils.FAIL_TO_AUTHENTICATE_ERROR;
 import static com.checkmarx.login.rest.utils.RestClientUtils.validateResponse;
 
@@ -39,7 +40,7 @@ import static com.checkmarx.login.rest.utils.RestClientUtils.validateResponse;
  */
 public class CxRestLoginClient {
 
-    private Logger log = Logger.getLogger("com.checkmarx.cxconsole.CxConsoleLauncher");
+    private Logger log = Logger.getLogger(LOG_NAME);
 
     private final String username;
     private final String password;

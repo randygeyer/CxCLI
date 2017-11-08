@@ -14,12 +14,14 @@ import org.apache.log4j.Logger;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import static com.checkmarx.cxconsole.CxConsoleLauncher.LOG_NAME;
+
 /**
  * Created by nirli on 26/10/2017.
  */
 public class CxSoapLoginClient {
 
-    private Logger log = Logger.getLogger("com.checkmarx.cxconsole.CxConsoleLauncher");
+    private Logger log = Logger.getLogger(LOG_NAME);
 
     private CxCLIWebServiceV1Soap cxSoapClient;
 

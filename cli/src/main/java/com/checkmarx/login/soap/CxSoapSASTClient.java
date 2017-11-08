@@ -17,13 +17,15 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static com.checkmarx.cxconsole.CxConsoleLauncher.LOG_NAME;
+
 /**
  * Created by nirli on 26/10/2017.
  */
 public class CxSoapSASTClient {
 
     private CxCLIWebServiceV1Soap cxSoapClient;
-    private Logger log = Logger.getLogger("com.checkmarx.cxconsole.CxConsoleLauncher");
+    private Logger log = Logger.getLogger(LOG_NAME);
 
     private static final String SOAP_ACTION_URL = "http://Checkmarx.com/v7/GetScanSummary";
     private static final String SDK_URL = "/Cxwebinterface/sdk/cxsdkwebservice.asmx";

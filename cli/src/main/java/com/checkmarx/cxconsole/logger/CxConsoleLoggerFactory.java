@@ -10,6 +10,8 @@ import org.apache.log4j.RollingFileAppender;
 import java.io.File;
 import java.io.IOException;
 
+import static com.checkmarx.cxconsole.CxConsoleLauncher.LOG_NAME;
+
 public class CxConsoleLoggerFactory {
 
     private static CxConsoleLoggerFactory logFactory;
@@ -43,7 +45,7 @@ public class CxConsoleLoggerFactory {
     }
 
     public Logger getLogger(String logFilePath) throws IOException {
-        Logger log = Logger.getLogger("com.checkmarx.cxconsole.commands");
+        Logger log = Logger.getLogger(LOG_NAME);
         initLogger(log, logFilePath);
 
         return log;

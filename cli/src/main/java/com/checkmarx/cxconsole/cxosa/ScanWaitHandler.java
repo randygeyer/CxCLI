@@ -1,4 +1,4 @@
-package com.checkmarx.cxosa;
+package com.checkmarx.cxconsole.cxosa;
 
 
 import com.checkmarx.login.rest.exceptions.CxRestOSAClientException;

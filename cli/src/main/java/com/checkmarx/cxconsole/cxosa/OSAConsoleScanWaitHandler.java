@@ -1,13 +1,14 @@
-package com.checkmarx.cxosa;
+package com.checkmarx.cxconsole.cxosa;
 
 
-import com.checkmarx.cxosa.dto.OSAScanStatus;
-import com.checkmarx.cxosa.dto.OSAScanStatusEnum;
+import com.checkmarx.cxconsole.cxosa.dto.OSAScanStatus;
+import com.checkmarx.cxconsole.cxosa.dto.OSAScanStatusEnum;
 import com.checkmarx.login.rest.exceptions.CxRestOSAClientException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import static com.checkmarx.cxosa.dto.OSAScanStatusEnum.QUEUED;
+import static com.checkmarx.cxconsole.CxConsoleLauncher.LOG_NAME;
+import static com.checkmarx.cxconsole.cxosa.dto.OSAScanStatusEnum.QUEUED;
 
 
 /**
@@ -16,7 +17,7 @@ import static com.checkmarx.cxosa.dto.OSAScanStatusEnum.QUEUED;
  */
 public class OSAConsoleScanWaitHandler implements ScanWaitHandler<OSAScanStatus> {
 
-    private static Logger log = Logger.getLogger("com.checkmarx.cxconsole.CxConsoleLauncher");
+    private static Logger log = Logger.getLogger(LOG_NAME);
     private long startTime;
     private long scanTimeoutInMin;
 

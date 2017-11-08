@@ -12,6 +12,8 @@ import org.apache.log4j.Logger;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 
+import static com.checkmarx.cxconsole.CxConsoleLauncher.LOG_NAME;
+
 class WaitScanCompletionJob implements Callable<Boolean> {
 
     private CxSoapSASTClient cxSoapSASTClient;
@@ -20,7 +22,7 @@ class WaitScanCompletionJob implements Callable<Boolean> {
     private long scanId;
     private boolean isAsyncScan = false;
 
-    private Logger log = Logger.getLogger("com.checkmarx.cxconsole.CxConsoleLauncher");
+    private Logger log = Logger.getLogger(LOG_NAME);
 
     WaitScanCompletionJob(CxSoapSASTClient cxSoapSASTClient, String sessionId, String scanId, boolean isAsyncScan) {
         super();

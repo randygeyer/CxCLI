@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.checkmarx.cxconsole.CxConsoleLauncher.LOG_NAME;
 import static com.checkmarx.exitcodes.Constants.ErrorMassages.SERVER_CONNECTIVITY_VALIDATION_ERROR;
 import static com.checkmarx.exitcodes.ErrorHandler.errorCodeResolver;
 import static com.checkmarx.login.soap.utils.SoapClientUtils.resolveServerProtocol;
@@ -26,7 +27,7 @@ import static com.checkmarx.login.soap.utils.SoapClientUtils.resolveServerProtoc
  */
 public abstract class CLICommand {
 
-    protected Logger log = Logger.getLogger("com.checkmarx.cxconsole.CxConsoleLauncher");
+    protected Logger log = Logger.getLogger(LOG_NAME);
 
     protected CLIScanParameters params;
 

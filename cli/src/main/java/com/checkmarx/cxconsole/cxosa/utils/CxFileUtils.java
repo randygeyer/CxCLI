@@ -1,4 +1,4 @@
-package com.checkmarx.cxosa.utils;
+package com.checkmarx.cxconsole.cxosa.utils;
 
 
 import org.apache.commons.io.FileUtils;
@@ -12,7 +12,6 @@ import java.io.IOException;
  * Created by Galn on 28/02/2017.
  */
 abstract class CxFileUtils {
-
     static void deleteTempPath(String folder, String prefix, Logger log) {
         GenericPrefixFilter filter = new GenericPrefixFilter(prefix);
         File dir = new File(folder);

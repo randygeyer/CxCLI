@@ -1,4 +1,4 @@
-package com.checkmarx.cxosa.utils;
+package com.checkmarx.cxconsole.cxosa.utils;
 
 import com.checkmarx.components.zipper.ZipListener;
 import com.checkmarx.components.zipper.Zipper;

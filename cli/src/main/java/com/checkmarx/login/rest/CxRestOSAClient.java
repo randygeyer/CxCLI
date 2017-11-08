@@ -1,8 +1,8 @@
 package com.checkmarx.login.rest;
 
+import com.checkmarx.cxconsole.cxosa.ScanWaitHandler;
+import com.checkmarx.cxconsole.cxosa.dto.*;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
-import com.checkmarx.cxosa.ScanWaitHandler;
-import com.checkmarx.cxosa.dto.*;
 import com.checkmarx.login.rest.dto.RestLoginResponseDTO;
 import com.checkmarx.login.rest.exceptions.CxRestClientValidatorException;
 import com.checkmarx.login.rest.exceptions.CxRestOSAClientException;
@@ -37,6 +37,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.checkmarx.cxconsole.CxConsoleLauncher.LOG_NAME;
 import static com.checkmarx.login.rest.dto.RestLoginResponseDTO.LOGIN_TYPE.USERNAME_AND_PASSWORD;
 import static com.checkmarx.login.rest.utils.RestClientUtils.*;
 
@@ -46,7 +47,7 @@ import static com.checkmarx.login.rest.utils.RestClientUtils.*;
  */
 public class CxRestOSAClient {
 
-    private static Logger log = Logger.getLogger("com.checkmarx.cxconsole.CxConsoleLauncher");
+    private static Logger log = Logger.getLogger(LOG_NAME);
 
     private String hostName;
     private HttpClient apacheClient;

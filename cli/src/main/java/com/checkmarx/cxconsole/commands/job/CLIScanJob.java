@@ -21,6 +21,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.Callable;
 
+import static com.checkmarx.cxconsole.CxConsoleLauncher.LOG_NAME;
+
 /**
  * Created by nirli on 05/11/2017.
  */
@@ -32,7 +34,7 @@ public abstract class CLIScanJob implements Callable<Integer> {
     boolean isAsyncScan;
     private String errorMsg;
 
-    protected Logger log = Logger.getLogger("com.checkmarx.cxconsole.CxConsoleLauncher");
+    protected Logger log = Logger.getLogger(LOG_NAME);
     protected CLIScanParameters params;
 
     CLIScanJob(CLIScanParameters params, boolean isAsyncScan) {

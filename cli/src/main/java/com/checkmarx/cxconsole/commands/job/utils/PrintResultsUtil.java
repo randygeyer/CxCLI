@@ -1,7 +1,9 @@
 package com.checkmarx.cxconsole.commands.job.utils;
 
-import com.checkmarx.cxosa.dto.OSASummaryResults;
+import com.checkmarx.cxconsole.cxosa.dto.OSASummaryResults;
 import org.apache.log4j.Logger;
+
+import static com.checkmarx.cxconsole.CxConsoleLauncher.LOG_NAME;
 
 /**
  * Created by nirli on 06/11/2017.
@@ -12,7 +14,7 @@ public class PrintResultsUtil {
     private static final int MEDIUM_VULNERABILITY_RESULTS = 1;
     private static final int HIGH_VULNERABILITY_RESULTS = 2;
 
-    protected static Logger log = Logger.getLogger("com.checkmarx.cxconsole.CxConsoleLauncher");
+    protected static Logger log = Logger.getLogger(LOG_NAME);
 
     private PrintResultsUtil() {
         throw new IllegalStateException("Utility class");
