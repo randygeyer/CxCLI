@@ -73,16 +73,17 @@ class WaitScanCompletionJob implements Callable<Boolean> {
                     }
 
                     String stageName = statusOfScanResult.getStageName();
+                    String currentStage = "Current stage: ";
                     stageName = stageName.isEmpty() ? "" : " \"" + stageName + "\"";
                     if (!stageName.isEmpty() && !statusOfScanResult.getStageMessage().isEmpty()) {
-                        log.info("Current stage: " + stageName + " - " + statusOfScanResult.getStageMessage());
+                        log.info(currentStage + stageName + " - " + statusOfScanResult.getStageMessage());
                     } else if (!stageName.isEmpty()) {
-                        log.info("Current stage: " + stageName);
+                        log.info(currentStage + stageName);
                         if (isAsyncScan && Objects.equals(currentStatusEnum, CurrentStatusEnum.QUEUED)) {
                             return true;
                         }
                     } else if (!statusOfScanResult.getStageMessage().isEmpty()) {
-                        log.info("Current stage: " + statusOfScanResult.getStageMessage());
+                        log.info(currentStage + statusOfScanResult.getStageMessage());
                     } else {
                         log.info("Scan state: " + statusOfScanResult.getCurrentStatus());
                     }

@@ -150,6 +150,8 @@ public class CommandParametersValidator {
                 validateGIT(parameters);
                 validateWorkspaceParameterOnlyInPerforce(parameters);
                 break;
+            default:
+                throw new CLICommandParameterValidatorException("Error validate SAST location type");
         }
     }
 
@@ -222,13 +224,13 @@ public class CommandParametersValidator {
             throw new CLICommandParameterValidatorException("locationUser is not specified. Required when locationType is shared");
         }
 
-        if (parameters.getCliSastParameters().getLocationPassword() == null) {
+        if (parameters.getCliSastParameters().getLocationPass() == null) {
             throw new CLICommandParameterValidatorException("locationPassword is not specified. Required when locationType is shared");
         }
     }
 
     private static void validateTFS(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
-        if (parameters.getCliSastParameters().getLocationPassword() == null) {
+        if (parameters.getCliSastParameters().getLocationPass() == null) {
             throw new CLICommandParameterValidatorException("locationPassword is not specified. Required when locationType is TFS");
         }
 

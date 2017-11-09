@@ -99,64 +99,56 @@ public class CxSoapSASTClient {
 
         Credentials creds = new Credentials();
         creds.setUser(parameters.getCliSastParameters().getLocationUser());
-        creds.setPass(parameters.getCliSastParameters().getLocationPassword());
-        if (locationType != null) {
-            switch (locationType) {
-                case LOCAL:
-                    localCodeContainer = new LocalCodeContainer();
-                    localCodeContainer.setZippedFile(fileBytes);
-                    localCodeContainer.setFileName(parameters.getCliSharedParameters().getLocationPath());
-                    srcCodeSettings.setPackagedCode(localCodeContainer);
-                    break;
-                case SHARED:
-                    srcCodeSettings.setUserCredentials(creds);
-                    generateScanPaths = true;
-                    break;
-                case SOURCE_CONTROL:
-                    SourceControlSettings sourceControlSetting = new SourceControlSettings();
-                    sourceControlSetting.setServerName(parameters.getCliSastParameters().getLocationURL());
-                    if (parameters.getCliSastParameters().getLocationPort() != null) {
-                        sourceControlSetting.setPort(parameters.getCliSastParameters().getLocationPort());
-                    }
-                    sourceControlSetting.setRepository(repositoryType);
-                    switch (repositoryType) {
-                        case SVN:
-                            sourceControlSetting.setUserCredentials(creds);
-                            generateScanPaths = true;
-                            if (parameters.getCliSastParameters().getPrivateKey() != null) {
-                                sourceControlSetting.setUseSSH(true);
-                                sourceControlSetting.setProtocol(SourceControlProtocolType.SSH);
-                                sourceControlSetting.setSSHPrivateKey(parameters.getCliSastParameters().getPrivateKey());
-                                sourceControlSetting.setSSHPublicKey("EmptyStab");
-                            }
-                            break;
-                        case TFS:
-                        case PERFORCE:
-                            sourceControlSetting.setUserCredentials(creds);
-                            generateScanPaths = true;
-                            if (parameters.getCliSastParameters().isPerforceWorkspaceMode()) {
-                                sourceControlSetting.setPerforceBrowsingMode(CxWSPerforceBrowsingMode.WORKSPACE);
-                            } else {
-                                sourceControlSetting.setPerforceBrowsingMode(CxWSPerforceBrowsingMode.DEPOT);
-                            }
-                            break;
-                        case GIT:
-                            sourceControlSetting.setGITBranch(parameters.getCliSastParameters().getLocationBranch());
-                            if (parameters.getCliSastParameters().getPrivateKey() != null) {
-                                sourceControlSetting.setUseSSH(true);
-                                sourceControlSetting.setProtocol(SourceControlProtocolType.SSH);
-                                sourceControlSetting.setSSHPrivateKey(parameters.getCliSastParameters().getPrivateKey());
-                                sourceControlSetting.setSSHPublicKey("EmptyStab");
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                    srcCodeSettings.setSourceControlSetting(sourceControlSetting);
-                    break;
-                default:
-                    break;
-            }
+        creds.setPass(parameters.getCliSastParameters().getLocationPass());
+        switch (locationType) {
+            case LOCAL:
+                localCodeContainer = new LocalCodeContainer();
+                localCodeContainer.setZippedFile(fileBytes);
+                localCodeContainer.setFileName(parameters.getCliSharedParameters().getLocationPath());
+                srcCodeSettings.setPackagedCode(localCodeContainer);
+                break;
+            case SHARED:
+                srcCodeSettings.setUserCredentials(creds);
+                generateScanPaths = true;
+                break;
+            case SOURCE_CONTROL:
+                SourceControlSettings sourceControlSetting = new SourceControlSettings();
+                sourceControlSetting.setServerName(parameters.getCliSastParameters().getLocationURL());
+                if (parameters.getCliSastParameters().getLocationPort() != null) {
+                    sourceControlSetting.setPort(parameters.getCliSastParameters().getLocationPort());
+                }
+                sourceControlSetting.setRepository(repositoryType);
+                switch (repositoryType) {
+                    case SVN:
+                        sourceControlSetting.setUserCredentials(creds);
+                        generateScanPaths = true;
+                        if (parameters.getCliSastParameters().getPrivateKey() != null) {
+                            initPrivateKey(sourceControlSetting, parameters.getCliSastParameters().getPrivateKey());
+                        }
+                        break;
+                    case TFS:
+                    case PERFORCE:
+                        sourceControlSetting.setUserCredentials(creds);
+                        generateScanPaths = true;
+                        if (parameters.getCliSastParameters().isPerforceWorkspaceMode()) {
+                            sourceControlSetting.setPerforceBrowsingMode(CxWSPerforceBrowsingMode.WORKSPACE);
+                        } else {
+                            sourceControlSetting.setPerforceBrowsingMode(CxWSPerforceBrowsingMode.DEPOT);
+                        }
+                        break;
+                    case GIT:
+                        sourceControlSetting.setGITBranch(parameters.getCliSastParameters().getLocationBranch());
+                        if (parameters.getCliSastParameters().getPrivateKey() != null) {
+                            initPrivateKey(sourceControlSetting, parameters.getCliSastParameters().getPrivateKey());
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                srcCodeSettings.setSourceControlSetting(sourceControlSetting);
+                break;
+            default:
+                break;
         }
 
         if (generateScanPaths && parameters.getCliSharedParameters().getLocationPath() != null) {
@@ -170,7 +162,7 @@ public class CxSoapSASTClient {
                 paths.getScanPath().add(lscanPath);
 
             }
-            srcCodeSettings.setPathList(paths); // TODO: Check when the pathList web service parameter is needed
+            srcCodeSettings.setPathList(paths);
         }
 
         args.setPrjSettings(projectSettings);
@@ -187,26 +179,11 @@ public class CxSoapSASTClient {
         return response;
     }
 
-    public CxWSResponseRunID cliScan(String sessionId, ProjectSettings projectSettings, SourceCodeSettings srcCodeSettings,
-                                     boolean incremental, boolean visibleToOther, boolean ignoreScanWithUnchangedSource) throws CxSoapSASTClientException {
-
-        CliScanArgs args = new CliScanArgs();
-        args.setIsIncremental(incremental);
-        args.setIsPrivateScan(!visibleToOther);
-        args.setIgnoreScanWithUnchangedCode(ignoreScanWithUnchangedSource);
-
-        args.setPrjSettings(projectSettings);
-        args.setSrcCodeSettings(srcCodeSettings);
-
-        CxWSResponseRunID response = cxSoapClient.scan(sessionId, args);
-        try {
-            SoapClientUtils.validateResponse(response);
-        } catch (CxSoapClientValidatorException e) {
-            log.error("cliScan response: " + response.getErrorMessage());
-            throw new CxSoapSASTClientException("cliScan response: " + response.getErrorMessage());
-        }
-
-        return response;
+    private void initPrivateKey(SourceControlSettings sourceControlSetting, String privateKey) {
+        sourceControlSetting.setUseSSH(true);
+        sourceControlSetting.setProtocol(SourceControlProtocolType.SSH);
+        sourceControlSetting.setSSHPrivateKey(privateKey);
+        sourceControlSetting.setSSHPublicKey("EmptyStab");
     }
 
     public CxWSResponseScanStatus getStatusOfScan(String runId, String sessionId) throws CxSoapSASTClientException {
@@ -227,7 +204,7 @@ public class CxSoapSASTClient {
         CxWSReportRequest reportRequest = new CxWSReportRequest();
         reportRequest.setScanID(scanId);
         reportRequest.setType(CxWSReportType.fromValue(type));
-        CxWSCreateReportResponse resp = cxSoapClient.createScanReport(sessionId, reportRequest);
+        final CxWSCreateReportResponse resp = cxSoapClient.createScanReport(sessionId, reportRequest);
         log.trace("ScanStatus response: " + resp);
         if (!resp.isIsSuccesfull()) {
             String err = "Cannot create scan(" + scanId + ") " + type + " report: " + resp.getErrorMessage();
@@ -271,8 +248,9 @@ public class CxSoapSASTClient {
         // get status report dto
         CxWSResponseScanResults repoResp = cxSoapClient.getScanReport(sessionId, repoId);
         if (!repoResp.isIsSuccesfull()) {
-            String err = "Cannot get dto of scan(" + scanId + ") " + type + " report(" + repoId + "): " + resp.getErrorMessage();
+            String err = "Cannot get dto of scan(" + scanId + ") " + type + " report(" + repoId + "): " + repoResp.getErrorMessage();
             log.error(err);
+            log.error(repoResp.isContainsAllResults());
             throw new CxSoapSASTClientException(err);
         }
         return repoResp.getScanResults();

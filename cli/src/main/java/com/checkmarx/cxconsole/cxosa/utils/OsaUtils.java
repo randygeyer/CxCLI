@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,19 +28,23 @@ public abstract class OsaUtils {
     private static final String TEMP_FILE_NAME_TO_ZIP = "CxZippedSource";
     private static final String TEMP_COPIED_FOLDER = "CxTempSource";
 
+    private OsaUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static File zipWorkspaceFolder(String[] fileExcluded, String[] folderExclusions, String[] fileIncluded, long maxZipSizeInBytes, String[] path, final Logger log)
-            throws InterruptedException, IOException {
+            throws IOException {
 
         String[] combinedExcludePattern = generateExcludePattern(folderExclusions, fileExcluded);
         String[] includeFilesPattern = processIncludedFiles(ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_OSA_INCLUDED_FILES), fileIncluded);
 
         ZipListener zipListener = new ZipListener() {
+            @Override
             public void updateProgress(String fileName, long size) {
                 numOfZippedFiles++;
                 log.debug("Zipping (" + FileUtils.byteCountToDisplaySize(size) + "): " + fileName);
             }
         };
-
 
         File tempFile = File.createTempFile(TEMP_FILE_NAME_TO_ZIP, ".bin");
         File tmpFolder = createTempDirectory();
@@ -76,7 +82,8 @@ public abstract class OsaUtils {
     }
 
     private static File createTempDirectory() throws IOException {
-        final File temp = File.createTempFile(TEMP_COPIED_FOLDER, Long.toString(System.nanoTime()));
+        Path tempPath = Files.createTempDirectory(TEMP_COPIED_FOLDER);
+        final File temp = tempPath.toFile();
         if (!(temp.delete())) {
             throw new IOException("Could not delete temp file: " + temp.getAbsolutePath());
         }

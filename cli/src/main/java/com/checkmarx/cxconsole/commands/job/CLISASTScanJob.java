@@ -21,6 +21,7 @@ import com.checkmarx.login.soap.providers.exceptions.CLISoapProvidersException;
 import com.checkmarx.login.soap.utils.SoapClientUtils;
 import com.checkmarx.parameters.CLIScanParameters;
 import com.checkmarx.thresholds.dto.ThresholdDto;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -46,6 +47,8 @@ public class CLISASTScanJob extends CLIScanJob {
     private static final int LOW_VULNERABILITY_RESULTS = 0;
     private static final int MEDIUM_VULNERABILITY_RESULTS = 1;
     private static final int HIGH_VULNERABILITY_RESULTS = 2;
+
+    private static final String CX_SERVER_PREFIX = "CxServer\\";
 
     private CxWSResponseProjectConfig projectConfig;
     private PresetDTO selectedPreset;
@@ -286,10 +289,10 @@ public class CLISASTScanJob extends CLIScanJob {
                     projectName = projectName.replace('/', '\\');
                 }
                 if (!projectName.contains("\\")) {
-                    projectName = "CxServer\\" + projectName;
+                    projectName = CX_SERVER_PREFIX + projectName;
                 } else {
                     if (!projectName.startsWith("CxServer")) {
-                        projectName = "CxServer\\" + projectName;
+                        projectName = CX_SERVER_PREFIX + projectName;
                     }
                 }
                 try {
@@ -337,7 +340,7 @@ public class CLISASTScanJob extends CLIScanJob {
                     }
                     fullProjectName += "\\" + projectData.getProjectName();
                     if (!fullProjectName.startsWith("CxServer")) {
-                        fullProjectName = "CxServer\\" + fullProjectName;
+                        fullProjectName = CX_SERVER_PREFIX + fullProjectName;
                     }
                     if (fullProjectName.equals(projectName)) {
                         //projectData.
@@ -383,16 +386,17 @@ public class CLISASTScanJob extends CLIScanJob {
         if (!isProjectDirectoryValid()) {
             return false;
         }
-        ZipListener listener = new ZipListener() {
-            @Override
-            public void updateProgress(String fileName, long size) {
-            }
-        };
         try {
             Zipper zipper = new Zipper();
             String[] excludePatterns = createExcludePatternsArray();
             String[] includeAllPatterns = new String[]{"**/*"};//the default is to include all files
-            zippedSourcesBytes = zipper.zip(new File(params.getCliSharedParameters().getLocationPath()), excludePatterns, includeAllPatterns, maxZipSize, listener);
+            ZipListener zipListener = new ZipListener() {
+                @Override
+                public void updateProgress(String fileName, long size) {
+                    log.debug("Zipping (" + FileUtils.byteCountToDisplaySize(size) + "): " + fileName);
+                }
+            };
+            zippedSourcesBytes = zipper.zip(new File(params.getCliSharedParameters().getLocationPath()), excludePatterns, includeAllPatterns, maxZipSize, zipListener);
 
         } catch (Exception e) {
             log.trace(e);

@@ -71,7 +71,7 @@ public class CLIOSAScanJob extends CLIScanJob {
             File zipForOSA;
             try {
                 zipForOSA = OsaUtils.zipWorkspaceFolder(params.getCliOsaParameters().getOsaExcludedFiles(), params.getCliOsaParameters().getOsaExcludedFolders(), params.getCliOsaParameters().getOsaIncludedFiles(), maxZipSize, osaLocationPath, log);
-            } catch (InterruptedException | IOException e) {
+            } catch (IOException e) {
                 log.error("Error during zipping sources: " + e.getMessage());
                 throw new CLIJobException("Error during zipping sources: " + e.getMessage());
             }

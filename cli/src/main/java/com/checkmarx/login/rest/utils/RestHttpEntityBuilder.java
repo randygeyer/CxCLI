@@ -22,7 +22,7 @@ public class RestHttpEntityBuilder {
     private static final String CLIENT_SECRET_KEY = "client_secret";
     private static final String CLIENT_SECRET_VALUE = "B9D84EA8-E476-4E83-A628-8A342D74D3BD";
     private static final String REFRESH_TOKEN = "refresh_token";
-    private static final String PASSWORD_KEY = "password";
+    private static final String PASS_KEY = "password";
     private static final String USERNAME_KEY = "username";
 
 
@@ -33,8 +33,8 @@ public class RestHttpEntityBuilder {
     public static StringEntity createGenerateTokenParamsEntity(String userName, String password) throws CxRestClientException {
         List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair(USERNAME_KEY, userName));
-        urlParameters.add(new BasicNameValuePair(PASSWORD_KEY, password));
-        urlParameters.add(new BasicNameValuePair("grant_type", PASSWORD_KEY));
+        urlParameters.add(new BasicNameValuePair(PASS_KEY, password));
+        urlParameters.add(new BasicNameValuePair("grant_type", PASS_KEY));
         urlParameters.add(new BasicNameValuePair("scope", "sast_rest_api offline_access soap_api"));
         urlParameters.add(new BasicNameValuePair(CLIENT_ID_KEY, CLI_CLIENT));
         urlParameters.add(new BasicNameValuePair(CLIENT_SECRET_KEY, CLIENT_SECRET_VALUE));
@@ -77,7 +77,7 @@ public class RestHttpEntityBuilder {
     public static UrlEncodedFormEntity createLoginParamsEntity(String userName, String password) throws CxRestLoginClientException {
         List<NameValuePair> urlParameters = new ArrayList<>();
         urlParameters.add(new BasicNameValuePair(USERNAME_KEY, userName));
-        urlParameters.add(new BasicNameValuePair(PASSWORD_KEY, password));
+        urlParameters.add(new BasicNameValuePair(PASS_KEY, password));
 
         try {
             return new UrlEncodedFormEntity(urlParameters, StandardCharsets.UTF_8.name());

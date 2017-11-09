@@ -77,7 +77,7 @@ public class SoapClientUtils {
 
             final String username = ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_KERBEROS_USERNAME);
             System.setProperty("cxf.kerberos.username", username);
-            final String password = ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_KERBEROS_PASSWORD);
+            final String password = ConfigMgr.getCfgMgr().getProperty("kerberos.password");
             System.setProperty("cxf.kerberos.password", password);
 
         }

@@ -42,7 +42,7 @@ public class CLISASTParameters extends AbstractCLIScanParameters {
     private String locationURL;
     private String locationBranch;
     private String locationUser;
-    private String locationPassword;
+    private String locationPass;
     private String locationPrivateKey;
     private String privateKey;
     private Integer locationPort;
@@ -133,11 +133,11 @@ public class CLISASTParameters extends AbstractCLIScanParameters {
         }
 
         locationUser = parsedCommandLineArguments.getOptionValue(PARAM_LOCATION_USER.getOpt());
-        locationPassword = parsedCommandLineArguments.getOptionValue(PARAM_LOCATION_PWD.getOpt());
+        locationPass = parsedCommandLineArguments.getOptionValue(PARAM_LOCATION_PWD.getOpt());
 
         if (locationType == LocationType.PERFORCE && !parsedCommandLineArguments.hasOption(PARAM_LOCATION_PWD.getOpt())) {
             // In Perforce the password is not mandatory in case of a new user
-            locationPassword = "";
+            locationPass = "";
         }
 
         locationURL = parsedCommandLineArguments.getOptionValue(PARAM_LOCATION_URL.getOpt());
@@ -259,8 +259,8 @@ public class CLISASTParameters extends AbstractCLIScanParameters {
         return locationUser;
     }
 
-    public String getLocationPassword() {
-        return locationPassword;
+    public String getLocationPass() {
+        return locationPass;
     }
 
     public String getLocationPrivateKey() {

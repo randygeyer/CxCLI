@@ -18,7 +18,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class GenerateTokenCommand extends CLICommand {
 
-    public GenerateTokenCommand(CLIScanParameters params) {
+    GenerateTokenCommand(CLIScanParameters params) {
         super(params);
         this.commandName = Commands.GENERATE_TOKEN.value();
     }

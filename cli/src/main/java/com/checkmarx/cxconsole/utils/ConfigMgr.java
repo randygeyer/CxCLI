@@ -43,7 +43,6 @@ public class ConfigMgr {
     public static final String KEY_VERSION = "cxconsole.version";
     public static final String KEY_USE_KERBEROS_AUTH = "use_kerberos_authentication";
     public static final String KEY_KERBEROS_USERNAME = "kerberos.username";
-    public static final String KEY_KERBEROS_PASSWORD = "kerberos.password";
 
     private String separator = FileSystems.getDefault().getSeparator();
     private String userDir = System.getProperty("user.dir");
@@ -126,7 +125,7 @@ public class ConfigMgr {
         applicationProperties.put(KEY_VERSION, ConsoleUtils.getBuildVersion());
         applicationProperties.put(KEY_USE_KERBEROS_AUTH, "false");
         applicationProperties.put(KEY_KERBEROS_USERNAME, "");
-        applicationProperties.put(KEY_KERBEROS_PASSWORD, "");
+        applicationProperties.put("kerberos.password", "");
         applicationProperties.put(KEY_CLI_APP_PATTERN, "[%d{ISO8601} %-5p] %m%n)");
         applicationProperties.put(KEY_FILE_APP_PATTERN, "%d{ISO8601} [%t] (%F\\:%L) %-5p - %m%n");
         applicationProperties.put(KEY_FILE_APP_MAX_SIZE, "10MB");

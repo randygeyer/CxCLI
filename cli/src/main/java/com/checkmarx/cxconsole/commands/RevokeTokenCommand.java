@@ -16,9 +16,9 @@ import java.util.concurrent.TimeoutException;
 /**
  * Created by nirli on 31/10/2017.
  */
-public class RevokeTokenCommand extends CLICommand {
+class RevokeTokenCommand extends CLICommand {
 
-    public RevokeTokenCommand(CLIScanParameters params) {
+    RevokeTokenCommand(CLIScanParameters params) {
         super(params);
         this.commandName = Commands.REVOKE_TOKEN.value();
     }

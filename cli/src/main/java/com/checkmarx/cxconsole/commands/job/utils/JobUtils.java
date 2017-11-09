@@ -89,19 +89,4 @@ public class JobUtils {
 
         return scanResults;
     }
-
-//    /*
-// * Generates project name according to folder name
-// */
-//    public static String generateProjectNameAccordingToFolderName(CLIScanParameters parameters) {
-//        String projPath = parameters.getCliMandatoryParameters().getSrcPath();
-//        String projectName;
-//        if (parameters.getCliMandatoryParameters().getFolderProjectName() != null && !parameters.getCliMandatoryParameters().getFolderProjectName().isEmpty()) {
-//            projectName = parameters.getCliMandatoryParameters().getFolderProjectName();
-//        } else {
-//            projectName = projPath.substring(projPath.lastIndexOf(File.separator) + 1, projPath.length());
-//        }
-//
-//        return projectName;
-//    }
 }
