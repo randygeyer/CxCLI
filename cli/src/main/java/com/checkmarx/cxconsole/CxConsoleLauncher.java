@@ -9,8 +9,7 @@ import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxconsole.utils.ConsoleUtils;
 import com.checkmarx.cxconsole.utils.CustomStringList;
 import com.checkmarx.login.soap.utils.SSLUtilities;
-import com.checkmarx.parameters.CLIScanParameters;
-import com.checkmarx.parameters.exceptions.CLIParameterParsingException;
+import com.checkmarx.parameters.CLIScanParametersSingleton;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -30,8 +29,9 @@ public class CxConsoleLauncher {
 
     public static final String LOG_NAME = "com.checkmarx.cxconsole.CxConsoleLauncher";
 
-    public static final Logger log = Logger.getLogger(LOG_NAME);
+    private static final Logger log = Logger.getLogger(LOG_NAME);
     private static final String INVALID_COMMAND_PARAMETERS_MSG = "Command parameters are invalid: ";
+    private static String[] argumentsLessCommandName;
 
     /**
      * Entry point to CxScan Console
@@ -77,16 +77,16 @@ public class CxConsoleLauncher {
         SSLUtilities.trustAllHttpsCertificates();
 
         String commandName = args[0];
-        String[] argumentsLessCommandName = java.util.Arrays.copyOfRange(args, 1, args.length);
+        argumentsLessCommandName = java.util.Arrays.copyOfRange(args, 1, args.length);
         makeArgumentsLowCase(argumentsLessCommandName);
         CLICommand command = null;
-        CLIScanParameters cliScanParameters = null;
+        CLIScanParametersSingleton cliScanParametersSingleton;
         try {
-            cliScanParameters = new CLIScanParameters(argumentsLessCommandName);
-            command = CommandFactory.getCommand(commandName, cliScanParameters);
+            cliScanParametersSingleton = CLIScanParametersSingleton.getCLIScanParameter();
+            command = CommandFactory.getCommand(commandName, cliScanParametersSingleton);
             command.checkParameters();
             log.trace("Parameters were checked successfully");
-        } catch (CLIParameterParsingException | CLICommandFactoryException | CLICommandParameterValidatorException e) {
+        } catch (ExceptionInInitializerError | CLICommandFactoryException | CLICommandParameterValidatorException e) {
             if (e instanceof CLICommandParameterValidatorException) {
                 if (command != null) {
                     command.printHelp();
@@ -135,5 +135,9 @@ public class CxConsoleLauncher {
         } else {
             log.info("Verbose mode is activated. All messages and events will be sent to the console or log file.");
         }
+    }
+
+    public static String[] getArgumentsLessCommandName() {
+        return argumentsLessCommandName;
     }
 }

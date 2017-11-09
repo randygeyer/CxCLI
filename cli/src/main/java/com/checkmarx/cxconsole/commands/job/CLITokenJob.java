@@ -2,7 +2,7 @@ package com.checkmarx.cxconsole.commands.job;
 
 import com.checkmarx.cxconsole.commands.job.exceptions.CLITokenJobException;
 import com.checkmarx.login.rest.CxRestTokenClient;
-import com.checkmarx.parameters.CLIScanParameters;
+import com.checkmarx.parameters.CLIScanParametersSingleton;
 import org.apache.log4j.Logger;
 
 import java.util.concurrent.Callable;
@@ -18,9 +18,9 @@ abstract class CLITokenJob implements Callable<Integer> {
 
     protected Logger log = Logger.getLogger(LOG_NAME);
 
-    protected CLIScanParameters params;
+    protected CLIScanParametersSingleton params;
 
-    CLITokenJob(CLIScanParameters params) {
+    CLITokenJob(CLIScanParametersSingleton params) {
         this.params = params;
         cxRestTokenClient = new CxRestTokenClient();
     }

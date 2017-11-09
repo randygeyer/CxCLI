@@ -5,7 +5,7 @@ import com.checkmarx.cxconsole.commands.exceptions.CLICommandException;
 import com.checkmarx.cxconsole.commands.exceptions.CLICommandParameterValidatorException;
 import com.checkmarx.cxconsole.commands.job.CxGenerateTokenJob;
 import com.checkmarx.cxconsole.commands.utils.CommandParametersValidator;
-import com.checkmarx.parameters.CLIScanParameters;
+import com.checkmarx.parameters.CLIScanParametersSingleton;
 import org.apache.commons.cli.Options;
 
 import java.util.concurrent.ExecutionException;
@@ -18,7 +18,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class GenerateTokenCommand extends CLICommand {
 
-    GenerateTokenCommand(CLIScanParameters params) {
+    GenerateTokenCommand(CLIScanParametersSingleton params) {
         super(params);
         this.commandName = Commands.GENERATE_TOKEN.value();
     }

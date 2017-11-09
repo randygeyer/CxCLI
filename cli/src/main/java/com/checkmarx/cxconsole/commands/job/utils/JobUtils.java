@@ -2,7 +2,7 @@ package com.checkmarx.cxconsole.commands.job.utils;
 
 import com.checkmarx.cxconsole.commands.job.exceptions.CLIJobException;
 import com.checkmarx.cxconsole.commands.job.exceptions.CLIJobUtilException;
-import com.checkmarx.parameters.CLIScanParameters;
+import com.checkmarx.parameters.CLIScanParametersSingleton;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -39,7 +39,7 @@ public class JobUtils {
         return (System.getProperty("os.name").contains("Windows"));
     }
 
-    public static String gerWorkDirectory(CLIScanParameters parameters) throws CLIJobUtilException {
+    public static String gerWorkDirectory(CLIScanParametersSingleton parameters) throws CLIJobUtilException {
         String folderPath = parameters.getCliMandatoryParameters().getSrcPath();
         if (folderPath == null || folderPath.isEmpty()) {
             //in case of ScanProject command

@@ -15,7 +15,7 @@ import com.checkmarx.login.rest.CxRestOSAClient;
 import com.checkmarx.login.rest.exceptions.CxRestOSAClientException;
 import com.checkmarx.login.soap.CxSoapSASTClient;
 import com.checkmarx.login.soap.exceptions.CxSoapClientValidatorException;
-import com.checkmarx.parameters.CLIScanParameters;
+import com.checkmarx.parameters.CLIScanParametersSingleton;
 import com.checkmarx.thresholds.dto.ThresholdDto;
 import org.apache.commons.lang3.StringUtils;
 
@@ -37,7 +37,7 @@ public class CLIOSAScanJob extends CLIScanJob {
     private CxRestOSAClient cxRestOSAClient;
     private CxSoapSASTClient cxSoapSASTClient;
 
-    public CLIOSAScanJob(CLIScanParameters params, boolean isAsyncScan) {
+    public CLIOSAScanJob(CLIScanParametersSingleton params, boolean isAsyncScan) {
         super(params, isAsyncScan);
     }
 

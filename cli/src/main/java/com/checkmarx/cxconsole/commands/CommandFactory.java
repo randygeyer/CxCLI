@@ -2,7 +2,7 @@ package com.checkmarx.cxconsole.commands;
 
 import com.checkmarx.cxconsole.commands.constants.Commands;
 import com.checkmarx.cxconsole.commands.exceptions.CLICommandFactoryException;
-import com.checkmarx.parameters.CLIScanParameters;
+import com.checkmarx.parameters.CLIScanParametersSingleton;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -21,7 +21,7 @@ public class CommandFactory {
     private static final String SAST_SCAN_COMMAND = "scan";
     private static final String ASYNC_SAST_SCAN_COMMAND = "asyncscan";
 
-    public static CLICommand getCommand(String commandName, CLIScanParameters parameters) throws CLICommandFactoryException {
+    public static CLICommand getCommand(String commandName, CLIScanParametersSingleton parameters) throws CLICommandFactoryException {
         switch (commandName.toLowerCase()) {
             case (GENERATE_TOKEN_COMMAND):
                 return new GenerateTokenCommand(parameters);

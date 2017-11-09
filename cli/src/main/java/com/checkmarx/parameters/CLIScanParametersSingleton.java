@@ -6,19 +6,24 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
+import static com.checkmarx.cxconsole.CxConsoleLauncher.getArgumentsLessCommandName;
+
 /**
  * Created by nirli on 30/10/2017.
  */
-public class CLIScanParameters {
+public class CLIScanParametersSingleton {
 
-    private CLIMandatoryParameters cliMandatoryParameters;
-    private CLISharedParameters cliSharedParameters;
-    private CLISASTParameters cliSastParameters;
-    private CLIOSAParameters cliOsaParameters;
+    private static final CLIScanParametersSingleton instance;
+    static {
+        try {
+            instance = new CLIScanParametersSingleton();
+        } catch (CLIParameterParsingException e) {
+            throw new ExceptionInInitializerError(e.getMessage());
+        }
+    }
 
-    private CommandLine parsedCommandLineArguments;
-
-    public CLIScanParameters(String[] args) throws CLIParameterParsingException {
+    private CLIScanParametersSingleton() throws CLIParameterParsingException {
+        String[] args = getArgumentsLessCommandName();
         cliMandatoryParameters = new CLIMandatoryParameters();
         cliSharedParameters = new CLISharedParameters();
         cliSastParameters = new CLISASTParameters();
@@ -32,8 +37,36 @@ public class CLIScanParameters {
         if (parsedCommandLineArguments.getArgs().length > 0) {
             throw new CLIParameterParsingException("Error complete parse all parameters from the command.");
         }
-
     }
+
+    public static CLIScanParametersSingleton getCLIScanParameter() {
+        return instance;
+    }
+
+    private CLIMandatoryParameters cliMandatoryParameters;
+    private CLISharedParameters cliSharedParameters;
+    private CLISASTParameters cliSastParameters;
+    private CLIOSAParameters cliOsaParameters;
+
+    private CommandLine parsedCommandLineArguments;
+
+//    public CLIScanParametersSingleton() throws CLIParameterParsingException {
+//        String[] args = getArgumentsLessCommandName();
+//        cliMandatoryParameters = new CLIMandatoryParameters();
+//        cliSharedParameters = new CLISharedParameters();
+//        cliSastParameters = new CLISASTParameters();
+//        cliOsaParameters = new CLIOSAParameters();
+//
+//        parsedCommandLineArguments = ParametersUtils.parseArguments(args, getAllCLIOptions());
+//        cliMandatoryParameters.initMandatoryParams(parsedCommandLineArguments);
+//        cliSharedParameters.initSharedParams(parsedCommandLineArguments);
+//        cliSastParameters.initSastParams(parsedCommandLineArguments, cliSharedParameters.getLocationType());
+//        cliOsaParameters.initOsaParams(parsedCommandLineArguments);
+//        if (parsedCommandLineArguments.getArgs().length > 0) {
+//            throw new CLIParameterParsingException("Error complete parse all parameters from the command.");
+//        }
+//
+//    }
 
     public CLIMandatoryParameters getCliMandatoryParameters() {
         return cliMandatoryParameters;

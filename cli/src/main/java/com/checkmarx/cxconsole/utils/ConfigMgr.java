@@ -2,7 +2,7 @@ package com.checkmarx.cxconsole.utils;
 
 import com.checkmarx.login.rest.CxRestLoginClient;
 import com.checkmarx.login.soap.CxSoapLoginClient;
-import com.checkmarx.parameters.CLIScanParameters;
+import com.checkmarx.parameters.CLIScanParametersSingleton;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -192,7 +192,7 @@ public class ConfigMgr {
         return cxSoapLoginClient;
     }
 
-    public static CxRestLoginClient getRestWSMgr(CLIScanParameters parameters) {
+    public static CxRestLoginClient getRestWSMgr(CLIScanParametersSingleton parameters) {
         if (cxRestLoginClient == null) {
             if (parameters.getCliMandatoryParameters().isHasUserParam() && parameters.getCliMandatoryParameters().isHasPasswordParam()) {
                 return new CxRestLoginClient(parameters.getCliMandatoryParameters().getOriginalHost(), parameters.getCliMandatoryParameters().getUsername(), parameters.getCliMandatoryParameters().getPassword());

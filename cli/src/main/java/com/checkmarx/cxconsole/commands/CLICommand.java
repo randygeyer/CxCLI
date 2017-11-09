@@ -4,7 +4,7 @@ import com.checkmarx.cxconsole.commands.exceptions.CLICommandException;
 import com.checkmarx.cxconsole.commands.exceptions.CLICommandParameterValidatorException;
 import com.checkmarx.cxconsole.logger.CxConsoleLoggerFactory;
 import com.checkmarx.login.soap.exceptions.CxSoapLoginClientException;
-import com.checkmarx.parameters.CLIScanParameters;
+import com.checkmarx.parameters.CLIScanParametersSingleton;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +29,7 @@ public abstract class CLICommand {
 
     protected Logger log = Logger.getLogger(LOG_NAME);
 
-    protected CLIScanParameters params;
+    protected CLIScanParametersSingleton params;
 
     int exitCode;
 
@@ -46,7 +46,7 @@ public abstract class CLICommand {
     private static final int UNASSIGNED_EXIT_CODE = -1;
     static final String HELP_HEADER = "\nThe \"Scan\" command allows to scan new and existing projects. It accepts all project settings as an arguments, similar to Web interface.";
 
-    CLICommand(CLIScanParameters params) {
+    CLICommand(CLIScanParametersSingleton params) {
         this.params = params;
         exitCode = UNASSIGNED_EXIT_CODE;
         initHelpMessage();

@@ -5,7 +5,7 @@ import com.checkmarx.cxconsole.commands.exceptions.CLICommandException;
 import com.checkmarx.cxconsole.commands.exceptions.CLICommandParameterValidatorException;
 import com.checkmarx.cxconsole.commands.job.CxRevokeTokenJob;
 import com.checkmarx.cxconsole.commands.utils.CommandParametersValidator;
-import com.checkmarx.parameters.CLIScanParameters;
+import com.checkmarx.parameters.CLIScanParametersSingleton;
 import org.apache.commons.cli.Options;
 
 import java.util.concurrent.ExecutionException;
@@ -18,7 +18,7 @@ import java.util.concurrent.TimeoutException;
  */
 class RevokeTokenCommand extends CLICommand {
 
-    RevokeTokenCommand(CLIScanParameters params) {
+    RevokeTokenCommand(CLIScanParametersSingleton params) {
         super(params);
         this.commandName = Commands.REVOKE_TOKEN.value();
     }

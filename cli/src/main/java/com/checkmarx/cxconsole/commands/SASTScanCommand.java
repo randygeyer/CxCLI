@@ -6,7 +6,7 @@ import com.checkmarx.cxconsole.commands.exceptions.CLICommandParameterValidatorE
 import com.checkmarx.cxconsole.commands.job.CLISASTScanJob;
 import com.checkmarx.cxconsole.commands.job.CLIScanJob;
 import com.checkmarx.cxconsole.commands.utils.CommandParametersValidator;
-import com.checkmarx.parameters.CLIScanParameters;
+import com.checkmarx.parameters.CLIScanParametersSingleton;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -20,7 +20,7 @@ import static com.checkmarx.exitcodes.Constants.ExitCodes.*;
  */
 public class SASTScanCommand extends CLICommand {
 
-    public SASTScanCommand(CLIScanParameters params, boolean isAsyncScan) {
+    public SASTScanCommand(CLIScanParametersSingleton params, boolean isAsyncScan) {
         super(params);
         this.isAsyncScan = isAsyncScan;
         if (isAsyncScan) {

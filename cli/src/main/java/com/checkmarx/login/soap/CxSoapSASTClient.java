@@ -5,7 +5,7 @@ import com.checkmarx.cxviewer.ws.generated.*;
 import com.checkmarx.login.soap.exceptions.CxSoapClientValidatorException;
 import com.checkmarx.login.soap.exceptions.CxSoapSASTClientException;
 import com.checkmarx.login.soap.utils.SoapClientUtils;
-import com.checkmarx.parameters.CLIScanParameters;
+import com.checkmarx.parameters.CLIScanParametersSingleton;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -75,7 +75,7 @@ public class CxSoapSASTClient {
         return response;
     }
 
-    public CxWSResponseRunID cliScan(String sessionId, long presetId, long configId, SourceLocationType locationType, byte[] fileBytes, RepositoryType repositoryType, CLIScanParameters parameters) throws CxSoapSASTClientException {
+    public CxWSResponseRunID cliScan(String sessionId, long presetId, long configId, SourceLocationType locationType, byte[] fileBytes, RepositoryType repositoryType, CLIScanParametersSingleton parameters) throws CxSoapSASTClientException {
 
         CliScanArgs args = new CliScanArgs();
         args.setIsIncremental(parameters.getCliSastParameters().isIncrementalScan());

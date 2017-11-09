@@ -3,7 +3,7 @@ package com.checkmarx.cxconsole.commands.job.retriableoperation;
 import com.checkmarx.cxconsole.commands.job.exceptions.CLIJobException;
 import com.checkmarx.login.rest.CxRestLoginClient;
 import com.checkmarx.login.rest.exceptions.CxRestLoginClientException;
-import com.checkmarx.parameters.CLIScanParameters;
+import com.checkmarx.parameters.CLIScanParametersSingleton;
 
 /**
  * Created by nirli on 06/11/2017.
@@ -11,9 +11,9 @@ import com.checkmarx.parameters.CLIScanParameters;
 public class RetryableRESTLogin extends RetryableOperation {
 
     private CxRestLoginClient cxRestLoginClient;
-    private CLIScanParameters params;
+    private CLIScanParametersSingleton params;
 
-    public RetryableRESTLogin(CLIScanParameters parameters, CxRestLoginClient cxRestLoginClient) {
+    public RetryableRESTLogin(CLIScanParametersSingleton parameters, CxRestLoginClient cxRestLoginClient) {
         this.cxRestLoginClient = cxRestLoginClient;
         this.params = parameters;
     }

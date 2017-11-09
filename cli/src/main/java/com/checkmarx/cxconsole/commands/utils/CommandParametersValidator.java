@@ -2,7 +2,7 @@ package com.checkmarx.cxconsole.commands.utils;
 
 import com.checkmarx.cxconsole.commands.constants.LocationType;
 import com.checkmarx.cxconsole.commands.exceptions.CLICommandParameterValidatorException;
-import com.checkmarx.parameters.CLIScanParameters;
+import com.checkmarx.parameters.CLIScanParametersSingleton;
 
 import java.io.File;
 
@@ -26,7 +26,7 @@ public class CommandParametersValidator {
     private static final String MSG_ERR_EXCLUDED_FILES = "Excluded files list is invalid.";
 
 
-    public static void validateGenerateTokenParams(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
+    public static void validateGenerateTokenParams(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliSharedParameters().isSsoLoginUsed() && !isWindows()) {
             throw new CLICommandParameterValidatorException(MSG_ERR_SSO_WINDOWS_SUPPORT);
         }
@@ -38,7 +38,7 @@ public class CommandParametersValidator {
         }
     }
 
-    public static void validateRevokeTokenParams(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
+    public static void validateRevokeTokenParams(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliSharedParameters().isSsoLoginUsed() && !isWindows()) {
             throw new CLICommandParameterValidatorException(MSG_ERR_SSO_WINDOWS_SUPPORT);
         }
@@ -48,7 +48,7 @@ public class CommandParametersValidator {
         }
     }
 
-    public static void validateScanMandatoryParams(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
+    public static void validateScanMandatoryParams(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliSharedParameters().isSsoLoginUsed() && !isWindows()) {
             throw new CLICommandParameterValidatorException(MSG_ERR_SSO_WINDOWS_SUPPORT);
         } else if ((!parameters.getCliMandatoryParameters().isHasUserParam() || !parameters.getCliMandatoryParameters().isHasPasswordParam()) && !parameters.getCliMandatoryParameters().isHasTokenParam()) {
@@ -62,7 +62,7 @@ public class CommandParametersValidator {
         }
     }
 
-    public static void validateSASTExcludedFilesFolder(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
+    public static void validateSASTExcludedFilesFolder(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliSastParameters().isHasExcludedFoldersParam()) {
             String[] excludedFolders = parameters.getCliSastParameters().getExcludedFolders();
             if (excludedFolders == null || excludedFolders.length == 0) {
@@ -78,7 +78,7 @@ public class CommandParametersValidator {
         }
     }
 
-    public static void validateOSAExcludedFilesFolder(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
+    public static void validateOSAExcludedFilesFolder(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliOsaParameters().isHasOsaExcludedFoldersParam()) {
             String[] osaExcludedFolders = parameters.getCliOsaParameters().getOsaExcludedFolders();
             if (osaExcludedFolders == null || osaExcludedFolders.length == 0) {
@@ -94,7 +94,7 @@ public class CommandParametersValidator {
         }
     }
 
-    public static void validatePrivateKeyLocationGITSVN(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
+    public static void validatePrivateKeyLocationGITSVN(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliSastParameters().getLocationPrivateKey() != null
                 && parameters.getCliSharedParameters().getLocationType() != null
                 && (parameters.getCliSharedParameters().getLocationType() == LocationType.GIT || parameters.getCliSharedParameters().getLocationType() == LocationType.SVN)) {
@@ -110,7 +110,7 @@ public class CommandParametersValidator {
         }
     }
 
-    public static void validateOSALocationType(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
+    public static void validateOSALocationType(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliOsaParameters().getOsaLocationPath() == null &&
                 (parameters.getCliSharedParameters().getLocationType() != LocationType.FOLDER &&
                         parameters.getCliSharedParameters().getLocationType() != LocationType.SHARED)) {
@@ -118,7 +118,7 @@ public class CommandParametersValidator {
         }
     }
 
-    public static void validateSASTLocationType(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
+    public static void validateSASTLocationType(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliSharedParameters().getLocationType() == null) {
             throw new CLICommandParameterValidatorException(MSG_ERR_MISSING_LOCATION_TYPE);
         }
@@ -155,7 +155,7 @@ public class CommandParametersValidator {
         }
     }
 
-    public static void validateServiceProviderFolder(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
+    public static void validateServiceProviderFolder(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliSharedParameters().getSpFolderName() != null) {
             File projectDir = new File(parameters.getCliSharedParameters().getSpFolderName().trim());
             if (!projectDir.exists()) {
@@ -170,7 +170,7 @@ public class CommandParametersValidator {
         }
     }
 
-    public static void validateEnableOSA(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
+    public static void validateEnableOSA(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliSastParameters().isOsaEnabled() &&
                 (parameters.getCliSharedParameters().getLocationPath() == null ||
                         (parameters.getCliSharedParameters().getLocationType() != LocationType.FOLDER && parameters.getCliSharedParameters().getLocationType() != LocationType.SHARED))) {
@@ -178,7 +178,7 @@ public class CommandParametersValidator {
         }
     }
 
-    public static void validateSASTAsyncScanParams(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
+    public static void validateSASTAsyncScanParams(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (!parameters.getCliSastParameters().getReportFile().isEmpty() ||
                 parameters.getCliSastParameters().getXmlFile() != null ||
                 !parameters.getCliSastParameters().getReportType().isEmpty()) {
@@ -191,7 +191,7 @@ public class CommandParametersValidator {
         }
     }
 
-    public static void validateOSAAsyncScanParams(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
+    public static void validateOSAAsyncScanParams(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliOsaParameters().getOsaReportHTML() != null ||
                 parameters.getCliOsaParameters().getOsaReportPDF() != null ||
                 parameters.getCliOsaParameters().getOsaJson() != null) {
@@ -209,13 +209,13 @@ public class CommandParametersValidator {
         return (System.getProperty("os.name").contains("Windows"));
     }
 
-    private static void validateFolder(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
+    private static void validateFolder(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliSharedParameters().getLocationPath() == null) {
             throw new CLICommandParameterValidatorException("locationPath parameter is not specified. Required when locationType parameter is folder");
         }
     }
 
-    private static void validateShared(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
+    private static void validateShared(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliSharedParameters().getLocationPath() == null) {
             throw new CLICommandParameterValidatorException("locationPath is not specified. Required when locationType is shared");
         }
@@ -229,7 +229,7 @@ public class CommandParametersValidator {
         }
     }
 
-    private static void validateTFS(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
+    private static void validateTFS(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliSastParameters().getLocationPass() == null) {
             throw new CLICommandParameterValidatorException("locationPassword is not specified. Required when locationType is TFS");
         }
@@ -247,7 +247,7 @@ public class CommandParametersValidator {
         }
     }
 
-    private static void validateSVN(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
+    private static void validateSVN(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliSastParameters().getLocationURL() == null) {
             throw new CLICommandParameterValidatorException("locationURL is not specified. Required when locationType is SVN");
         }
@@ -257,7 +257,7 @@ public class CommandParametersValidator {
         }
     }
 
-    private static void validateGIT(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
+    private static void validateGIT(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliSastParameters().getLocationURL() == null) {
             throw new CLICommandParameterValidatorException("locationURL is not specified. Required when locationType is GIT");
         }
@@ -267,7 +267,7 @@ public class CommandParametersValidator {
         }
     }
 
-    private static void validatePerforce(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
+    private static void validatePerforce(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliSastParameters().getLocationURL() == null) {
             throw new CLICommandParameterValidatorException("locationURL is not specified. Required when locationType is Perforce");
         }
@@ -281,14 +281,14 @@ public class CommandParametersValidator {
         }
     }
 
-    private static void validateWorkspaceParameterOnlyInPerforce(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
+    private static void validateWorkspaceParameterOnlyInPerforce(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliSharedParameters().getLocationType() != null &&
                 parameters.getCliSharedParameters().getLocationType() != LocationType.PERFORCE && parameters.getCliSastParameters().isPerforceWorkspaceMode()) {
             throw new CLICommandParameterValidatorException("WorkspaceMode parameter should be specified only when locationType is Perforce");
         }
     }
 
-    private static void validateLocationPort(CLIScanParameters parameters) throws CLICommandParameterValidatorException {
+    private static void validateLocationPort(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliSastParameters().getLocationPort() == null) {
             throw new CLICommandParameterValidatorException("Invalid location port");
         }

@@ -11,7 +11,7 @@ import com.checkmarx.login.rest.CxRestLoginClient;
 import com.checkmarx.login.soap.CxSoapLoginClient;
 import com.checkmarx.login.soap.exceptions.CxSoapLoginClientException;
 import com.checkmarx.login.soap.utils.SoapClientUtils;
-import com.checkmarx.parameters.CLIScanParameters;
+import com.checkmarx.parameters.CLIScanParametersSingleton;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -35,9 +35,9 @@ public abstract class CLIScanJob implements Callable<Integer> {
     private String errorMsg;
 
     protected Logger log = Logger.getLogger(LOG_NAME);
-    protected CLIScanParameters params;
+    protected CLIScanParametersSingleton params;
 
-    CLIScanJob(CLIScanParameters params, boolean isAsyncScan) {
+    CLIScanJob(CLIScanParametersSingleton params, boolean isAsyncScan) {
         this.params = params;
         this.isAsyncScan = isAsyncScan;
         cxRestLoginClient = ConfigMgr.getRestWSMgr(this.params);

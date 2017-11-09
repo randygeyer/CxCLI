@@ -3,7 +3,7 @@ package com.checkmarx.cxconsole.commands.job;
 import com.checkmarx.cxconsole.commands.job.exceptions.CLITokenJobException;
 import com.checkmarx.login.rest.exceptions.CxRestClientException;
 import com.checkmarx.parameters.CLIMandatoryParameters;
-import com.checkmarx.parameters.CLIScanParameters;
+import com.checkmarx.parameters.CLIScanParametersSingleton;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -14,7 +14,7 @@ public class CxGenerateTokenJob extends CLITokenJob {
 
     private CLIMandatoryParameters mandatoryParamsContainer;
 
-    public CxGenerateTokenJob(CLIScanParameters parameters) {
+    public CxGenerateTokenJob(CLIScanParametersSingleton parameters) {
         super(parameters);
         mandatoryParamsContainer = params.getCliMandatoryParameters();
     }

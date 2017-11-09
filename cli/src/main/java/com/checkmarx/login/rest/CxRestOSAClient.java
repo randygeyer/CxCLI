@@ -276,23 +276,17 @@ public class CxRestOSAClient {
 
     public OSAScanStatus waitForOSAScanToFinish(String scanId, long scanTimeoutInMin, ScanWaitHandler<OSAScanStatus> waitHandler, boolean isAsyncOsaScan) throws CxRestOSAClientException {
         long timeToStop = (System.currentTimeMillis() / 60000) + scanTimeoutInMin;
-
         long startTime = System.currentTimeMillis();
         OSAScanStatus scanStatus = null;
         OSAScanStatusEnum status = null;
-
         waitHandler.onStart(startTime, scanTimeoutInMin);
-
         int retry = waitForScanToFinishRetry;
-
         while (scanTimeoutInMin <= 0 || (System.currentTimeMillis() / 60000) <= timeToStop) {
-
             if (!isAsyncOsaScan) {
                 try {
                     Thread.sleep(10000); //Get status every 10 sec
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                    ;
                 }
             }
 
@@ -306,17 +300,14 @@ public class CxRestOSAClient {
             retry = waitForScanToFinishRetry;
 
             status = scanStatus.getStatus();
-
             if (OSAScanStatusEnum.FAILED.equals(status)) {
                 waitHandler.onFail(scanStatus);
                 throw new CxRestOSAClientException("OSA scan cannot be completed. status: [" + status.uiValue() + "]. message: [" + StringUtils.defaultString(scanStatus.getMessage()) + "]");
             }
-
             if (isAsyncOsaScan && (OSAScanStatusEnum.QUEUED.equals(status) || OSAScanStatusEnum.IN_PROGRESS.equals(status))) {
                 waitHandler.onQueued(scanStatus);
                 return scanStatus;
             }
-
             if (OSAScanStatusEnum.FINISHED.equals(status)) {
                 waitHandler.onSuccess(scanStatus);
                 return scanStatus;

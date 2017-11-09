@@ -165,7 +165,6 @@ public abstract class OsaUtils {
 
 
     public static void deleteTempFiles() {
-
         try {
             String tempDir = System.getProperty("java.io.tmpdir");
             CxFileUtils.deleteTempPath(tempDir, TEMP_FILE_NAME_TO_ZIP, log);

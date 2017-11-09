@@ -19,7 +19,7 @@ import com.checkmarx.login.soap.exceptions.CxSoapSASTClientException;
 import com.checkmarx.login.soap.providers.ScanPrerequisitesValidator;
 import com.checkmarx.login.soap.providers.exceptions.CLISoapProvidersException;
 import com.checkmarx.login.soap.utils.SoapClientUtils;
-import com.checkmarx.parameters.CLIScanParameters;
+import com.checkmarx.parameters.CLIScanParametersSingleton;
 import com.checkmarx.thresholds.dto.ThresholdDto;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -61,7 +61,7 @@ public class CLISASTScanJob extends CLIScanJob {
     private RepositoryType repoType;
 
 
-    public CLISASTScanJob(CLIScanParameters params, boolean isAsyncScan) {
+    public CLISASTScanJob(CLIScanParametersSingleton params, boolean isAsyncScan) {
         super(params, isAsyncScan);
     }
 

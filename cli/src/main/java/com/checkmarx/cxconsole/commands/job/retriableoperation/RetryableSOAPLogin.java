@@ -6,7 +6,7 @@ import com.checkmarx.cxviewer.ws.generated.CxWSResponseLoginData;
 import com.checkmarx.login.soap.CxSoapLoginClient;
 import com.checkmarx.login.soap.exceptions.CxSoapLoginClientException;
 import com.checkmarx.login.soap.utils.SoapClientUtils;
-import com.checkmarx.parameters.CLIScanParameters;
+import com.checkmarx.parameters.CLIScanParametersSingleton;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -17,9 +17,9 @@ import java.net.URL;
 public class RetryableSOAPLogin extends RetryableOperation {
 
     private CxSoapLoginClient cxSoapLoginClient;
-    private CLIScanParameters params;
+    private CLIScanParametersSingleton params;
 
-    public RetryableSOAPLogin(CLIScanParameters parameters, CxSoapLoginClient cxSoapLoginClient) {
+    public RetryableSOAPLogin(CLIScanParametersSingleton parameters, CxSoapLoginClient cxSoapLoginClient) {
         this.cxSoapLoginClient = cxSoapLoginClient;
         this.params = parameters;
     }
