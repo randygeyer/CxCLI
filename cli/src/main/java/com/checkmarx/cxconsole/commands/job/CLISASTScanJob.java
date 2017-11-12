@@ -3,6 +3,7 @@ package com.checkmarx.cxconsole.commands.job;
 import com.checkmarx.components.zipper.ZipListener;
 import com.checkmarx.components.zipper.Zipper;
 import com.checkmarx.cxconsole.commands.constants.LocationType;
+import com.checkmarx.cxconsole.commands.job.constants.SASTResultsDTO;
 import com.checkmarx.cxconsole.commands.job.exceptions.CLIJobException;
 import com.checkmarx.cxconsole.commands.job.utils.JobUtils;
 import com.checkmarx.cxconsole.commands.job.utils.PathHandler;
@@ -182,7 +183,7 @@ public class CLISASTScanJob extends CLIScanJob {
             }
 
             //SAST print results
-            int[] scanResults = JobUtils.parseScanSummary(scanSummary);
+            SASTResultsDTO scanResults = JobUtils.parseScanSummary(scanSummary);
             PrintResultsUtils.printSASTResultsToConsole(scanResults);
 
             //SAST reports
@@ -200,8 +201,8 @@ public class CLISASTScanJob extends CLIScanJob {
 
             //SAST threshold calculation
             if (params.getCliSastParameters().isSastThresholdEnabled()) {
-                ThresholdDto thresholdDto = new ThresholdDto(ThresholdDto.ScanType.SAST_SCAN, params.getCliSastParameters().getSastHighThresholdValue(), params.getCliSastParameters().getSastMediumThresholdValue(),
-                        params.getCliSastParameters().getSastLowThresholdValue(), scanResults[HIGH_VULNERABILITY_RESULTS], scanResults[MEDIUM_VULNERABILITY_RESULTS], scanResults[LOW_VULNERABILITY_RESULTS]);
+                ThresholdDto thresholdDto = new ThresholdDto(params.getCliSastParameters().getSastHighThresholdValue(), params.getCliSastParameters().getSastMediumThresholdValue(),
+                        params.getCliSastParameters().getSastLowThresholdValue(), scanResults);
                 return resolveThresholdExitCode(thresholdDto);
             }
         }

@@ -1,5 +1,7 @@
 package com.checkmarx.thresholds.dto;
 
+import com.checkmarx.cxconsole.commands.job.constants.SASTResultsDTO;
+
 public class ThresholdDto {
 
     public enum ScanType {
@@ -25,6 +27,16 @@ public class ThresholdDto {
         this.highSeverityScanResult = highSeverityScanResult;
         this.mediumSeverityScanResult = mediumSeverityScanResult;
         this.lowSeverityScanResult = lowSeverityScanResult;
+    }
+
+    public ThresholdDto(int highSeverityThreshold, int mediumSeverityThreshold, int lowSeverityThreshold, SASTResultsDTO sastResultsDTO) {
+        this.scanType = ScanType.SAST_SCAN;
+        this.highSeverityThreshold = highSeverityThreshold;
+        this.mediumSeverityThreshold = mediumSeverityThreshold;
+        this.lowSeverityThreshold = lowSeverityThreshold;
+        this.highSeverityScanResult = sastResultsDTO.getHighVulnerabilityResult();
+        this.mediumSeverityScanResult = sastResultsDTO.getMediumVulnerabilityResult();
+        this.lowSeverityScanResult = sastResultsDTO.getLowVulnerabilityResult();
     }
 
     public int getHighSeverityThreshold() {

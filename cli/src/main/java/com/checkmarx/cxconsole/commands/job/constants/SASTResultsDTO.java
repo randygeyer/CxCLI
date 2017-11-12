@@ -39,4 +39,6 @@ public class SASTResultsDTO {
     public int getLowVulnerabilityResult() {
         return lowVulnerabilityResult;
     }
+
+
 }

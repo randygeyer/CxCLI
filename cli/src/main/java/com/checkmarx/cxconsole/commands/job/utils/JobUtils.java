@@ -1,5 +1,6 @@
 package com.checkmarx.cxconsole.commands.job.utils;
 
+import com.checkmarx.cxconsole.commands.job.constants.SASTResultsDTO;
 import com.checkmarx.cxconsole.commands.job.exceptions.CLIJobException;
 import com.checkmarx.cxconsole.commands.job.exceptions.CLIJobUtilException;
 import com.checkmarx.parameters.CLIScanParametersSingleton;
@@ -56,8 +57,7 @@ public class JobUtils {
         return folderPath;
     }
 
-    public static int[] parseScanSummary(String scanSummary) throws CLIJobException {
-        int[] scanResults = new int[3];
+    public static SASTResultsDTO parseScanSummary(String scanSummary) throws CLIJobException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
         InputSource is = new InputSource(new StringReader(scanSummary));
@@ -75,18 +75,9 @@ public class JobUtils {
         node.getNodeType();
         Element eElement = (Element) node;
         String highStr = eElement.getElementsByTagName("High").item(0).getTextContent();
-        if (highStr != null) {
-            scanResults[HIGH_VULNERABILITY_RESULTS] = Integer.parseInt(highStr);
-        }
         String mediumStr = eElement.getElementsByTagName("Medium").item(0).getTextContent();
-        if (highStr != null) {
-            scanResults[MEDIUM_VULNERABILITY_RESULTS] = Integer.parseInt(mediumStr);
-        }
         String lowStr = eElement.getElementsByTagName("Low").item(0).getTextContent();
-        if (lowStr != null) {
-            scanResults[LOW_VULNERABILITY_RESULTS] = Integer.parseInt(lowStr);
-        }
 
-        return scanResults;
+        return new SASTResultsDTO(highStr, mediumStr, lowStr);
     }
 }
