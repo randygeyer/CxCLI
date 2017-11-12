@@ -67,16 +67,6 @@ class OSAScanCommand extends CLICommand {
     }
 
     @Override
-    public String getMandatoryParams() {
-        return params.getCliOsaParameters().getMandatoryParams();
-    }
-
-    @Override
-    public String getKeyDescriptions() {
-        return params.getCliMandatoryParameters().getKeyDescriptions();
-    }
-
-    @Override
     public String getUsageExamples() {
         return "\n\nrunCxConsole.cmd OsaScan -v -Projectname SP\\Cx\\Engine\\AST -CxServer http://localhost -cxuser admin -cxpassword admin -osaLocationPath C:\\cx  -OsaFilesExclude *.class OsaPathExclude src,temp  \n"
                 + "runCxConsole.cmd  OsaScan -v -projectname SP\\Cx\\Engine\\AST -cxserver http://localhost -cxuser admin -cxpassword admin -locationtype folder -locationurl http://vsts2003:8080 -locationuser dm\\matys -locationpassword XYZ  -OsaReportPDF -\n"
@@ -91,13 +81,4 @@ class OSAScanCommand extends CLICommand {
         helpFormatter.printHelp(120, getCommandName(), header, params.getAllCLIOptions(), footer, true);
     }
 
-    @Override
-    public String getOptionalKeyDescriptions() {
-        return null;
-    }
-
-    @Override
-    public String getOptionalParams() {
-        return null;
-    }
 }

@@ -24,6 +24,8 @@ public class RestHttpEntityBuilder {
     private static final String REFRESH_TOKEN = "refresh_token";
     private static final String PASS_KEY = "password";
     private static final String USERNAME_KEY = "username";
+    private static final String ERROR_MESSAGE_PREFIX = "Failed to create body entity, due to: ";
+
 
 
     private RestHttpEntityBuilder() {
@@ -42,7 +44,7 @@ public class RestHttpEntityBuilder {
         try {
             return new UrlEncodedFormEntity(urlParameters, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
-            throw new CxRestClientException("Failed to create body entity, due to: " + e.getMessage());
+            throw new CxRestClientException(ERROR_MESSAGE_PREFIX + e.getMessage());
         }
     }
 
@@ -56,7 +58,7 @@ public class RestHttpEntityBuilder {
         try {
             return new UrlEncodedFormEntity(urlParameters, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
-            throw new CxRestClientException("Failed to create body entity, due to: " + e.getMessage());
+            throw new CxRestClientException(ERROR_MESSAGE_PREFIX + e.getMessage());
         }
     }
 
@@ -70,7 +72,7 @@ public class RestHttpEntityBuilder {
         try {
             return new UrlEncodedFormEntity(urlParameters, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
-            throw new CxRestLoginClientException("Failed to create body entity, due to: " + e.getMessage());
+            throw new CxRestLoginClientException(ERROR_MESSAGE_PREFIX + e.getMessage());
         }
     }
 
@@ -82,7 +84,7 @@ public class RestHttpEntityBuilder {
         try {
             return new UrlEncodedFormEntity(urlParameters, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
-            throw new CxRestLoginClientException("Failed to create body entity, due to: " + e.getMessage());
+            throw new CxRestLoginClientException(ERROR_MESSAGE_PREFIX + e.getMessage());
         }
     }
 }

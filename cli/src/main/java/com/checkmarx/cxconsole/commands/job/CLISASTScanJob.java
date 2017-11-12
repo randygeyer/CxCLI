@@ -6,7 +6,7 @@ import com.checkmarx.cxconsole.commands.constants.LocationType;
 import com.checkmarx.cxconsole.commands.job.exceptions.CLIJobException;
 import com.checkmarx.cxconsole.commands.job.utils.JobUtils;
 import com.checkmarx.cxconsole.commands.job.utils.PathHandler;
-import com.checkmarx.cxconsole.commands.job.utils.PrintResultsUtil;
+import com.checkmarx.cxconsole.commands.job.utils.PrintResultsUtils;
 import com.checkmarx.cxconsole.commands.job.utils.StoreReportUtils;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxviewer.ws.generated.*;
@@ -28,7 +28,6 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,7 +53,6 @@ public class CLISASTScanJob extends CLIScanJob {
     private PresetDTO selectedPreset;
     private ConfigurationDTO selectedConfiguration;
     private CxSoapSASTClient cxSoapSASTClient;
-    private long projectId;
     private byte[] zippedSourcesBytes;
     private String runId;
     private SourceLocationType sourceLocationType;
@@ -84,9 +82,7 @@ public class CLISASTScanJob extends CLIScanJob {
         }
         cxSoapSASTClient = new CxSoapSASTClient(this.cxSoapLoginClient.getCxSoapClient());
 
-        locateProjectOnServer(params.getCliMandatoryParameters().getProjectNameWithPath(), sessionId);
         ScanPrerequisitesValidator scanPrerequisitesValidator;
-
         try {
             scanPrerequisitesValidator = new ScanPrerequisitesValidator(cxSoapLoginClient.getCxSoapClient(), sessionId);
             selectedPreset = scanPrerequisitesValidator.validateJobPreset(params.getCliSastParameters().getPresetName());
@@ -176,7 +172,7 @@ public class CLISASTScanJob extends CLIScanJob {
             if (resultsFileName == null) {
                 resultsFileName = PathHandler.normalizePathString(params.getCliMandatoryParameters().getProjectName()) + ".xml";
             }
-            String scanSummary = null;
+            String scanSummary;
             try {
                 scanSummary = cxSoapSASTClient.getScanSummary(params.getCliMandatoryParameters().getOriginalHost(), sessionId, scanId);
                 storeXMLResults(resultsFileName, cxSoapSASTClient.getScanReport(sessionId, scanId, "XML"));
@@ -187,7 +183,7 @@ public class CLISASTScanJob extends CLIScanJob {
 
             //SAST print results
             int[] scanResults = JobUtils.parseScanSummary(scanSummary);
-            PrintResultsUtil.printSASTResultsToConsole(scanResults);
+            PrintResultsUtils.printSASTResultsToConsole(scanResults);
 
             //SAST reports
             if (!params.getCliSastParameters().getReportType().isEmpty()) {
@@ -274,92 +270,6 @@ public class CLISASTScanJob extends CLIScanJob {
         }
     }
 
-    private void locateProjectOnServer(String projectName, String sessionId) throws CLIJobException {
-        int retriesNum = ConfigMgr.getCfgMgr().getIntProperty(ConfigMgr.KEY_RETIRES);
-        CxWSResponseProjectsDisplayData getPrjsResult = null;
-        int count = 0;
-        String errMsg = "";
-        if (params.getCliSharedParameters().getLocationType() == null) {
-            long getStatusInterval = ConfigMgr.getCfgMgr().getIntProperty(
-                    ConfigMgr.KEY_PROGRESS_INTERVAL);
-
-            while ((getPrjsResult == null || !getPrjsResult.isIsSuccesfull())
-                    && count < retriesNum) {
-                if (projectName.contains("/")) {
-                    projectName = projectName.replace('/', '\\');
-                }
-                if (!projectName.contains("\\")) {
-                    projectName = CX_SERVER_PREFIX + projectName;
-                } else {
-                    if (!projectName.startsWith("CxServer")) {
-                        projectName = CX_SERVER_PREFIX + projectName;
-                    }
-                }
-                try {
-                    getPrjsResult = cxSoapSASTClient.getProjectsDisplayData(sessionId);
-                } catch (CxSoapClientValidatorException e) {
-                    errMsg = e.getMessage();
-                    count++;
-                    log.trace("Error during fetching existing projects dto.", e);
-                    log.info("Error occurred during fetching existing projects dto: " + errMsg + ". Operation retry " + count);
-                }
-
-                if ((getPrjsResult != null) && !getPrjsResult.isIsSuccesfull()) {
-                    errMsg = getPrjsResult.getErrorMessage();
-                    log.error("Existing projects dto fetching was unsuccessful.");
-                    count++;
-                    log.info("Existing projects dto fetching unsuccessful: " + getPrjsResult.getErrorMessage() + ". Operation retry " + count);
-                }
-
-                if ((getPrjsResult == null || !getPrjsResult.isIsSuccesfull())
-                        && count < retriesNum) {
-                    try {
-                        Thread.sleep(getStatusInterval * 1000);
-                    } catch (InterruptedException ex) {
-                        Thread.currentThread().interrupt();
-                    }
-                }
-            }
-
-            if ((getPrjsResult != null) && !getPrjsResult.isIsSuccesfull()) {
-                throw new CLIJobException("Existing projects dto fetching was unsuccessful. " + (errMsg == null ? "" : errMsg));
-            } else if (getPrjsResult == null) {
-                throw new CLIJobException("Error occurred during existing projects dto fetching. " + errMsg);
-            } else {
-                List<ProjectDisplayData> prjData = getPrjsResult.getProjectList().getProjectDisplayData();
-                for (ProjectDisplayData projectData : prjData) {
-                    String fullProjectName = "";
-                    String[] locationParts = projectData.getGroup().split("\\-\\>");
-                    if (locationParts.length > 0) {
-                        fullProjectName = locationParts[0];
-                        for (int i = 1; i < locationParts.length; i++) {
-                            fullProjectName += ("\\" + locationParts[i]);
-                        }
-                    } else {
-                        fullProjectName = projectData.getGroup();
-                    }
-                    fullProjectName += "\\" + projectData.getProjectName();
-                    if (!fullProjectName.startsWith("CxServer")) {
-                        fullProjectName = CX_SERVER_PREFIX + fullProjectName;
-                    }
-                    if (fullProjectName.equals(projectName)) {
-                        //projectData.
-                        projectId = projectData.getProjectID();
-                        break;
-                    }
-                }
-            }
-
-            try {
-                projectConfig = cxSoapSASTClient.getProjectConfiguration(sessionId, projectId);
-            } catch (CxSoapClientValidatorException e) {
-                log.error("Error retrieving project information from server (project ID: " + projectId + " ): " + e.getMessage());
-                throw new CLIJobException("Error retrieving project information from server (project ID: " + projectId + " ): " + e.getMessage());
-            }
-            log.trace("Existing projects dto response:" + getPrjsResult);
-        }
-    }
-
     private LocationType getLocationType(SourceCodeSettings scSettings) {
         SourceLocationType slType = scSettings.getSourceOrigin();
         if (slType.equals(SourceLocationType.LOCAL)) {
@@ -408,7 +318,7 @@ public class CLISASTScanJob extends CLIScanJob {
     }
 
     private String[] createExcludePatternsArray() {
-        LinkedList<String> excludePatterns = new LinkedList<String>();
+        LinkedList<String> excludePatterns = new LinkedList<>();
         try {
             String defaultExcludedFolders = ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_EXCLUDED_FOLDERS);
             for (String folder : StringUtils.split(defaultExcludedFolders, ",")) {

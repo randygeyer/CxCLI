@@ -18,9 +18,9 @@ import static com.checkmarx.exitcodes.Constants.ExitCodes.*;
 /**
  * Created by nirli on 31/10/2017.
  */
-public class SASTScanCommand extends CLICommand {
+class SASTScanCommand extends CLICommand {
 
-    public SASTScanCommand(CLIScanParametersSingleton params, boolean isAsyncScan) {
+    SASTScanCommand(CLIScanParametersSingleton params, boolean isAsyncScan) {
         super(params);
         this.isAsyncScan = isAsyncScan;
         if (isAsyncScan) {
@@ -86,26 +86,6 @@ public class SASTScanCommand extends CLICommand {
     }
 
     @Override
-    public String getMandatoryParams() {
-        return params.getCliSastParameters().getMandatoryParams();
-    }
-
-    @Override
-    public String getKeyDescriptions() {
-        return params.getCliSastParameters().getKeyDescriptions();
-    }
-
-    @Override
-    public String getOptionalParams() {
-        return params.getCliSastParameters().getOptionalParams();
-    }
-
-    @Override
-    public String getOptionalKeyDescriptions() {
-        return params.getCliSastParameters().getOptionalKeyDescriptions();
-    }
-
-    @Override
     public String getUsageExamples() {
         return "\n\nCxConsole Scan -Projectname SP\\Cx\\Engine\\AST -CxServer http://localhost -cxuser admin@cx -cxpassword admin -locationtype folder -locationpath C:\\cx -preset All -incremental -reportpdf a.pdf\n"
                 + "CxConsole Scan -projectname SP\\Cx\\Engine\\AST -cxserver http://localhost -cxuser admin@cx -cxpassword admin -locationtype tfs -locationurl http://vsts2003:8080 -locationuser dm\\matys -locationpassword XYZ -preset default -reportxml a.xml -reportpdf b.pdf -incremental -forcescan\n"
@@ -114,7 +94,8 @@ public class SASTScanCommand extends CLICommand {
 
     @Override
     public void printHelp() {
+        String helpHeader = "\nThe \"Scan\" command allows to scan new and existing projects. It accepts all project settings as an arguments, similar to Web interface.";
         String helpFooter = "\nUsage example: " + getUsageExamples() + "\n\n(c) 2017 CheckMarx.com LTD, All Rights Reserved\n";
-        helpFormatter.printHelp(120, getCommandName(), HELP_HEADER, params.getAllCLIOptions(), helpFooter, true);
+        helpFormatter.printHelp(120, getCommandName(), helpHeader, params.getAllCLIOptions(), helpFooter, true);
     }
 }

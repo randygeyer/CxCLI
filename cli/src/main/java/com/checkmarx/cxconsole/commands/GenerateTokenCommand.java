@@ -8,15 +8,13 @@ import com.checkmarx.cxconsole.commands.utils.CommandParametersValidator;
 import com.checkmarx.parameters.CLIScanParametersSingleton;
 import org.apache.commons.cli.Options;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Created by nirli on 31/10/2017.
  */
-public class GenerateTokenCommand extends CLICommand {
+class GenerateTokenCommand extends CLICommand {
 
     GenerateTokenCommand(CLIScanParametersSingleton params) {
         super(params);
@@ -34,7 +32,7 @@ public class GenerateTokenCommand extends CLICommand {
             } else {
                 exitCode = future.get();
             }
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (Exception e) {
             throw new CLICommandException("Error executing GenerateToken command, due to: " + e.getMessage());
         }
         return exitCode;
@@ -51,33 +49,14 @@ public class GenerateTokenCommand extends CLICommand {
     }
 
     @Override
-    public String getMandatoryParams() {
-        return params.getCliMandatoryParameters().getMandatoryParamsGenerateToken();
-    }
-
-    @Override
     public String getUsageExamples() {
         return "CxConsole GenerateToken -CxServer http://localhost -cxuser admin@company -cxpassword admin -v";
     }
 
     @Override
     public void printHelp() {
-        String helpFooter = "\nUsage example: " + getUsageExamples() + "\n\n(c) 2014 CheckMarx.com LTD, All Rights Reserved\n";
-        helpFormatter.printHelp(120, getCommandName(), HELP_HEADER, (Options) params.getCliMandatoryParameters().getGenerateTokenMandatoryParamsOptionGroup().getOptions(), helpFooter, true);
-    }
-
-    @Override
-    public String getKeyDescriptions() {
-        return params.getCliMandatoryParameters().getKeyDescriptionsGenerateToken();
-    }
-
-    @Override
-    public String getOptionalParams() {
-        return params.getCliSharedParameters().getParamLogFile() + "logFile";
-    }
-
-    @Override
-    public String getOptionalKeyDescriptions() {
-        return "[ " + params.getCliSharedParameters().getParamLogFile() + " logFile ]";
+        String helpHeader = "\nThe \"GenerateToken\" command allows to generate login token, to be used instead of username and password.";
+        String helpFooter = "\nUsage example: " + getUsageExamples() + "\n\n(c) 2017 CheckMarx.com LTD, All Rights Reserved\n";
+        helpFormatter.printHelp(120, getCommandName(), helpHeader, (Options) params.getCliMandatoryParameters().getGenerateTokenMandatoryParamsOptionGroup().getOptions(), helpFooter, true);
     }
 }

@@ -44,7 +44,6 @@ public abstract class CLICommand {
     boolean isAsyncScan = false;
 
     private static final int UNASSIGNED_EXIT_CODE = -1;
-    static final String HELP_HEADER = "\nThe \"Scan\" command allows to scan new and existing projects. It accepts all project settings as an arguments, similar to Web interface.";
 
     CLICommand(CLIScanParametersSingleton params) {
         this.params = params;
@@ -112,15 +111,6 @@ public abstract class CLICommand {
 
     public abstract String getCommandName();
 
-    public abstract String getMandatoryParams();
-
-    public abstract String getOptionalParams();
-
-    public abstract String getKeyDescriptions();
-
-    public abstract String getOptionalKeyDescriptions();
-
-    public abstract String getUsageExamples();
 
     public abstract void printHelp();
 
@@ -151,9 +141,7 @@ public abstract class CLICommand {
         if (logFileLocation == null) {
             logFileLocation = usrDir + normalizeLogPath(parts[parts.length - 1]) + ".log";
         } else {
-
             String origPath = logFileLocation;
-
             try {
                 logFileLocation = Paths.get(logFileLocation).toFile().getCanonicalPath();
             } catch (IOException e) {
@@ -161,7 +149,6 @@ public abstract class CLICommand {
             }
 
             File logpath = new File(logFileLocation);
-
             if (logpath.isAbsolute()) {
                 // Path is absolute
                 if (logFileLocation.endsWith(File.separator)) {
@@ -218,5 +205,5 @@ public abstract class CLICommand {
         return normalPathName;
     }
 
-
+    public abstract String getUsageExamples();
 }

@@ -59,9 +59,9 @@ public class JobUtils {
     public static int[] parseScanSummary(String scanSummary) throws CLIJobException {
         int[] scanResults = new int[3];
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = null;
+        DocumentBuilder builder;
         InputSource is = new InputSource(new StringReader(scanSummary));
-        Document xmlDoc = null;
+        Document xmlDoc;
         try {
             builder = factory.newDocumentBuilder();
             xmlDoc = builder.parse(is);

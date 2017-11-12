@@ -22,7 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.IOException;
 
-import static com.checkmarx.cxconsole.commands.job.utils.PrintResultsUtil.printOSAResultsToConsole;
+import static com.checkmarx.cxconsole.commands.job.utils.PrintResultsUtils.printOSAResultsToConsole;
 import static com.checkmarx.cxconsole.cxosa.dto.OSAScanStatusEnum.QUEUED;
 import static com.checkmarx.exitcodes.Constants.ExitCodes.SCAN_SUCCEEDED_EXIT_CODE;
 import static com.checkmarx.exitcodes.ErrorHandler.errorCodeResolver;

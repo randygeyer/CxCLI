@@ -8,10 +8,8 @@ import com.checkmarx.cxconsole.commands.utils.CommandParametersValidator;
 import com.checkmarx.parameters.CLIScanParametersSingleton;
 import org.apache.commons.cli.Options;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Created by nirli on 31/10/2017.
@@ -34,7 +32,7 @@ class RevokeTokenCommand extends CLICommand {
             } else {
                 exitCode = future.get();
             }
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (Exception e) {
             throw new CLICommandException("Error executing RevokeToken command, due to: " + e.getMessage());
         }
         return exitCode;
@@ -51,33 +49,14 @@ class RevokeTokenCommand extends CLICommand {
     }
 
     @Override
-    public String getMandatoryParams() {
-        return params.getCliMandatoryParameters().getMandatoryParamsRevokeToken();
-    }
-
-    @Override
-    public String getKeyDescriptions() {
-        return params.getCliMandatoryParameters().getKeyDescriptionsRevokeToken();
-    }
-
-    @Override
-    public String getOptionalParams() {
-        return params.getCliSharedParameters().getParamLogFile() + "logFile";
-    }
-
-    @Override
-    public String getOptionalKeyDescriptions() {
-        return "[ " + params.getCliSharedParameters().getParamLogFile() + " logFile ]";
-    }
-
-    @Override
     public String getUsageExamples() {
         return "RevokeToken -CxToken 1241513513tsfrg42 -CxServer http://localhost -v";
     }
 
     @Override
     public void printHelp() {
-        String helpFooter = "\nUsage example: " + getUsageExamples() + "\n\n(c) 2014 CheckMarx.com LTD, All Rights Reserved\n";
-        helpFormatter.printHelp(120, getCommandName(), HELP_HEADER, (Options) params.getCliMandatoryParameters().getRevokeTokenMandatoryParamsOptionGroup().getOptions(), helpFooter, true);
+        String helpHeader = "\nThe \"RevokeToken\" command allows to discard existing token.";
+        String helpFooter = "\nUsage example: " + getUsageExamples() + "\n\n(c) 2017 CheckMarx.com LTD, All Rights Reserved\n";
+        helpFormatter.printHelp(120, getCommandName(), helpHeader, (Options) params.getCliMandatoryParameters().getRevokeTokenMandatoryParamsOptionGroup().getOptions(), helpFooter, true);
     }
 }

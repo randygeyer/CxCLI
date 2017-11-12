@@ -8,9 +8,9 @@ abstract class AbstractCLIScanParameters {
     static final String KEY_DESCR_INTEND_SINGLE = "\t";
     static final String KEY_DESCR_INTEND_SMALL = "\t\t";
 
-    abstract public String getMandatoryParams();
+    public abstract String getMandatoryParams();
 
-    abstract public String getKeyDescriptions();
+    public abstract String getKeyDescriptions();
 
     abstract void initCommandLineOptions();
 

@@ -22,7 +22,7 @@ public class CxGenerateTokenJob extends CLITokenJob {
     @Override
     public Integer call() throws CLITokenJobException {
         log.info("Trying to login to server: " + params.getCliMandatoryParameters().getOriginalHost());
-        String token = null;
+        String token;
         try {
             token = cxRestTokenClient.generateToken(new URL(mandatoryParamsContainer.getOriginalHost()), mandatoryParamsContainer.getUsername(), mandatoryParamsContainer.getPassword());
         } catch (MalformedURLException | CxRestClientException e) {

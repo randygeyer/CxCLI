@@ -6,7 +6,6 @@ import org.apache.cxf.transport.http.auth.SpnegoAuthSupplier;
 
 import java.net.URI;
 
-;
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,13 +20,13 @@ public class DynamicAuthSupplier extends SpnegoAuthSupplier {
 
     private static boolean isKerberosActive = false;
 
-    static void setKerberosActive(boolean isActive){
+    static void setKerberosActive(boolean isActive) {
         isKerberosActive = isActive;
     }
 
     @Override
     public String getAuthorization(AuthorizationPolicy authPolicy, URI currentURI, Message message, String fullHeader) {
-        if(!isKerberosActive){
+        if (!isKerberosActive) {
             return null;
         }
 

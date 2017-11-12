@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by Galn on 06/04/2017.
@@ -57,8 +58,8 @@ public abstract class OsaUtils {
         try (OutputStream fileOutputStream = new FileOutputStream(tempFile)) {
             new Zipper().zip(tmpFolder, combinedExcludePattern, includeFilesPattern, fileOutputStream, maxZipSizeInBytes, zipListener);
         } catch (Zipper.MaxZipSizeReached e) {
-            tempFile.delete();
-            throw new IOException("Reached maximum upload size limit of " + FileUtils.byteCountToDisplaySize(maxZipSizeInBytes));
+            boolean verifyDeletion = tempFile.delete();
+            throw new IOException("Reached maximum upload size limit of " + FileUtils.byteCountToDisplaySize(maxZipSizeInBytes) + "Temporary directory deleted: " + verifyDeletion);
         } catch (Zipper.NoFilesToZip e) {
             throw new IOException("No files to zip");
         }
@@ -76,9 +77,8 @@ public abstract class OsaUtils {
         return tempFile;
     }
 
-
     public static String composeProjectOSASummaryLink(String url, long projectId) {
-        return String.format(url + "/CxWebClient/portal#/projectState/%s/OSA", projectId);
+        return String.format("%s/CxWebClient/portal#/projectState/%s/OSA", url, projectId);
     }
 
     private static File createTempDirectory() throws IOException {
@@ -96,7 +96,6 @@ public abstract class OsaUtils {
     }
 
     private static String[] generateExcludePattern(String[] folderExclusions, String[] filterPattern) {
-
         String[] excludeFoldersPattern = processExcludeFolders(folderExclusions);
         String[] excludeFilesPattern = processPatternFiles(filterPattern);
 
@@ -105,12 +104,10 @@ public abstract class OsaUtils {
 
     private static String[] processExcludeFolders(String[] folderExclusions) {
         if (folderExclusions == null) {
-            return folderExclusions;
+            return null;
         }
 
         List<String> result = new ArrayList<>();
-
-
         for (String p : folderExclusions) {
             p = p.trim();
             if (p.length() > 0 && !p.equals("null")) {
@@ -123,7 +120,7 @@ public abstract class OsaUtils {
 
     private static String[] processPatternFiles(String[] filesExclusions) {
         if (filesExclusions == null) {
-            return filesExclusions;
+            return null;
         }
         List<String> result = new ArrayList<>();
 
@@ -145,7 +142,7 @@ public abstract class OsaUtils {
         if (configIncluded != null) {
             for (String file : StringUtils.split(configIncluded, ",")) {
                 String trimmedPattern = file.trim();
-                if (trimmedPattern != "") {
+                if (!Objects.equals(trimmedPattern, "")) {
                     defIncludedFiles.add("**/" + trimmedPattern.replace('\\', '/'));
                 }
             }
@@ -154,7 +151,7 @@ public abstract class OsaUtils {
         if (fileIncluded != null) {
             for (String file : fileIncluded) {
                 String trimmedPattern = file.trim();
-                if (trimmedPattern != "") {
+                if (!Objects.equals(trimmedPattern, "")) {
                     defIncludedFiles.add("**/" + trimmedPattern.replace('\\', '/'));
                 }
             }

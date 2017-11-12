@@ -105,32 +105,8 @@ public class CLISASTParameters extends AbstractCLIScanParameters {
         isOsaEnabled = parsedCommandLineArguments.hasOption(PARAM_ENABLE_OSA.getOpt());
         this.locationType = locationType;
 
-        xmlFile = parsedCommandLineArguments.getOptionValue(PARAM_XML_FILE.getOpt());
-
-        if (parsedCommandLineArguments.hasOption(PARAM_PDF_FILE.getOpt())) {
-            reportType.add("PDF");
-            reportFile.add(parsedCommandLineArguments.getOptionValue(PARAM_PDF_FILE.getOpt()));
-        }
-
-        if (parsedCommandLineArguments.hasOption(PARAM_CSV_FILE.getOpt())) {
-            reportType.add("CSV");
-            reportFile.add(parsedCommandLineArguments.getOptionValue(PARAM_CSV_FILE.getOpt()));
-        }
-
-        if (parsedCommandLineArguments.hasOption(PARAM_RTF_FILE.getOpt())) {
-            reportType.add("RTF");
-            reportFile.add(parsedCommandLineArguments.getOptionValue(PARAM_RTF_FILE.getOpt()));
-        }
-
-        if (parsedCommandLineArguments.hasOption(PARAM_EXCLUDE_FOLDERS.getOpt())) {
-            hasExcludedFoldersParam = true;
-            excludedFolders = parsedCommandLineArguments.getOptionValues(PARAM_EXCLUDE_FOLDERS.getOpt());
-        }
-
-        if (parsedCommandLineArguments.hasOption(PARAM_EXCLUDE_FILES.getOpt())) {
-            hasExcludedFilesParam = true;
-            excludedFiles = parsedCommandLineArguments.getOptionValues(PARAM_EXCLUDE_FILES.getOpt());
-        }
+        initReportFilesParams(parsedCommandLineArguments);
+        initExcludedFilesAndFolderParams(parsedCommandLineArguments);
 
         locationUser = parsedCommandLineArguments.getOptionValue(PARAM_LOCATION_USER.getOpt());
         locationPass = parsedCommandLineArguments.getOptionValue(PARAM_LOCATION_PWD.getOpt());
@@ -152,22 +128,7 @@ public class CLISASTParameters extends AbstractCLIScanParameters {
             privateKey = ParametersUtils.setPrivateKeyFromLocation(locationPrivateKey);
         }
 
-        if (parsedCommandLineArguments.hasOption(PARAM_LOCATION_PORT.getOpt())) {
-            String portStr = parsedCommandLineArguments.getOptionValue(PARAM_LOCATION_PORT.getOpt());
-            locationPort = Integer.parseInt(portStr);
-        } else {
-            if (locationType == LocationType.SVN) {
-                if (locationURL.toLowerCase().startsWith("svn://")) {
-                    locationPort = 3690;
-                } else {
-                    locationPort = 80;
-                }
-            } else if (locationType == LocationType.TFS) {
-                locationPort = 8080;
-            } else if (locationType == LocationType.PERFORCE) {
-                locationPort = 1666;
-            }
-        }
+        initLocationPort(parsedCommandLineArguments);
         isPerforceWorkspaceMode = parsedCommandLineArguments.hasOption(PARAM_WORKSPACE.getOpt());
 
 
@@ -187,6 +148,53 @@ public class CLISASTParameters extends AbstractCLIScanParameters {
             if (sastHighThresholdStr != null) {
                 sastHighThresholdValue = Integer.parseInt(sastHighThresholdStr);
             }
+        }
+    }
+
+    private void initLocationPort(CommandLine parsedCommandLineArguments) {
+        if (parsedCommandLineArguments.hasOption(PARAM_LOCATION_PORT.getOpt())) {
+            String portStr = parsedCommandLineArguments.getOptionValue(PARAM_LOCATION_PORT.getOpt());
+            locationPort = Integer.parseInt(portStr);
+        } else {
+            if (locationType == LocationType.SVN) {
+                if (locationURL.toLowerCase().startsWith("svn://")) {
+                    locationPort = 3690;
+                } else {
+                    locationPort = 80;
+                }
+            } else if (locationType == LocationType.TFS) {
+                locationPort = 8080;
+            } else if (locationType == LocationType.PERFORCE) {
+                locationPort = 1666;
+            }
+        }
+    }
+
+    private void initExcludedFilesAndFolderParams(CommandLine parsedCommandLineArguments) {
+        if (parsedCommandLineArguments.hasOption(PARAM_EXCLUDE_FOLDERS.getOpt())) {
+            hasExcludedFoldersParam = true;
+            excludedFolders = parsedCommandLineArguments.getOptionValues(PARAM_EXCLUDE_FOLDERS.getOpt());
+        }
+
+        if (parsedCommandLineArguments.hasOption(PARAM_EXCLUDE_FILES.getOpt())) {
+            hasExcludedFilesParam = true;
+            excludedFiles = parsedCommandLineArguments.getOptionValues(PARAM_EXCLUDE_FILES.getOpt());
+        }
+    }
+
+    private void initReportFilesParams(CommandLine parsedCommandLineArguments) {
+        xmlFile = parsedCommandLineArguments.getOptionValue(PARAM_XML_FILE.getOpt());
+        if (parsedCommandLineArguments.hasOption(PARAM_PDF_FILE.getOpt())) {
+            reportType.add("PDF");
+            reportFile.add(parsedCommandLineArguments.getOptionValue(PARAM_PDF_FILE.getOpt()));
+        }
+        if (parsedCommandLineArguments.hasOption(PARAM_CSV_FILE.getOpt())) {
+            reportType.add("CSV");
+            reportFile.add(parsedCommandLineArguments.getOptionValue(PARAM_CSV_FILE.getOpt()));
+        }
+        if (parsedCommandLineArguments.hasOption(PARAM_RTF_FILE.getOpt())) {
+            reportType.add("RTF");
+            reportFile.add(parsedCommandLineArguments.getOptionValue(PARAM_RTF_FILE.getOpt()));
         }
     }
 
