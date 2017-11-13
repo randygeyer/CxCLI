@@ -14,6 +14,7 @@ import static com.checkmarx.cxconsole.CxConsoleLauncher.getArgumentsLessCommandN
 public class CLIScanParametersSingleton {
 
     private static final CLIScanParametersSingleton instance;
+
     static {
         try {
             instance = new CLIScanParametersSingleton();
@@ -49,24 +50,6 @@ public class CLIScanParametersSingleton {
     private CLIOSAParameters cliOsaParameters;
 
     private CommandLine parsedCommandLineArguments;
-
-//    public CLIScanParametersSingleton() throws CLIParameterParsingException {
-//        String[] args = getArgumentsLessCommandName();
-//        cliMandatoryParameters = new CLIMandatoryParameters();
-//        cliSharedParameters = new CLISharedParameters();
-//        cliSastParameters = new CLISASTParameters();
-//        cliOsaParameters = new CLIOSAParameters();
-//
-//        parsedCommandLineArguments = ParametersUtils.parseArguments(args, getAllCLIOptions());
-//        cliMandatoryParameters.initMandatoryParams(parsedCommandLineArguments);
-//        cliSharedParameters.initSharedParams(parsedCommandLineArguments);
-//        cliSastParameters.initSastParams(parsedCommandLineArguments, cliSharedParameters.getLocationType());
-//        cliOsaParameters.initOsaParams(parsedCommandLineArguments);
-//        if (parsedCommandLineArguments.getArgs().length > 0) {
-//            throw new CLIParameterParsingException("Error complete parse all parameters from the command.");
-//        }
-//
-//    }
 
     public CLIMandatoryParameters getCliMandatoryParameters() {
         return cliMandatoryParameters;

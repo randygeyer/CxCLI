@@ -11,10 +11,6 @@ import static com.checkmarx.cxconsole.CxConsoleLauncher.LOG_NAME;
  */
 public class PrintResultsUtils {
 
-    private static final int LOW_VULNERABILITY_RESULTS = 0;
-    private static final int MEDIUM_VULNERABILITY_RESULTS = 1;
-    private static final int HIGH_VULNERABILITY_RESULTS = 2;
-
     private static final String LINE_SPACER = "------------------------";
     private static final String RESULT_FOOTER = "-----------------------------------------------------------------------------------------";
 

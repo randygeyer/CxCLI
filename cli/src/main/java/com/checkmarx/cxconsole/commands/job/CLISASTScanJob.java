@@ -44,12 +44,6 @@ import static com.checkmarx.thresholds.ThresholdResolver.resolveThresholdExitCod
  */
 public class CLISASTScanJob extends CLIScanJob {
 
-    private static final int LOW_VULNERABILITY_RESULTS = 0;
-    private static final int MEDIUM_VULNERABILITY_RESULTS = 1;
-    private static final int HIGH_VULNERABILITY_RESULTS = 2;
-
-    private static final String CX_SERVER_PREFIX = "CxServer\\";
-
     private CxWSResponseProjectConfig projectConfig;
     private PresetDTO selectedPreset;
     private ConfigurationDTO selectedConfiguration;

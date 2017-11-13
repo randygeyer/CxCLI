@@ -26,10 +26,6 @@ import static com.checkmarx.cxconsole.CxConsoleLauncher.LOG_NAME;
  */
 public class JobUtils {
 
-    private static final int LOW_VULNERABILITY_RESULTS = 0;
-    private static final int MEDIUM_VULNERABILITY_RESULTS = 1;
-    private static final int HIGH_VULNERABILITY_RESULTS = 2;
-
     protected static Logger log = Logger.getLogger(LOG_NAME);
 
     private JobUtils() {

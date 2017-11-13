@@ -233,7 +233,6 @@ public class CxRestOSAClient {
         }
     }
 
-
     private List<CVE> getOSAVulnerabilities(String scanId) throws IOException, CxRestClientValidatorException {
         HttpGet getRequest = createHttpRequest(String.valueOf(RestResourcesURIBuilder.buildGetOSAScanVulnerabilitiesResultsURL(new URL(hostName), scanId)), MediaType.APPLICATION_JSON);
         HttpResponse response = null;
