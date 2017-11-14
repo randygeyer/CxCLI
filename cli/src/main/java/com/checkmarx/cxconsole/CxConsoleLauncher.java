@@ -1,5 +1,6 @@
 package com.checkmarx.cxconsole;
 
+import com.checkmarx.clients.soap.login.utils.SSLUtilities;
 import com.checkmarx.cxconsole.commands.CLICommand;
 import com.checkmarx.cxconsole.commands.CommandFactory;
 import com.checkmarx.cxconsole.commands.exceptions.CLICommandException;
@@ -8,7 +9,6 @@ import com.checkmarx.cxconsole.commands.exceptions.CLICommandParameterValidatorE
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxconsole.utils.ConsoleUtils;
 import com.checkmarx.cxconsole.utils.CustomStringList;
-import com.checkmarx.login.soap.utils.SSLUtilities;
 import com.checkmarx.parameters.CLIScanParametersSingleton;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;

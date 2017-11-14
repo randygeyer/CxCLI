@@ -1,5 +1,9 @@
 package com.checkmarx.cxconsole.commands.job;
 
+import com.checkmarx.clients.rest.osa.CxRestOSAClient;
+import com.checkmarx.clients.rest.osa.exceptions.CxRestOSAClientException;
+import com.checkmarx.clients.soap.exceptions.CxSoapClientValidatorException;
+import com.checkmarx.clients.soap.sast.CxSoapSASTClient;
 import com.checkmarx.cxconsole.commands.job.exceptions.CLIJobException;
 import com.checkmarx.cxconsole.commands.job.utils.JobUtils;
 import com.checkmarx.cxconsole.commands.job.utils.PathHandler;
@@ -11,10 +15,6 @@ import com.checkmarx.cxconsole.cxosa.utils.OsaUtils;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxviewer.ws.generated.CxWSResponseProjectsDisplayData;
 import com.checkmarx.cxviewer.ws.generated.ProjectDisplayData;
-import com.checkmarx.login.rest.CxRestOSAClient;
-import com.checkmarx.login.rest.exceptions.CxRestOSAClientException;
-import com.checkmarx.login.soap.CxSoapSASTClient;
-import com.checkmarx.login.soap.exceptions.CxSoapClientValidatorException;
 import com.checkmarx.parameters.CLIScanParametersSingleton;
 import com.checkmarx.thresholds.dto.ThresholdDto;
 import org.apache.commons.lang3.StringUtils;

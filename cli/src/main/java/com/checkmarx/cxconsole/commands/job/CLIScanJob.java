@@ -1,5 +1,9 @@
 package com.checkmarx.cxconsole.commands.job;
 
+import com.checkmarx.clients.rest.login.CxRestLoginClient;
+import com.checkmarx.clients.soap.login.CxSoapLoginClient;
+import com.checkmarx.clients.soap.login.exceptions.CxSoapLoginClientException;
+import com.checkmarx.clients.soap.utils.SoapClientUtils;
 import com.checkmarx.cxconsole.commands.job.exceptions.CLIJobException;
 import com.checkmarx.cxconsole.commands.job.retriableoperation.RetryableOperation;
 import com.checkmarx.cxconsole.commands.job.retriableoperation.RetryableRESTLogin;
@@ -7,10 +11,6 @@ import com.checkmarx.cxconsole.commands.job.retriableoperation.RetryableSOAPLogi
 import com.checkmarx.cxconsole.commands.job.utils.JobUtils;
 import com.checkmarx.cxconsole.commands.job.utils.PathHandler;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
-import com.checkmarx.login.rest.CxRestLoginClient;
-import com.checkmarx.login.soap.CxSoapLoginClient;
-import com.checkmarx.login.soap.exceptions.CxSoapLoginClientException;
-import com.checkmarx.login.soap.utils.SoapClientUtils;
 import com.checkmarx.parameters.CLIScanParametersSingleton;
 import org.apache.log4j.Logger;
 

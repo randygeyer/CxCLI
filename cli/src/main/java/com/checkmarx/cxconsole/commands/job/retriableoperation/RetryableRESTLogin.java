@@ -1,8 +1,8 @@
 package com.checkmarx.cxconsole.commands.job.retriableoperation;
 
+import com.checkmarx.clients.rest.login.CxRestLoginClient;
+import com.checkmarx.clients.rest.login.exceptions.CxRestLoginClientException;
 import com.checkmarx.cxconsole.commands.job.exceptions.CLIJobException;
-import com.checkmarx.login.rest.CxRestLoginClient;
-import com.checkmarx.login.rest.exceptions.CxRestLoginClientException;
 import com.checkmarx.parameters.CLIScanParametersSingleton;
 
 /**

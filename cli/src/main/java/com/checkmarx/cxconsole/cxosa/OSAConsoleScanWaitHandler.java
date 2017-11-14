@@ -1,9 +1,9 @@
 package com.checkmarx.cxconsole.cxosa;
 
 
+import com.checkmarx.clients.rest.osa.exceptions.CxRestOSAClientException;
 import com.checkmarx.cxconsole.cxosa.dto.OSAScanStatus;
 import com.checkmarx.cxconsole.cxosa.dto.OSAScanStatusEnum;
-import com.checkmarx.login.rest.exceptions.CxRestOSAClientException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 

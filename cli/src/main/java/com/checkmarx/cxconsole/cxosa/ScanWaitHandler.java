@@ -1,7 +1,7 @@
 package com.checkmarx.cxconsole.cxosa;
 
 
-import com.checkmarx.login.rest.exceptions.CxRestOSAClientException;
+import com.checkmarx.clients.rest.osa.exceptions.CxRestOSAClientException;
 
 /**
  * Created by: Dorg.
