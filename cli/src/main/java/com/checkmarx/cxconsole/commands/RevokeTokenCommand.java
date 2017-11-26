@@ -33,6 +33,7 @@ class RevokeTokenCommand extends CLICommand {
                 exitCode = future.get();
             }
         } catch (Exception e) {
+            log.error("Error executing RevokeToken command, due to: " + e.getMessage());
             throw new CLICommandException("Error executing RevokeToken command, due to: " + e.getMessage());
         }
         return exitCode;

@@ -49,7 +49,7 @@ public class RetryableSOAPLogin extends RetryableOperation {
                 sessionId = responseLoginData.getSessionId();
             }
         } catch (CxSoapLoginClientException e) {
-            error = "Unsuccessful login.\\n" + e.getMessage();
+            error = "Unsuccessful login: " + e.getMessage();
             log.trace(error);
             throw new CLIJobException(error);
         }

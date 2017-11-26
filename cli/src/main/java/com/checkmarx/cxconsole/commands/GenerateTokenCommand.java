@@ -33,6 +33,7 @@ class GenerateTokenCommand extends CLICommand {
                 exitCode = future.get();
             }
         } catch (Exception e) {
+            log.error("Error executing GenerateToken command, due to: " + e.getMessage());
             throw new CLICommandException("Error executing GenerateToken command, due to: " + e.getMessage());
         }
         return exitCode;
