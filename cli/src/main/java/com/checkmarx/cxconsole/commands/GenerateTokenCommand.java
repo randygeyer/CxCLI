@@ -15,7 +15,10 @@ import java.util.concurrent.TimeUnit;
  */
 class GenerateTokenCommand extends CLICommand {
 
-    GenerateTokenCommand(CLIScanParametersSingleton params) {
+    private static final String SERVER_STACK_TRACE_ERROR_MESSAGE = "com.checkmarx.cxconsole.commands.job.exceptions.CLITokenJobException: Fail to generate login token: Fail to authenticate: status code: HTTP/1.1 400 Bad Request. error:\"error\":\"invalid_grant\"";
+    private static final String USER_AUTHENTICATION_ERROR = "User authentication failed, unable to generate token";
+
+            GenerateTokenCommand(CLIScanParametersSingleton params) {
         super(params);
         this.commandName = Commands.GENERATE_TOKEN.value();
     }
@@ -32,8 +35,12 @@ class GenerateTokenCommand extends CLICommand {
                 exitCode = future.get();
             }
         } catch (Exception e) {
-            log.error("Error executing GenerateToken command, due to: " + e.getMessage());
-            throw new CLICommandException("Error executing GenerateToken command, due to: " + e.getMessage());
+            String errorMessage = e.getMessage();
+            if (e.getMessage().contains(SERVER_STACK_TRACE_ERROR_MESSAGE)){
+                errorMessage = e.getMessage().replace(SERVER_STACK_TRACE_ERROR_MESSAGE, USER_AUTHENTICATION_ERROR);
+            }
+            log.error("Error executing GenerateToken command, due to: " + errorMessage);
+            throw new CLICommandException("Error executing GenerateToken command, due to: " + errorMessage);
         }
         return exitCode;
     }

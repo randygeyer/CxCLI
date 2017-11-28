@@ -36,7 +36,7 @@ public class Constants {
         public static final String LOGIN_ERROR_MSG = "Login Failed";
         public static final String UNSUCCESSFUL_LOGIN_ERROR_MSG = "Unsuccessful login";
         public static final String UNSUCCESSFUL_REST_LOGIN = "Fail to login with credentials: Fail to authenticate: status code: HTTP/1.1 403 Forbidden.";
-        public static final String INVALID_CREDENTIALS_FOR_TOKEN_GENERATION = "error:\"error\":\"invalid_grant\"";
+        public static final String INVALID_CREDENTIALS_FOR_TOKEN_GENERATION = "User authentication failed, unable to generate token";
         public static final String NO_PROJECT_PRIOR_TO_OSA_SCAN_ERROR_MSG = "OSA scan requires an existing project on the server";
         public static final String REPORT_PARAMETER_IN_ASYNC_SCAN = "Asynchronous run does not allow report creation. Please remove the report parameters and run again";
         public static final String THRESHOLD_PARAMETER_IN_ASYNC_SCAN = "Asynchronous run does not support threshold. Please remove the threshold parameters and run again";
