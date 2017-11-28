@@ -6,7 +6,6 @@ import com.checkmarx.cxconsole.commands.exceptions.CLICommandParameterValidatorE
 import com.checkmarx.cxconsole.commands.job.CxGenerateTokenJob;
 import com.checkmarx.cxconsole.commands.utils.CommandParametersValidator;
 import com.checkmarx.parameters.CLIScanParametersSingleton;
-import org.apache.commons.cli.Options;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -51,13 +50,13 @@ class GenerateTokenCommand extends CLICommand {
 
     @Override
     public String getUsageExamples() {
-        return "CxConsole GenerateToken -CxServer http://localhost -cxuser admin@company -cxpassword admin -v";
+        return "runCxConsole.cmd GenerateToken -CxServer http://localhost -cxuser admin@company -cxpassword admin -v";
     }
 
     @Override
     public void printHelp() {
         String helpHeader = "\nThe \"GenerateToken\" command allows to generate login token, to be used instead of username and password.";
         String helpFooter = "\nUsage example: " + getUsageExamples() + "\n\n(c) 2017 CheckMarx.com LTD, All Rights Reserved\n";
-        helpFormatter.printHelp(120, getCommandName(), helpHeader, (Options) params.getCliMandatoryParameters().getGenerateTokenMandatoryParamsOptionGroup().getOptions(), helpFooter, true);
+        helpFormatter.printHelp(120, getCommandName(), helpHeader, params.getCliMandatoryParameters().getGenerateTokenMandatoryParamsOptionGroup(), helpFooter, true);
     }
 }

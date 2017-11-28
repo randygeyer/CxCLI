@@ -147,21 +147,21 @@ public class CLIMandatoryParameters extends AbstractCLIScanParameters {
         return mandatoryParamsOptionGroup;
     }
 
-    public OptionGroup getGenerateTokenMandatoryParamsOptionGroup() {
-        OptionGroup mandatoryParamsOptionGroup = new OptionGroup();
-        mandatoryParamsOptionGroup.addOption(PARAM_HOST);
-        mandatoryParamsOptionGroup.addOption(PARAM_USER);
-        mandatoryParamsOptionGroup.addOption(PARAM_PASSWORD);
+    public Options getGenerateTokenMandatoryParamsOptionGroup() {
+        Options mandatoryParamsOptions = new Options();
+        mandatoryParamsOptions.addOption(PARAM_HOST);
+        mandatoryParamsOptions.addOption(PARAM_USER);
+        mandatoryParamsOptions.addOption(PARAM_PASSWORD);
 
-        return mandatoryParamsOptionGroup;
+        return mandatoryParamsOptions;
     }
 
-    public OptionGroup getRevokeTokenMandatoryParamsOptionGroup() {
-        OptionGroup mandatoryParamsOptionGroup = new OptionGroup();
-        mandatoryParamsOptionGroup.addOption(PARAM_HOST);
-        mandatoryParamsOptionGroup.addOption(PARAM_TOKEN);
+    public Options getRevokeTokenMandatoryParamsOptions() {
+        Options mandatoryParamsOptions = new Options();
+        mandatoryParamsOptions.addOption(PARAM_HOST);
+        mandatoryParamsOptions.addOption(PARAM_TOKEN);
 
-        return mandatoryParamsOptionGroup;
+        return mandatoryParamsOptions;
     }
 
     public String getKeyDescriptions() {

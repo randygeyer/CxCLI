@@ -6,7 +6,6 @@ import com.checkmarx.cxconsole.commands.exceptions.CLICommandParameterValidatorE
 import com.checkmarx.cxconsole.commands.job.CxRevokeTokenJob;
 import com.checkmarx.cxconsole.commands.utils.CommandParametersValidator;
 import com.checkmarx.parameters.CLIScanParametersSingleton;
-import org.apache.commons.cli.Options;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -51,13 +50,13 @@ class RevokeTokenCommand extends CLICommand {
 
     @Override
     public String getUsageExamples() {
-        return "RevokeToken -CxToken 1241513513tsfrg42 -CxServer http://localhost -v";
+        return "runCxConsole.cmd RevokeToken -CxToken 1241513513tsfrg42 -CxServer http://localhost -v";
     }
 
     @Override
     public void printHelp() {
         String helpHeader = "\nThe \"RevokeToken\" command allows to discard existing token.";
         String helpFooter = "\nUsage example: " + getUsageExamples() + "\n\n(c) 2017 CheckMarx.com LTD, All Rights Reserved\n";
-        helpFormatter.printHelp(120, getCommandName(), helpHeader, (Options) params.getCliMandatoryParameters().getRevokeTokenMandatoryParamsOptionGroup().getOptions(), helpFooter, true);
+        helpFormatter.printHelp(120, getCommandName(), helpHeader, params.getCliMandatoryParameters().getRevokeTokenMandatoryParamsOptions(), helpFooter, true);
     }
 }
