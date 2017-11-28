@@ -45,6 +45,6 @@ public class RetryableRESTLogin extends RetryableOperation {
 
     @Override
     public String getOperationName() {
-        return "REST Token login";
+        return "REST login";
     }
 }
