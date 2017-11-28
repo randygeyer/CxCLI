@@ -63,6 +63,9 @@ public class CxConsoleLauncher {
         log.info("CxConsole version " + ConsoleUtils.getBuildVersion());
         log.info("CxConsole scan session started");
         log.info("");
+        log.trace("CLI input:" + getFullCommandFromArgs(args));
+        log.trace("");
+
 
         if (args == null || args.length == 0) {
             log.fatal("Missing command name. Available commands: " + CommandFactory.getCommandNames());
@@ -107,6 +110,15 @@ public class CxConsoleLauncher {
             log.error(e.getMessage());
             return errorCodeResolver(e.getMessage());
         }
+    }
+
+    private static String getFullCommandFromArgs(String[] args) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String str: args) {
+            stringBuilder.append(str).append(" ");
+        }
+
+        return stringBuilder.toString();
     }
 
     private static void makeArgumentsLowCase(String[] argumentsLessCommandName) {
