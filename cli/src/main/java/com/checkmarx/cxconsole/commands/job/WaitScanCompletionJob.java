@@ -58,8 +58,8 @@ class WaitScanCompletionJob implements Callable<Boolean> {
 
                     if (currentStatusEnum.equals(CurrentStatusEnum.FAILED)) {
                         // Scan failed
-                        log.error(statusOfScanResult.getErrorMessage());
-                        throw new CLIJobUtilException(statusOfScanResult.getErrorMessage());
+                        log.trace(statusOfScanResult.getStageMessage());
+                        throw new CLIJobUtilException(statusOfScanResult.getStageMessage());
                     }
 
                     if (currentStatusEnum.equals(CurrentStatusEnum.CANCELED)) {
