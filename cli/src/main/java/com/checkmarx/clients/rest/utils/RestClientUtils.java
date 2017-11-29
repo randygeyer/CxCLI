@@ -29,7 +29,11 @@ public class RestClientUtils {
             if (response.getStatusLine().getStatusCode() != status) {
                 String responseBody = IOUtils.toString(response.getEntity().getContent(), Charset.defaultCharset());
                 responseBody = responseBody.replace("{", "").replace("}", "").replace(System.getProperty("line.separator"), " ").replace("  ", "");
-                throw new CxRestClientValidatorException(message + ": " + "status code: " + response.getStatusLine() + ". error:" + responseBody);
+                if (responseBody.contains("<!DOCTYPE html>")){
+                    throw new CxRestClientValidatorException(message + ": " + "status code: 500.  error:  500 Internal Server Error");
+                }else {
+                    throw new CxRestClientValidatorException(message + ": " + "status code: " + response.getStatusLine() + ". error:" + responseBody);
+                }
             }
         } catch (IOException e) {
             throw new CxRestClientValidatorException("Error parse REST response body: " + e.getMessage());

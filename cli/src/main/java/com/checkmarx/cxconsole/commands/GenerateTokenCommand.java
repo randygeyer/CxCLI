@@ -35,7 +35,7 @@ class GenerateTokenCommand extends CLICommand {
                 exitCode = future.get();
             }
         } catch (Exception e) {
-            String errorMessage = e.getMessage();
+            String errorMessage = e.getCause().getMessage();
             if (e.getMessage().contains(SERVER_STACK_TRACE_ERROR_MESSAGE)){
                 errorMessage = e.getMessage().replace(SERVER_STACK_TRACE_ERROR_MESSAGE, USER_AUTHENTICATION_ERROR);
             }

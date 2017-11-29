@@ -47,8 +47,8 @@ class SASTScanCommand extends CLICommand {
                 exitCode = future.get();
             }
         } catch (Exception e) {
-            log.error("Error executing SAST scan command: " + e.getCause());
-            throw new CLICommandException("Error executing SAST scan command: " + e.getCause());
+            log.error("Error executing SAST scan command: " + e.getCause().getMessage());
+            throw new CLICommandException("Error executing SAST scan command: " + e.getCause().getMessage());
         }
         if (params.getCliSastParameters().isOsaEnabled()) {
             CLICommand osaCommand;

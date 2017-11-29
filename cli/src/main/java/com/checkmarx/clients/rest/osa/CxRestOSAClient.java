@@ -101,8 +101,8 @@ public class CxRestOSAClient {
             //extract response as object and return the link
             return parseJsonFromResponse(response, CreateOSAScanResponse.class);
         } catch (IOException | CxRestClientValidatorException e) {
-            log.error("Failed to create OSA scan: " + e.getMessage());
-            throw new CxRestOSAClientException("Failed to create OSA scan: " + e.getMessage());
+            log.error(e.getMessage());
+            throw new CxRestOSAClientException(e.getMessage());
         } finally {
             if (post != null) {
                 post.releaseConnection();

@@ -96,14 +96,16 @@ public abstract class CLICommand {
         log.debug("Command type: " + getCommandName());
         for (Option opt : params.getParsedCommandLineArguments().getOptions()) {
             String option = opt.getOpt();
-            if (!Objects.equals(option, "cxpassword")) {
+            if (!Objects.equals(option, "cxpassword") && !Objects.equals(option, "locationpassword")) {
                 if (opt.getValue() == null) {
                     log.debug("Option: " + StringUtils.capitalize(opt.getOpt()) + "   Value: True");
                 } else {
                     log.debug("Option: " + StringUtils.capitalize(opt.getOpt()) + "   Value: " + opt.getValue());
                 }
-            } else {
-                log.debug("Option: Cxpassword   Value: **********");
+            } else if (Objects.equals(option, "cxpassword")){
+                log.debug("Option: CxPassword   Value: **********");
+            }else if (Objects.equals(option, "locationpassword")){
+                log.debug("Option: LocationPassword   Value: **********");
             }
         }
         log.debug("-----------------------------------------------------------------------------");
