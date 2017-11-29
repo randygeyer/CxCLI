@@ -60,6 +60,8 @@ public class CxRestLoginClient {
     private static final Header CLI_ORIGIN_HEADER = new BasicHeader(CX_ORIGIN_HEADER_KEY, CX_ORIGIN_HEADER_VALUE);
     private static final String CSRF_TOKEN_HEADER = "CXCSRFToken";
 
+    private static final String SERVER_STACK_TRACE_ERROR_MESSAGE = "Failed to get access token: Fail to authenticate: status code: HTTP/1.1 400 Bad Request. error:\"error\":\"invalid_grant\"";
+
     public CxRestLoginClient(String hostname, String token) {
         this.hostName = hostname;
         this.token = token;
@@ -73,7 +75,12 @@ public class CxRestLoginClient {
             String accessToken = getAccessToken(token);
             authorizationHeader = new BasicHeader("Authorization", "Bearer " + accessToken);
         } catch (CxRestLoginClientException e) {
-            log.error("Failed to login with token, due to: " + e.getMessage());
+            if (e.getMessage().contains(SERVER_STACK_TRACE_ERROR_MESSAGE)) {
+                log.trace("Failed to login with token, due to: " + e.getMessage());
+                log.error("User authentication failed");
+            } else {
+                log.error("Failed to login with token, due to: " + e.getCause().getMessage());
+            }
         }
         headers.add(authorizationHeader);
         apacheClient = HttpClientBuilder.create().setDefaultHeaders(headers).build();
