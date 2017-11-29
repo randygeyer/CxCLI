@@ -76,8 +76,8 @@ public class CxRestLoginClient {
             authorizationHeader = new BasicHeader("Authorization", "Bearer " + accessToken);
         } catch (CxRestLoginClientException e) {
             if (e.getMessage().contains(SERVER_STACK_TRACE_ERROR_MESSAGE)) {
-                log.trace("Failed to login with token, due to: " + e.getMessage());
-                log.error("User authentication failed");
+                log.trace("Failed to login, due to: " + e.getMessage());
+                log.error("Failed to login: User authentication failed");
             } else {
                 log.error("Failed to login with token, due to: " + e.getCause().getMessage());
             }
