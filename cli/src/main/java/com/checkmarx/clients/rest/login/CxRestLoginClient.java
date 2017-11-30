@@ -79,7 +79,7 @@ public class CxRestLoginClient {
                 log.trace("Failed to login, due to: " + e.getMessage());
                 log.error("Failed to login: User authentication failed");
             } else {
-                log.error("Failed to login with token, due to: " + e.getCause().getMessage());
+                log.error("Failed to login with token, due to: " + e.getMessage());
             }
         }
         headers.add(authorizationHeader);

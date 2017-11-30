@@ -102,9 +102,9 @@ public abstract class CLICommand {
                 } else {
                     log.debug("Option: " + StringUtils.capitalize(opt.getOpt()) + "   Value: " + opt.getValue());
                 }
-            } else if (Objects.equals(option, "cxpassword")){
+            } else if (Objects.equals(option, "cxpassword")) {
                 log.debug("Option: CxPassword   Value: **********");
-            }else if (Objects.equals(option, "locationpassword")){
+            } else if (Objects.equals(option, "locationpassword")) {
                 log.debug("Option: LocationPassword   Value: **********");
             }
         }
