@@ -8,16 +8,20 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 
+import static com.checkmarx.cxconsole.CxConsoleLauncher.LOG_NAME;
+
 /**
  * Created by Galn on 28/02/2017.
  */
 abstract class CxFileUtils {
 
+    private static Logger log = Logger.getLogger(LOG_NAME);
+
     private CxFileUtils() {
         throw new IllegalStateException("Utility class");
     }
 
-    static void deleteTempPath(String folder, String prefix, Logger log) {
+    static void deleteTempPath(String folder, String prefix) {
         GenericPrefixFilter filter = new GenericPrefixFilter(prefix);
         File dir = new File(folder);
 

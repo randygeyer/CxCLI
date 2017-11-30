@@ -60,6 +60,9 @@ public class CommandParametersValidator {
         if (parameters.getCliMandatoryParameters().getOriginalHost() == null || parameters.getCliMandatoryParameters().getHost() == null) {
             throw new CLICommandParameterValidatorException("Please provide server");
         }
+        if (parameters.getCliMandatoryParameters().getProjectName() == null ) {
+            throw new CLICommandParameterValidatorException("Please provide project name");
+        }
     }
 
     public static void validateSASTExcludedFilesFolder(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
