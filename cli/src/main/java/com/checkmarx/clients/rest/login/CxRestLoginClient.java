@@ -31,7 +31,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.checkmarx.clients.rest.utils.RestClientUtils.FAIL_TO_AUTHENTICATE_ERROR;
+import static com.checkmarx.clients.rest.login.CxRestTokenClient.FAIL_TO_AUTHENTICATE_ERROR;
 import static com.checkmarx.clients.rest.utils.RestClientUtils.validateResponse;
 import static com.checkmarx.cxconsole.CxConsoleLauncher.LOG_NAME;
 

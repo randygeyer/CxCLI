@@ -21,6 +21,9 @@ public class CommandFactory {
     private static final String SAST_SCAN_COMMAND = "scan";
     private static final String ASYNC_SAST_SCAN_COMMAND = "asyncscan";
 
+    private static final String COMMANDS_LIST = GENERATE_TOKEN_COMMAND + " " + REVOKE_TOKEN_COMMAND + " " + OSA_SCAN_COMMAND + " " +
+            ASYNC_OSA_SCAN_COMMAND + " " + SAST_SCAN_COMMAND + " " + ASYNC_SAST_SCAN_COMMAND + " ";
+
     public static CLICommand getCommand(String commandName, CLIScanParametersSingleton parameters) throws CLICommandFactoryException {
         switch (commandName.toLowerCase()) {
             case (GENERATE_TOKEN_COMMAND):
@@ -43,5 +46,12 @@ public class CommandFactory {
 
     public static String getCommandNames() {
         return StringUtils.join(Commands.class.getEnumConstants(), ", ");
+    }
+
+    public static void verifyCommand(String command) throws CLICommandFactoryException {
+        if (!COMMANDS_LIST.contains(command.toLowerCase())) {
+            throw new CLICommandFactoryException("Command " + command + " was not found. Available commands are:\n"
+                    + getCommandNames());
+        }
     }
 }

@@ -17,9 +17,6 @@ import java.util.List;
  */
 public class RestClientUtils {
 
-    public static final String PARSING_ERROR = "Failed due to parsing error: ";
-    public static final String FAIL_TO_AUTHENTICATE_ERROR = "Fail to authenticate";
-
     private RestClientUtils() {
         throw new IllegalStateException("Utility class");
     }
@@ -29,10 +26,12 @@ public class RestClientUtils {
             if (response.getStatusLine().getStatusCode() != status) {
                 String responseBody = IOUtils.toString(response.getEntity().getContent(), Charset.defaultCharset());
                 responseBody = responseBody.replace("{", "").replace("}", "").replace(System.getProperty("line.separator"), " ").replace("  ", "");
-                if (responseBody.contains("<!DOCTYPE html>")){
-                    throw new CxRestClientValidatorException(message + ": " + "status code: 500.  error:  500 Internal Server Error");
-                }else {
-                    throw new CxRestClientValidatorException(message + ": " + "status code: " + response.getStatusLine() + ". error:" + responseBody);
+                if (responseBody.contains("<!DOCTYPE html>")) {
+                    throw new CxRestClientValidatorException(message + ": " + "status code: 500. Error message: Internal Server Error");
+                } else if (responseBody.contains("\"error\":\"invalid_grant\"")) {
+                    throw new CxRestClientValidatorException(message);
+                } else {
+                    throw new CxRestClientValidatorException(message + ": " + "status code: " + response.getStatusLine() + ". Error message:" + responseBody);
                 }
             }
         } catch (IOException e) {

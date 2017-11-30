@@ -17,9 +17,12 @@ import org.apache.http.protocol.HTTP;
 import java.io.IOException;
 import java.net.URL;
 
-import static com.checkmarx.clients.rest.utils.RestClientUtils.*;
+import static com.checkmarx.clients.rest.utils.RestClientUtils.validateResponse;
 
 public class CxRestTokenClient {
+
+    private static final String PARSING_ERROR = "Failed due to parsing error: ";
+    static final String FAIL_TO_AUTHENTICATE_ERROR = " User authentication failed";
 
     private HttpClient client = HttpClientBuilder.create().build();
 
