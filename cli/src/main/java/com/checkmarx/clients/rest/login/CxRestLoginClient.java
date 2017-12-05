@@ -79,7 +79,7 @@ public class CxRestLoginClient {
                 log.trace("Failed to login, due to: " + e.getMessage());
                 log.error("Failed to login: User authentication failed");
             } else {
-                log.error("Failed to login with token, due to: " + e.getMessage());
+                log.error("Failed to login with token: " + e.getMessage());
             }
         }
         headers.add(authorizationHeader);
@@ -183,7 +183,8 @@ public class CxRestLoginClient {
             RestGetAccessTokenDTO jsonResponse = RestClientUtils.parseJsonFromResponse(getAccessTokenResponse, RestGetAccessTokenDTO.class);
             accessToken = jsonResponse.getAccessToken();
         } catch (IOException | CxRestClientValidatorException e) {
-            throw new CxRestLoginClientException("Failed to get access token: " + e.getMessage());
+            log.trace("Failed to get access token: " + e.getMessage());
+            throw new CxRestLoginClientException("User authentication failed");
         } finally {
             if (postRequest != null) {
                 postRequest.releaseConnection();

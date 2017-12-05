@@ -39,7 +39,8 @@ public class RetryableRESTLogin extends RetryableOperation {
             throw new CLIJobException("Unsuccessful login.");
         }
 
-        log.info("REST login was completed successfully");
+        log.trace("REST login was completed successfully");
+        log.trace("Login was completed successfully");
         finished = true;
     }
 

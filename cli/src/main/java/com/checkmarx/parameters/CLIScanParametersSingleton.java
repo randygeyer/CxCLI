@@ -36,7 +36,7 @@ public class CLIScanParametersSingleton {
         cliSastParameters.initSastParams(parsedCommandLineArguments, cliSharedParameters.getLocationType());
         cliOsaParameters.initOsaParams(parsedCommandLineArguments);
         if (parsedCommandLineArguments.getArgs().length > 0) {
-            throw new CLIParameterParsingException("Error complete parse all parameters from the command.");
+            throw new CLIParameterParsingException("Unable to parse due to missing or incorrect parameters. Recheck the provided parameters and try again.");
         }
     }
 

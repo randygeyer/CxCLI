@@ -27,7 +27,7 @@ public class CxRevokeTokenJob extends CLITokenJob {
         } catch (CxRestClientException | MalformedURLException e) {
             throw new CLITokenJobException("Fail to revoke login token(" + mandatoryParamsContainer.getToken() + "): " + e.getMessage());
         }
-        log.info("The request to revoke token: " + mandatoryParamsContainer.getToken() + " , was completed successfully");
+        log.info("The request to revoke token: " + mandatoryParamsContainer.getToken() + " was completed successfully");
 
         return SCAN_SUCCEEDED_EXIT_CODE;
     }
