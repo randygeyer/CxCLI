@@ -1,8 +1,12 @@
 package com.checkmarx.clients.rest.osa;
 
+import com.checkmarx.clients.rest.exceptions.CxRestClientException;
 import com.checkmarx.clients.rest.exceptions.CxRestClientValidatorException;
 import com.checkmarx.clients.rest.login.dto.RestLoginResponseDTO;
+import com.checkmarx.clients.rest.osa.constant.OSAFileToScan;
+import com.checkmarx.clients.rest.osa.constant.OsaShaOneDTO;
 import com.checkmarx.clients.rest.osa.exceptions.CxRestOSAClientException;
+import com.checkmarx.clients.rest.utils.RestHttpEntityBuilder;
 import com.checkmarx.clients.rest.utils.RestResourcesURIBuilder;
 import com.checkmarx.cxconsole.cxosa.ScanWaitHandler;
 import com.checkmarx.cxconsole.cxosa.dto.*;
@@ -14,23 +18,16 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.HttpClientUtils;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
 
 import javax.ws.rs.core.MediaType;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -55,11 +52,6 @@ public class CxRestOSAClient {
     private RestLoginResponseDTO.LOGIN_TYPE loginType;
     private static int waitForScanToFinishRetry = ConfigMgr.getCfgMgr().getIntProperty(ConfigMgr.KEY_OSA_PROGRESS_INTERVAL);
 
-    private static final String CX_ORIGIN_HEADER_KEY = "cxOrigin";
-    private static final String CX_ORIGIN_HEADER_VALUE = "cx-CLI";
-    private static final Header CLI_ORIGIN_HEADER = new BasicHeader(CX_ORIGIN_HEADER_KEY, CX_ORIGIN_HEADER_VALUE);
-    private static final String OSA_ZIPPED_FILE_KEY_NAME = "OSAZippedSourceCode";
-
     private static final String OSA_SUMMARY_NAME = "CxOSASummary";
     private static final String OSA_LIBRARIES_NAME = "CxOSALibraries";
     private static final String OSA_VULNERABILITIES_NAME = "CxOSAVulnerabilities";
@@ -72,27 +64,25 @@ public class CxRestOSAClient {
         this.loginType = restLoginResponseDTO.getLoginType();
     }
 
-    public CreateOSAScanResponse createOSAScan(long projectId, File zipFile) throws CxRestOSAClientException {
+    public CreateOSAScanResponse createOSAScan(long projectId, OSAFileToScan[] hashedFilesList) throws CxRestOSAClientException {
         HttpPost post = null;
         HttpResponse response = null;
+        //TODO: Verify CLI origin in CX server
+        String origin = "cxCLI";
+        OsaShaOneDTO osaShaOneDTO = new OsaShaOneDTO(projectId, origin, hashedFilesList);
 
-        try (FileInputStream fileInputStream = new FileInputStream(zipFile)) {
-            post = new HttpPost(String.valueOf(RestResourcesURIBuilder.buildCreateOSAScanURL(new URL(hostName), projectId)));
+        try {
+            post = new HttpPost(String.valueOf(RestResourcesURIBuilder.buildCreateOSASha1ScanURL(new URL(hostName))));
             List<Header> defaultHeaders = new ArrayList<>();
             if (loginType == USERNAME_AND_PASSWORD) {
-                defaultHeaders.add(CLI_ORIGIN_HEADER);
                 defaultHeaders.add(restLoginResponseDTO.getCxcsrfTokenHeader());
                 apacheClient = HttpClientBuilder.create().setDefaultHeaders(defaultHeaders).setDefaultCookieStore(restLoginResponseDTO.getCookieStore()).build();
             } else {
                 defaultHeaders.add(restLoginResponseDTO.getTokenAuthorizationHeader());
                 apacheClient = HttpClientBuilder.create().setDefaultHeaders(defaultHeaders).build();
             }
-            InputStreamBody streamBody = new InputStreamBody(fileInputStream, ContentType.APPLICATION_OCTET_STREAM, OSA_ZIPPED_FILE_KEY_NAME);
-            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-            builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-            builder.addPart(OSA_ZIPPED_FILE_KEY_NAME, streamBody);
-            HttpEntity entity = builder.build();
-            post.setEntity(entity);
+            post.setEntity(RestHttpEntityBuilder.createOsaShaOneEntity(osaShaOneDTO));
+
             //send scan request
             response = apacheClient.execute(post);
             //verify scan request
@@ -100,7 +90,7 @@ public class CxRestOSAClient {
 
             //extract response as object and return the link
             return parseJsonFromResponse(response, CreateOSAScanResponse.class);
-        } catch (IOException | CxRestClientValidatorException e) {
+        } catch (IOException | CxRestClientException e) {
             log.error(e.getMessage());
             throw new CxRestOSAClientException(e.getMessage());
         } finally {

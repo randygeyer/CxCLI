@@ -9,17 +9,17 @@ public class RestResourcesURIBuilder {
 
     private static final String CREDENTIALS_LOGIN_RESOURCE = "auth/login";
     private static final String TOKEN_LOGIN_RESOURCE = "token";
-    private static final String IDENTITY_CONNECT_RESOURCE = "identity/connect";
+    private static final String IDENTITY_CONNECT_RESOURCE = "auth/identity/connect";
     private static final String REVOCATION_RESOURCE = "revocation";
 
     private static final String SCAN_ID_QUERY_PARAM = "?scanId=";
     private static final String ITEM_PER_PAGE_QUERY_PARAM = "&itemsPerPage=";
-    private static final String OSA_SCAN_PROJECT_RESOURCE = "projects/{projectId}/scans";
     private static final String OSA_SCAN_STATUS_RESOURCE = "scans/{scanId}";
     private static final String OSA_SCAN_SUMMARY_RESOURCE = "osa/reports";
     private static final String OSA_FILE_EXTENSIONS_RESOURCE = "osa/fileextensions";
     private static final String OSA_SCAN_LIBRARIES_PATH = "/osa/libraries";
     private static final String OSA_SCAN_VULNERABILITIES_PATH = "/osa/vulnerabilities";
+    private static final String OSA_CREATE_SHA1_SCAN_PATH = "osa/scans";
     private static final long MAX_ITEMS = 1000000;
 
     private RestResourcesURIBuilder() {
@@ -36,7 +36,7 @@ public class RestResourcesURIBuilder {
 
     public static URL getFileExtensionsURL(URL serverUrl) {
         try {
-            return new URL(serverUrl, APPLICATION_NAME + "/" + OSA_FILE_EXTENSIONS_RESOURCE );
+            return new URL(serverUrl, APPLICATION_NAME + "/" + OSA_FILE_EXTENSIONS_RESOURCE);
         } catch (MalformedURLException e) {
             return serverUrl;
         }
@@ -66,9 +66,9 @@ public class RestResourcesURIBuilder {
         }
     }
 
-    public static URL buildCreateOSAScanURL(URL serverUrl, long projectId) {
+    public static URL buildCreateOSASha1ScanURL(URL serverUrl) {
         try {
-            return new URL(serverUrl, APPLICATION_NAME + "/" + OSA_SCAN_PROJECT_RESOURCE.replace("{projectId}", String.valueOf(projectId)));
+            return new URL(serverUrl, APPLICATION_NAME + "/" + OSA_CREATE_SHA1_SCAN_PATH);
         } catch (MalformedURLException e) {
             return serverUrl;
         }

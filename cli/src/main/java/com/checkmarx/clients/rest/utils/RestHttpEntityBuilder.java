@@ -2,8 +2,12 @@ package com.checkmarx.clients.rest.utils;
 
 import com.checkmarx.clients.rest.exceptions.CxRestClientException;
 import com.checkmarx.clients.rest.login.exceptions.CxRestLoginClientException;
+import com.checkmarx.clients.rest.osa.constant.OsaShaOneDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -84,5 +88,17 @@ public class RestHttpEntityBuilder {
         } catch (UnsupportedEncodingException e) {
             throw new CxRestLoginClientException(ERROR_MESSAGE_PREFIX + e.getMessage());
         }
+    }
+
+    public static StringEntity createOsaShaOneEntity(OsaShaOneDTO osaShaOneDTO) throws CxRestClientException {
+        ObjectMapper mapper = new ObjectMapper();
+        String osaShaOneDTOStr;
+        try {
+            osaShaOneDTOStr = mapper.writeValueAsString(osaShaOneDTO);
+            return new StringEntity(osaShaOneDTOStr, ContentType.APPLICATION_JSON);
+        } catch (JsonProcessingException e) {
+            throw new CxRestClientException(ERROR_MESSAGE_PREFIX + e.getMessage());
+        }
+
     }
 }

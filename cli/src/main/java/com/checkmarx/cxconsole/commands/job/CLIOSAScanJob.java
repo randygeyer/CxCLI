@@ -1,6 +1,7 @@
 package com.checkmarx.cxconsole.commands.job;
 
 import com.checkmarx.clients.rest.osa.CxRestOSAClient;
+import com.checkmarx.clients.rest.osa.constant.OSAFileToScan;
 import com.checkmarx.clients.rest.osa.exceptions.CxRestOSAClientException;
 import com.checkmarx.clients.soap.exceptions.CxSoapClientValidatorException;
 import com.checkmarx.clients.soap.sast.CxSoapSASTClient;
@@ -18,9 +19,6 @@ import com.checkmarx.cxviewer.ws.generated.ProjectDisplayData;
 import com.checkmarx.parameters.CLIScanParametersSingleton;
 import com.checkmarx.thresholds.dto.ThresholdDto;
 import org.apache.commons.lang3.StringUtils;
-
-import java.io.File;
-import java.io.IOException;
 
 import static com.checkmarx.cxconsole.commands.job.utils.PrintResultsUtils.printOSAResultsToConsole;
 import static com.checkmarx.cxconsole.cxosa.dto.OSAScanStatusEnum.QUEUED;
@@ -67,29 +65,23 @@ public class CLIOSAScanJob extends CLIScanJob {
 
             String[] osaLocationPath = params.getCliOsaParameters().getOsaLocationPath() != null ? params.getCliOsaParameters().getOsaLocationPath() : new String[]{params.getCliSharedParameters().getLocationPath()};
             log.info("OSA source location: " + StringUtils.join(osaLocationPath, ", "));
-            log.info("Zipping dependencies");
-            File zipForOSA;
-            try {
-                zipForOSA = OsaUtils.zipWorkspaceFolder(params.getCliOsaParameters().getOsaExcludedFiles(), params.getCliOsaParameters().getOsaExcludedFolders(), params.getCliOsaParameters().getOsaIncludedFiles(), maxZipSize, osaLocationPath, log);
-            } catch (IOException e) {
-                log.error("Error during zipping sources: " + e.getMessage());
-                throw new CLIJobException("Error during zipping sources: " + e.getMessage());
-            }
+
+            //TODO: Add component to extract files to scan + deletion of extraction of temp files
+            log.info("Setting up open source analysis scan request");
 
             log.info("Sending OSA scan request");
             CreateOSAScanResponse osaScan;
             try {
-                osaScan = cxRestOSAClient.createOSAScan(projectId, zipForOSA);
+                //TODO: remove the line below with real sources from user
+                OSAFileToScan[] osaFileToScen = new OSAFileToScan[]{new OSAFileToScan("6355D32CF1B04CDFF6B484E5E711782B2F0C39BE", "coffee-script-1.6.3.tgz"),
+                        new OSAFileToScan("3A1F9F72B2A0530A047852BC1F93CB57F72351D8", "common.h")};
+                osaScan = cxRestOSAClient.createOSAScan(projectId, osaFileToScen);
             } catch (CxRestOSAClientException e) {
                 log.error("Error create OSA scan: " + e.getMessage());
                 throw new CLIJobException("Error create OSA scan: " + e.getMessage());
             }
             String osaProjectSummaryLink = OsaUtils.composeProjectOSASummaryLink(params.getCliMandatoryParameters().getOriginalHost(), projectId);
             log.info("OSA scan created successfully");
-
-            if (zipForOSA.exists() && !zipForOSA.delete()) {
-                log.warn("Warning: failed to delete temporary zip file: " + zipForOSA.getAbsolutePath());
-            }
 
             if (isAsyncScan) {
                 log.info("Asynchronous scan, Waiting for OSA scan to queue");
