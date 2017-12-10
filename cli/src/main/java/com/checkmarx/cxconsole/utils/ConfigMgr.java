@@ -13,12 +13,11 @@ import java.nio.file.FileSystems;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+import static com.checkmarx.cxconsole.CxConsoleLauncher.LOG_NAME;
+
 /**
  * Class responsible for loading CxConsole properties from corresponding
  * config folder <br>
- * Properties should be stored in file {user.dir}/config/cx_console.properties
- *
- * @author Oleksiy Mysnyk
  */
 public class ConfigMgr {
 
@@ -32,6 +31,8 @@ public class ConfigMgr {
     public static final String KEY_EXCLUDED_FOLDERS = "scan.zip.ignored.folders";
     public static final String KEY_EXCLUDED_FILES = "scan.zip.ignored.files";
     public static final String KEY_OSA_INCLUDED_FILES = "scan.zip.osa.include.files";
+    public static final String KEY_OSA_EXCLUDED_FILES = "scan.zip.osa.exclude.files";
+    public static final String KEY_OSA_EXTRACTABLE_FILES = "scan.zip.osa.extractable.files";
     public static final String KEY_MAX_ZIP_SIZE = "scan.zip.max_size";
     public static final String KEY_OSA_MAX_ZIP_SIZE = "scan.osa.zip.max_size";
     public static final String KEY_DEF_LOG_NAME = "scan.log.default.filename";
@@ -57,41 +58,40 @@ public class ConfigMgr {
 
     private static ConfigMgr mgr;
 
+    private static Logger log = Logger.getLogger(LOG_NAME);
+
     private ConfigMgr(String defConfig) {
         applicationProperties = new Properties();
         loadProperties(defConfig);
     }
 
-
     protected void loadProperties(String confPath) {
         try {
             if (confPath != null && loadFromConfigParam(confPath)) {
-                Logger.getRootLogger().info("Config file location: " + confPath);
+                log.info("Config file location: " + confPath);
                 return;
             }
 
             if (!loadConfigFromFile(defaultPath) || applicationProperties.isEmpty()) {
-                Logger.getRootLogger().warn("Error occurred during loading configuration file. Default configuration values will be loaded.");
+                log.warn("Error occurred during loading configuration file. Default configuration values will be loaded.");
                 loadDefaults();
             }
 
-            Logger.getRootLogger().info("Default configuration file location: " + defaultPath);
+            log.info("Default configuration file location: " + defaultPath);
         } catch (Exception ex) {
-            Logger.getRootLogger().warn("Error occurred during loading configuration file.");
+            log.warn("Error occurred during loading configuration file.");
         }
     }
-
 
     private boolean loadFromConfigParam(String confPath) {
         try {
             confPath = Paths.get(confPath).toFile().getCanonicalPath();
         } catch (Exception ex) {
-            Logger.getRootLogger().warn("Error occurred during loading configuration file. The Config path is invalid.");
+            log.warn("Error occurred during loading configuration file. The Config path is invalid.");
             return false;
         }
         return loadConfigFromFile(confPath);
     }
-
 
     private boolean loadConfigFromFile(String path) {
         boolean ret = false;
@@ -101,14 +101,13 @@ public class ConfigMgr {
 
                 ret = true;
             } catch (Exception e) {
-                Logger.getRootLogger().error("Error occurred during loading CxConsole properties.");
+                log.error("Error occurred during loading CxConsole properties.");
             }
         } else {
-            Logger.getRootLogger().error("The specified configuration path: [" + path + "] does not exist.");
+            log.error("The specified configuration path: [" + path + "] does not exist.");
         }
         return ret;
     }
-
 
     protected void loadDefaults() {
         applicationProperties.put(REPORT_TIMEOUT, "30");
@@ -140,7 +139,7 @@ public class ConfigMgr {
             try (FileOutputStream fOut = new FileOutputStream(propsFile)) {
                 applicationProperties.store(fOut, "");
             } catch (IOException e) {
-                Logger.getRootLogger().warn("Cannot create configuration file");
+                log.warn("Cannot create configuration file");
             }
         }
     }
@@ -157,7 +156,7 @@ public class ConfigMgr {
             try {
                 intValue = Integer.parseInt(value.toString());
             } catch (NumberFormatException e) {
-                // ignore
+                log.warn("Can't parse string to int value: " + e.getMessage());
             }
         }
         return intValue;
@@ -170,7 +169,7 @@ public class ConfigMgr {
             try {
                 longValue = Long.parseLong(value.toString());
             } catch (NumberFormatException e) {
-                // ignore
+                log.warn("Can't parse string to long value: " + e.getMessage());
             }
         }
         return longValue;
@@ -195,9 +194,9 @@ public class ConfigMgr {
     public static CxRestLoginClient getRestWSMgr(CLIScanParametersSingleton parameters) {
         if (cxRestLoginClient == null) {
             if (parameters.getCliMandatoryParameters().isHasUserParam() && parameters.getCliMandatoryParameters().isHasPasswordParam()) {
-                return new CxRestLoginClient(parameters.getCliMandatoryParameters().getOriginalHost(), parameters.getCliMandatoryParameters().getUsername(), parameters.getCliMandatoryParameters().getPassword());
+                cxRestLoginClient = new CxRestLoginClient(parameters.getCliMandatoryParameters().getOriginalHost(), parameters.getCliMandatoryParameters().getUsername(), parameters.getCliMandatoryParameters().getPassword());
             } else if (parameters.getCliMandatoryParameters().isHasTokenParam()) {
-                return new CxRestLoginClient(parameters.getCliMandatoryParameters().getOriginalHost(), parameters.getCliMandatoryParameters().getToken());
+                cxRestLoginClient = new CxRestLoginClient(parameters.getCliMandatoryParameters().getOriginalHost(), parameters.getCliMandatoryParameters().getToken());
             }
         }
 

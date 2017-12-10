@@ -16,9 +16,9 @@ public class OsaShaOneDTO implements Serializable {
     private String origin;
 
     @JsonProperty("HashedFilesList")
-    private OSAFileToScan[] hashedFilesList;
+    private FileNameAndShaOneForOsaScan[] hashedFilesList;
 
-    public OsaShaOneDTO(long projectId, String origin, OSAFileToScan[] hashedFilesList) {
+    public OsaShaOneDTO(long projectId, String origin, FileNameAndShaOneForOsaScan[] hashedFilesList) {
         this.projectId = projectId;
         this.origin = origin;
         this.hashedFilesList = hashedFilesList;
@@ -40,11 +40,11 @@ public class OsaShaOneDTO implements Serializable {
         this.origin = origin;
     }
 
-    public OSAFileToScan[] getHashedFilesList() {
+    public FileNameAndShaOneForOsaScan[] getHashedFilesList() {
         return hashedFilesList;
     }
 
-    public void setHashedFilesList(OSAFileToScan[] hashedFilesList) {
+    public void setHashedFilesList(FileNameAndShaOneForOsaScan[] hashedFilesList) {
         this.hashedFilesList = hashedFilesList;
     }
 }

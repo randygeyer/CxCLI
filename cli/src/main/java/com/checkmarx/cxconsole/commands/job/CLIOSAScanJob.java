@@ -1,7 +1,7 @@
 package com.checkmarx.cxconsole.commands.job;
 
 import com.checkmarx.clients.rest.osa.CxRestOSAClient;
-import com.checkmarx.clients.rest.osa.constant.OSAFileToScan;
+import com.checkmarx.clients.rest.osa.constant.FileNameAndShaOneForOsaScan;
 import com.checkmarx.clients.rest.osa.exceptions.CxRestOSAClientException;
 import com.checkmarx.clients.soap.exceptions.CxSoapClientValidatorException;
 import com.checkmarx.clients.soap.sast.CxSoapSASTClient;
@@ -12,10 +12,12 @@ import com.checkmarx.cxconsole.cxosa.OSAConsoleScanWaitHandler;
 import com.checkmarx.cxconsole.cxosa.dto.CreateOSAScanResponse;
 import com.checkmarx.cxconsole.cxosa.dto.OSAScanStatus;
 import com.checkmarx.cxconsole.cxosa.dto.OSASummaryResults;
+import com.checkmarx.cxconsole.cxosa.utils.OSAScanner;
 import com.checkmarx.cxconsole.cxosa.utils.OsaUtils;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxviewer.ws.generated.CxWSResponseProjectsDisplayData;
 import com.checkmarx.cxviewer.ws.generated.ProjectDisplayData;
+import com.checkmarx.parameters.CLIOSAParameters;
 import com.checkmarx.parameters.CLIScanParametersSingleton;
 import com.checkmarx.thresholds.dto.ThresholdDto;
 import org.apache.commons.lang3.StringUtils;
@@ -41,7 +43,8 @@ public class CLIOSAScanJob extends CLIScanJob {
 
     @Override
     public Integer call() throws CLIJobException {
-        OSASummaryResults osaSummaryResults = null;
+        OSASummaryResults osaSummaryResults;
+        CLIOSAParameters cliosaParameters = params.getCliOsaParameters();
         try {
             log.info("Project name is \"" + params.getCliMandatoryParameters().getProjectName() + "\"");
 
@@ -63,18 +66,19 @@ public class CLIOSAScanJob extends CLIScanJob {
 
             long projectId = locateProjectOnServer();
 
-            String[] osaLocationPath = params.getCliOsaParameters().getOsaLocationPath() != null ? params.getCliOsaParameters().getOsaLocationPath() : new String[]{params.getCliSharedParameters().getLocationPath()};
+            String[] osaLocationPath = cliosaParameters.getOsaLocationPath() != null ? cliosaParameters.getOsaLocationPath() : new String[]{params.getCliSharedParameters().getLocationPath()};
             log.info("OSA source location: " + StringUtils.join(osaLocationPath, ", "));
 
             //TODO: Add component to extract files to scan + deletion of extraction of temp files
             log.info("Setting up open source analysis scan request");
+            OSAScanner.scanFiles(osaLocationPath, cliosaParameters.getOsaIncludedFiles(), cliosaParameters.getOsaExcludedFiles(), cliosaParameters.getOsaExtractableFiles())
 
             log.info("Sending OSA scan request");
             CreateOSAScanResponse osaScan;
             try {
                 //TODO: remove the line below with real sources from user
-                OSAFileToScan[] osaFileToScen = new OSAFileToScan[]{new OSAFileToScan("6355D32CF1B04CDFF6B484E5E711782B2F0C39BE", "coffee-script-1.6.3.tgz"),
-                        new OSAFileToScan("3A1F9F72B2A0530A047852BC1F93CB57F72351D8", "common.h")};
+                FileNameAndShaOneForOsaScan[] osaFileToScen = new FileNameAndShaOneForOsaScan[]{new FileNameAndShaOneForOsaScan("6355D32CF1B04CDFF6B484E5E711782B2F0C39BE", "coffee-script-1.6.3.tgz"),
+                        new FileNameAndShaOneForOsaScan("3A1F9F72B2A0530A047852BC1F93CB57F72351D8", "common.h")};
                 osaScan = cxRestOSAClient.createOSAScan(projectId, osaFileToScen);
             } catch (CxRestOSAClientException e) {
                 log.error("Error create OSA scan: " + e.getMessage());
@@ -114,9 +118,9 @@ public class CLIOSAScanJob extends CLIScanJob {
                 printOSAResultsToConsole(osaSummaryResults, osaProjectSummaryLink);
 
                 //OSA reports
-                String htmlFile = params.getCliOsaParameters().getOsaReportHTML();
-                String pdfFile = params.getCliOsaParameters().getOsaReportPDF();
-                String jsonFile = params.getCliOsaParameters().getOsaJson();
+                String htmlFile = cliosaParameters.getOsaReportHTML();
+                String pdfFile = cliosaParameters.getOsaReportPDF();
+                String jsonFile = cliosaParameters.getOsaJson();
                 try {
                     if (htmlFile != null || pdfFile != null || jsonFile != null) {
                         log.info("Creating CxOSA Reports");
@@ -145,9 +149,9 @@ public class CLIOSAScanJob extends CLIScanJob {
                 }
 
                 //Osa threshold calculation
-                if (params.getCliOsaParameters().isOsaThresholdEnabled()) {
-                    ThresholdDto thresholdDto = new ThresholdDto(ThresholdDto.ScanType.OSA_SCAN, params.getCliOsaParameters().getOsaHighThresholdValue(), params.getCliOsaParameters().getOsaMediumThresholdValue(),
-                            params.getCliOsaParameters().getOsaLowThresholdValue(), osaSummaryResults.getTotalHighVulnerabilities(),
+                if (cliosaParameters.isOsaThresholdEnabled()) {
+                    ThresholdDto thresholdDto = new ThresholdDto(ThresholdDto.ScanType.OSA_SCAN, cliosaParameters.getOsaHighThresholdValue(), cliosaParameters.getOsaMediumThresholdValue(),
+                            cliosaParameters.getOsaLowThresholdValue(), osaSummaryResults.getTotalHighVulnerabilities(),
                             osaSummaryResults.getTotalMediumVulnerabilities(), osaSummaryResults.getTotalLowVulnerabilities());
                     return resolveThresholdExitCode(thresholdDto);
                 }

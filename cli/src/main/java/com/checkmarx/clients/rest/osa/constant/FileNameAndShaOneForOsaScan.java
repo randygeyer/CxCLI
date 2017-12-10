@@ -4,14 +4,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 
-public class OSAFileToScan implements Serializable {
+public class FileNameAndShaOneForOsaScan implements Serializable {
 
     @JsonProperty("filename")
     private String fileName;
     @JsonProperty("sha1")
     private String sha1;
 
-    public OSAFileToScan(String sha1, String fileName) {
+    public FileNameAndShaOneForOsaScan(String sha1, String fileName) {
         this.sha1 = sha1;
         this.fileName = fileName;
     }

@@ -3,7 +3,7 @@ package com.checkmarx.clients.rest.osa;
 import com.checkmarx.clients.rest.exceptions.CxRestClientException;
 import com.checkmarx.clients.rest.exceptions.CxRestClientValidatorException;
 import com.checkmarx.clients.rest.login.dto.RestLoginResponseDTO;
-import com.checkmarx.clients.rest.osa.constant.OSAFileToScan;
+import com.checkmarx.clients.rest.osa.constant.FileNameAndShaOneForOsaScan;
 import com.checkmarx.clients.rest.osa.constant.OsaShaOneDTO;
 import com.checkmarx.clients.rest.osa.exceptions.CxRestOSAClientException;
 import com.checkmarx.clients.rest.utils.RestHttpEntityBuilder;
@@ -55,6 +55,7 @@ public class CxRestOSAClient {
     private static final String OSA_SUMMARY_NAME = "CxOSASummary";
     private static final String OSA_LIBRARIES_NAME = "CxOSALibraries";
     private static final String OSA_VULNERABILITIES_NAME = "CxOSAVulnerabilities";
+    private static final String CLI_ORIGIN_VALUE_IN_SERVER = "CLI";
     private static final String JSON_FILE = ".json";
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -64,12 +65,10 @@ public class CxRestOSAClient {
         this.loginType = restLoginResponseDTO.getLoginType();
     }
 
-    public CreateOSAScanResponse createOSAScan(long projectId, OSAFileToScan[] hashedFilesList) throws CxRestOSAClientException {
+    public CreateOSAScanResponse createOSAScan(long projectId, FileNameAndShaOneForOsaScan[] hashedFilesList) throws CxRestOSAClientException {
         HttpPost post = null;
         HttpResponse response = null;
-        //TODO: Verify CLI origin in CX server
-        String origin = "cxCLI";
-        OsaShaOneDTO osaShaOneDTO = new OsaShaOneDTO(projectId, origin, hashedFilesList);
+        OsaShaOneDTO osaShaOneDTO = new OsaShaOneDTO(projectId, CLI_ORIGIN_VALUE_IN_SERVER, hashedFilesList);
 
         try {
             post = new HttpPost(String.valueOf(RestResourcesURIBuilder.buildCreateOSASha1ScanURL(new URL(hostName))));
