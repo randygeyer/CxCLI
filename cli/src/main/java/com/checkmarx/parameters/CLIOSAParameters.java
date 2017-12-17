@@ -1,11 +1,14 @@
 package com.checkmarx.parameters;
 
+import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.parameters.exceptions.CLIParameterParsingException;
 import com.checkmarx.parameters.utils.ParametersUtils;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
+
+import static com.checkmarx.cxconsole.utils.ConfigMgr.KEY_OSA_UNZIP_DEPTH;
 
 /**
  * Created by nirli on 29/10/2017.
@@ -30,8 +33,10 @@ public class CLIOSAParameters extends AbstractCLIScanParameters {
     private String[] osaExcludedFiles = new String[]{};
     private boolean hasOsaExcludedFilesParam = false;
     private String[] osaIncludedFiles = new String[]{};
-    private boolean hasOsaExtractableFilesParam = false;
-    private String[] osaExtractableFiles = new String[]{};
+    private boolean hasOsaIncludedFilesParam = false;
+    private String[] osaExtractableIncludeFiles = new String[]{};
+    private boolean hasOsaExtractableIncludeFilesParam = false;
+    private String osaScanDepth;
     private String osaReportPDF;
     private String osaReportHTML;
     private String osaJson;
@@ -47,10 +52,12 @@ public class CLIOSAParameters extends AbstractCLIScanParameters {
             .valueSeparator(',').build();
     private static final Option PARAM_OSA_INCLUDE_FILES = Option.builder("osafilesinclude").hasArgs().argName("folders list").desc("Comma separated list of files extension to include in OSA scan. Example: '-OsaFilesInclude *.bin' include only files with .bin extension. Optional.")
             .valueSeparator(',').build();
-    private static final Option PARAM_OSA_EXTRACTABLE_FILES = Option.builder("osafilesextractable").hasArgs().argName("folders list").desc("Comma separated list of files extension to be extracted for OSA scan. Example: '-OsaFilesExtractable *.zip' extracts only files with .zip extension. Optional.")
-            .valueSeparator(',').build();
     private static final Option PARAM_OSA_EXCLUDE_FOLDERS = Option.builder("osapathexclude").hasArgs().argName("folders list").desc("Comma separated list of folder path patterns to exclude from OSA scan. Example: '-OsaPathExclude test' excludes all folders which start with 'test' prefix. Optional.")
             .valueSeparator(',').build();
+    private static final Option PARAM_OSA_EXTRACTABLE_INCLUDE_FILES = Option.builder("osaarchiveincludes").hasArgs().argName("folders list").desc("Comma separated list of files extension to be extracted for OSA scan. Example: '-OSAArchiveIncludes *.zip' extracts only files with .zip extension. Optional.")
+            .valueSeparator(',').build();
+    private static final Option PARAM_OSA_UNZIP_DEPTH = Option.builder("osascandepth").hasArg(true).argName("OSA analysis unzip depth").desc("Extraction depth for files to send for OSA analysis. Optional. ").build();
+
 
     private static final Option PARAM_OSA_LOW_THRESHOLD = Option.builder("osalow").hasArg(true).argName("number of low OSA vulnerabilities").desc("OSA low severity vulnerability threshold. If the number of low vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").build();
     private static final Option PARAM_OSA_MEDIUM_THRESHOLD = Option.builder("osamedium").hasArg(true).argName("number of medium OSA vulnerabilities").desc("OSA medium severity vulnerability threshold. If the number of medium vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").build();
@@ -63,31 +70,27 @@ public class CLIOSAParameters extends AbstractCLIScanParameters {
 
     void initOsaParams(CommandLine parsedCommandLineArguments) {
         osaLocationPath = parsedCommandLineArguments.getOptionValues(PARAM_OSA_LOCATION_PATH.getOpt());
+
+        hasOsaExcludedFoldersParam = parsedCommandLineArguments.hasOption(PARAM_OSA_EXCLUDE_FOLDERS.getOpt());
         osaExcludedFolders = parsedCommandLineArguments.getOptionValues(PARAM_OSA_EXCLUDE_FOLDERS.getOpt());
+        hasOsaExcludedFilesParam = parsedCommandLineArguments.hasOption(PARAM_OSA_EXCLUDE_FILES.getOpt());
         osaExcludedFiles = parsedCommandLineArguments.getOptionValues(PARAM_OSA_EXCLUDE_FILES.getOpt());
+        hasOsaIncludedFilesParam = parsedCommandLineArguments.hasOption(PARAM_OSA_INCLUDE_FILES.getOpt());
         osaIncludedFiles = parsedCommandLineArguments.getOptionValues(PARAM_OSA_INCLUDE_FILES.getOpt());
+        hasOsaExtractableIncludeFilesParam = parsedCommandLineArguments.hasOption(PARAM_OSA_EXTRACTABLE_INCLUDE_FILES.getOpt());
+        osaExtractableIncludeFiles = parsedCommandLineArguments.getOptionValues(PARAM_OSA_EXTRACTABLE_INCLUDE_FILES.getOpt());
         osaReportHTML = ParametersUtils.getOptionalValue(parsedCommandLineArguments, PARAM_OSA_HTML_FILE.getOpt());
         osaReportPDF = ParametersUtils.getOptionalValue(parsedCommandLineArguments, PARAM_OSA_PDF_FILE.getOpt());
         osaJson = ParametersUtils.getOptionalValue(parsedCommandLineArguments, PARAM_OSA_JSON.getOpt());
-
-        if (parsedCommandLineArguments.hasOption(PARAM_OSA_EXCLUDE_FOLDERS.getOpt())) {
-            hasOsaExcludedFoldersParam = true;
-            osaExcludedFolders = parsedCommandLineArguments.getOptionValues(PARAM_OSA_EXCLUDE_FOLDERS.getOpt());
-        }
-
-        if (parsedCommandLineArguments.hasOption(PARAM_OSA_EXCLUDE_FILES.getOpt())) {
-            hasOsaExcludedFilesParam = true;
-            osaExcludedFiles = parsedCommandLineArguments.getOptionValues(PARAM_OSA_EXCLUDE_FILES.getOpt());
-        }
-
-        if (parsedCommandLineArguments.hasOption(PARAM_OSA_EXTRACTABLE_FILES.getOpt())) {
-            hasOsaExtractableFilesParam = true;
-            osaExtractableFiles = parsedCommandLineArguments.getOptionValues(PARAM_OSA_EXTRACTABLE_FILES.getOpt());
-        }
-
+        osaScanDepth = ParametersUtils.getOptionalValue(parsedCommandLineArguments, PARAM_OSA_UNZIP_DEPTH.getOpt());
         String osaLowThresholdStr = parsedCommandLineArguments.getOptionValue(PARAM_OSA_LOW_THRESHOLD.getOpt());
         String osaMediumThresholdStr = parsedCommandLineArguments.getOptionValue(PARAM_OSA_MEDIUM_THRESHOLD.getOpt());
         String osaHighThresholdStr = parsedCommandLineArguments.getOptionValue(PARAM_OSA_HIGH_THRESHOLD.getOpt());
+
+        if (osaScanDepth == null) {
+            osaScanDepth = ConfigMgr.getCfgMgr().getProperty(KEY_OSA_UNZIP_DEPTH);
+        }
+
         if (osaLowThresholdStr != null || osaMediumThresholdStr != null || osaHighThresholdStr != null) {
             isOsaThresholdEnabled = true;
             if (osaLowThresholdStr != null) {
@@ -160,12 +163,20 @@ public class CLIOSAParameters extends AbstractCLIScanParameters {
         return hasOsaExcludedFilesParam;
     }
 
-    public boolean isHasOsaExtractableFilesParam() {
-        return hasOsaExtractableFilesParam;
+    public boolean isHasOsaExtractableIncludeFilesParam() {
+        return hasOsaExtractableIncludeFilesParam;
     }
 
-    public String[] getOsaExtractableFiles() {
-        return osaExtractableFiles;
+    public String[] getOsaExtractableIncludeFiles() {
+        return osaExtractableIncludeFiles;
+    }
+
+    public boolean isHasOsaIncludedFilesParam() {
+        return hasOsaIncludedFilesParam;
+    }
+
+    public String getOsaScanDepth() {
+        return osaScanDepth;
     }
 
     @Override
@@ -178,6 +189,7 @@ public class CLIOSAParameters extends AbstractCLIScanParameters {
         commandLineOptions.addOption(PARAM_OSA_EXCLUDE_FILES);
         commandLineOptions.addOption(PARAM_OSA_INCLUDE_FILES);
         commandLineOptions.addOption(PARAM_OSA_LOCATION_PATH);
+        commandLineOptions.addOption(PARAM_OSA_EXTRACTABLE_INCLUDE_FILES);
 
         commandLineOptions.addOption(PARAM_OSA_LOW_THRESHOLD);
         commandLineOptions.addOption(PARAM_OSA_MEDIUM_THRESHOLD);

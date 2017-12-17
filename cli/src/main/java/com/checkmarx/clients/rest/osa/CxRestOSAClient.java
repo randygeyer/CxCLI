@@ -65,7 +65,7 @@ public class CxRestOSAClient {
         this.loginType = restLoginResponseDTO.getLoginType();
     }
 
-    public CreateOSAScanResponse createOSAScan(long projectId, FileNameAndShaOneForOsaScan[] hashedFilesList) throws CxRestOSAClientException {
+    public CreateOSAScanResponse createOSAScan(long projectId, List<FileNameAndShaOneForOsaScan> hashedFilesList) throws CxRestOSAClientException {
         HttpPost post = null;
         HttpResponse response = null;
         OsaShaOneDTO osaShaOneDTO = new OsaShaOneDTO(projectId, CLI_ORIGIN_VALUE_IN_SERVER, hashedFilesList);

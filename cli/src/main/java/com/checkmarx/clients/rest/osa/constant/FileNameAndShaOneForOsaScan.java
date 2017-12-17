@@ -6,10 +6,10 @@ import java.io.Serializable;
 
 public class FileNameAndShaOneForOsaScan implements Serializable {
 
-    @JsonProperty("filename")
-    private String fileName;
     @JsonProperty("sha1")
     private String sha1;
+    @JsonProperty("filename")
+    private String fileName;
 
     public FileNameAndShaOneForOsaScan(String sha1, String fileName) {
         this.sha1 = sha1;

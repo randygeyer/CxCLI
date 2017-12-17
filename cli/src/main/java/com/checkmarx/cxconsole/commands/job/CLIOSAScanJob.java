@@ -12,8 +12,8 @@ import com.checkmarx.cxconsole.cxosa.OSAConsoleScanWaitHandler;
 import com.checkmarx.cxconsole.cxosa.dto.CreateOSAScanResponse;
 import com.checkmarx.cxconsole.cxosa.dto.OSAScanStatus;
 import com.checkmarx.cxconsole.cxosa.dto.OSASummaryResults;
-import com.checkmarx.cxconsole.cxosa.utils.OSAScanner;
-import com.checkmarx.cxconsole.cxosa.utils.OsaUtils;
+import com.checkmarx.cxconsole.cxosa.utils.Exception.OSAUtilException;
+import com.checkmarx.cxconsole.cxosa.utils.OSAUtil;
 import com.checkmarx.cxconsole.utils.ConfigMgr;
 import com.checkmarx.cxviewer.ws.generated.CxWSResponseProjectsDisplayData;
 import com.checkmarx.cxviewer.ws.generated.ProjectDisplayData;
@@ -21,6 +21,8 @@ import com.checkmarx.parameters.CLIOSAParameters;
 import com.checkmarx.parameters.CLIScanParametersSingleton;
 import com.checkmarx.thresholds.dto.ThresholdDto;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.List;
 
 import static com.checkmarx.cxconsole.commands.job.utils.PrintResultsUtils.printOSAResultsToConsole;
 import static com.checkmarx.cxconsole.cxosa.dto.OSAScanStatusEnum.QUEUED;
@@ -70,21 +72,25 @@ public class CLIOSAScanJob extends CLIScanJob {
             log.info("OSA source location: " + StringUtils.join(osaLocationPath, ", "));
 
             //TODO: Add component to extract files to scan + deletion of extraction of temp files
-            log.info("Setting up open source analysis scan request");
-            OSAScanner.scanFiles(osaLocationPath, cliosaParameters.getOsaIncludedFiles(), cliosaParameters.getOsaExcludedFiles(), cliosaParameters.getOsaExtractableFiles())
+            log.info("Setting up OSA analysis request");
+            List<FileNameAndShaOneForOsaScan> osaFilesToScan;
+            try {
+                osaFilesToScan = OSAUtil.scanFiles(osaLocationPath, cliosaParameters.getOsaIncludedFiles(), cliosaParameters.getOsaExcludedFiles(),
+                        cliosaParameters.getOsaExtractableIncludeFiles(), Integer.parseInt(cliosaParameters.getOsaScanDepth()));
+            } catch (OSAUtilException e) {
+                log.trace(e.getMessage());
+                throw new CLIJobException("Error create OSA scan: " + e.getMessage());
+            }
 
             log.info("Sending OSA scan request");
             CreateOSAScanResponse osaScan;
             try {
-                //TODO: remove the line below with real sources from user
-                FileNameAndShaOneForOsaScan[] osaFileToScen = new FileNameAndShaOneForOsaScan[]{new FileNameAndShaOneForOsaScan("6355D32CF1B04CDFF6B484E5E711782B2F0C39BE", "coffee-script-1.6.3.tgz"),
-                        new FileNameAndShaOneForOsaScan("3A1F9F72B2A0530A047852BC1F93CB57F72351D8", "common.h")};
-                osaScan = cxRestOSAClient.createOSAScan(projectId, osaFileToScen);
+                osaScan = cxRestOSAClient.createOSAScan(projectId, osaFilesToScan);
             } catch (CxRestOSAClientException e) {
                 log.error("Error create OSA scan: " + e.getMessage());
                 throw new CLIJobException("Error create OSA scan: " + e.getMessage());
             }
-            String osaProjectSummaryLink = OsaUtils.composeProjectOSASummaryLink(params.getCliMandatoryParameters().getOriginalHost(), projectId);
+            String osaProjectSummaryLink = OSAUtil.composeProjectOSASummaryLink(params.getCliMandatoryParameters().getOriginalHost(), projectId);
             log.info("OSA scan created successfully");
 
             if (isAsyncScan) {
@@ -159,7 +165,6 @@ public class CLIOSAScanJob extends CLIScanJob {
                 log.info("OSA scan queued successfully. Job finished");
             }
         } finally {
-            OsaUtils.deleteTempFiles();
             if (cxRestOSAClient != null) {
                 cxRestOSAClient.close();
             }

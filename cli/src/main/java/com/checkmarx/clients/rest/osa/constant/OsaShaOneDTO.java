@@ -3,6 +3,7 @@ package com.checkmarx.clients.rest.osa.constant;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by nirli on 05/12/2017.
@@ -16,9 +17,9 @@ public class OsaShaOneDTO implements Serializable {
     private String origin;
 
     @JsonProperty("HashedFilesList")
-    private FileNameAndShaOneForOsaScan[] hashedFilesList;
+    private List<FileNameAndShaOneForOsaScan> hashedFilesList;
 
-    public OsaShaOneDTO(long projectId, String origin, FileNameAndShaOneForOsaScan[] hashedFilesList) {
+    public OsaShaOneDTO(long projectId, String origin, List<FileNameAndShaOneForOsaScan> hashedFilesList) {
         this.projectId = projectId;
         this.origin = origin;
         this.hashedFilesList = hashedFilesList;
@@ -40,11 +41,11 @@ public class OsaShaOneDTO implements Serializable {
         this.origin = origin;
     }
 
-    public FileNameAndShaOneForOsaScan[] getHashedFilesList() {
+    public List<FileNameAndShaOneForOsaScan> getHashedFilesList() {
         return hashedFilesList;
     }
 
-    public void setHashedFilesList(FileNameAndShaOneForOsaScan[] hashedFilesList) {
+    public void setHashedFilesList(List<FileNameAndShaOneForOsaScan> hashedFilesList) {
         this.hashedFilesList = hashedFilesList;
     }
 }
