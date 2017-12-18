@@ -100,7 +100,6 @@ public class OSAUtil {
         }
 
         List<File> files = getFiles(baseDir);
-
         for (File file : files) {
             String virtualFullPath = virtualPath + getRelativePath(baseDir, file);
             if (isCandidateForSha1(virtualFullPath)) {
