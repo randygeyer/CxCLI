@@ -99,6 +99,8 @@ public abstract class CLICommand {
             if (!Objects.equals(option, "cxpassword") && !Objects.equals(option, "locationpassword")) {
                 if (opt.getValue() == null) {
                     log.debug("Option: " + StringUtils.capitalize(opt.getOpt()) + "   Value: True");
+                } else if (Objects.equals(option, "osalocationpath")) {
+                    log.debug("Option: " + StringUtils.capitalize(opt.getOpt()) + "   Value: " + StringUtils.join(opt.getValues(), ", "));
                 } else {
                     log.debug("Option: " + StringUtils.capitalize(opt.getOpt()) + "   Value: " + opt.getValue());
                 }

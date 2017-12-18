@@ -2,7 +2,6 @@ package com.checkmarx.cxconsole.cxosa.utils;
 
 import com.checkmarx.clients.rest.osa.constant.FileNameAndShaOneForOsaScan;
 import com.checkmarx.cxconsole.cxosa.utils.Exception.OSAUtilException;
-import com.checkmarx.cxconsole.utils.ConfigMgr;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.FileHeader;
@@ -19,27 +18,30 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.checkmarx.cxconsole.CxConsoleLauncher.LOG_NAME;
-import static com.checkmarx.cxconsole.utils.ConfigMgr.*;
 
 public class OSAUtil {
-
-    private static Logger log = Logger.getLogger(LOG_NAME);
-
-    private static List<String> exclusions;
-    private static List<String> inclusions;
-    private static List<String> extractableIncluded;
-
-    private enum ListType {EXCLUSION, INCLUSION, EXTRACTABLE_INCLUDE}
-
-    private static final String TEMP_FOLDER_FOR_FILES_EXTRACTION = "CxOSATempExtractedSource";
 
     private OSAUtil() {
         throw new IllegalStateException("Utility class");
     }
+
+    private static final String TEMP_FOLDER_FOR_FILES_EXTRACTION = "CxOSATempExtractedSource";
+
+    private static Logger log = Logger.getLogger(LOG_NAME);
+    private static String[] osaIncludedFiles;
+    private static String[] osaExcludedFiles;
+    private static String[] osaExtractableIncludeFiles;
+    private static final String[] EXTRACTABLE_EXTENSIONS = {"jar", "war", "ear", "sca", "gem", "whl", "egg", "tar",
+            "tar.gz", "tgz", "zip", "rar"};
+    private static final String[] WHITE_SOURCE_SUPPORTED_EXTENSIONS = {"jar", "war", "ear", "aar", "dll", "exe", "msi",
+            "nupkg", "egg", "whl", "tar.gz", "gem", "deb", "udeb", "dmg", "drpm", "rpm", "pkg.tar.xz", "swf", "swc",
+            "air", "apk", "zip", "gzip", "tar.bz2", "tgz", "c", "cc", "cp", "cpp", "css", "c++", "h", "hh", "hpp", "hxx",
+            "h++", "m", "mm", "pch", "c#", "cs", "csharp", "go", "goc", "js", "plx", "pm", "ph", "cgi", "fcgi", "psgi",
+            "al", "perl", "t", "p6m", "p6l", "nqp", "6pl", "6pm", "p6", "php", "py", "rb", "swift", "clj", "cljx",
+            "cljs", "cljc"};
 
     public static String composeProjectOSASummaryLink(String url, long projectId) {
         return String.format("%s/CxWebClient/portal#/projectState/%s/OSA", url, projectId);
@@ -56,10 +58,11 @@ public class OSAUtil {
     public static List<FileNameAndShaOneForOsaScan> scanFiles(String[] baseDirectories, String[] osaIncludedFiles,
                                                               String[] osaExcludedFiles, String[] osaExtractableIncludeFiles,
                                                               int unzipDepth) throws OSAUtilException {
-        exclusions = setUpExtensionsList(osaExcludedFiles, ListType.EXCLUSION);
-        inclusions = setUpExtensionsList(osaIncludedFiles, ListType.INCLUSION);
-        extractableIncluded = setUpExtensionsList(osaExtractableIncludeFiles, ListType.EXTRACTABLE_INCLUDE);
         File baseTempDir = new File(TEMP_FOLDER_FOR_FILES_EXTRACTION);
+        OSAUtil.osaIncludedFiles = osaIncludedFiles;
+        OSAUtil.osaExcludedFiles = osaExcludedFiles;
+        OSAUtil.osaExtractableIncludeFiles = osaExtractableIncludeFiles;
+
         File extractTempDir = null;
         ArrayList<FileNameAndShaOneForOsaScan> listToScan = new ArrayList<>();
         for (String baseDirectory : baseDirectories) {
@@ -73,7 +76,7 @@ public class OSAUtil {
             } finally {
                 try {
                     if (extractTempDir != null) {
-                        FileUtils.deleteDirectory(extractTempDir);
+                        FileUtils.deleteDirectory(baseTempDir);
                     }
                 } catch (Exception e) {
                     log.trace("Failed to delete temp directory: [" + extractTempDir.getAbsolutePath() + "]");
@@ -82,22 +85,6 @@ public class OSAUtil {
         }
         return listToScan;
     }
-
-    private static List<String> setUpExtensionsList(String[] extensionStringList, ListType listType) {
-        String[] strArray = new String[0];
-        String regex = "\\s*,\\s*";
-        if (extensionStringList != null && extensionStringList.length > 0) {
-            return new ArrayList<>(Arrays.asList(extensionStringList));
-        } else if (listType.equals(ListType.EXCLUSION)) {
-            strArray = (ConfigMgr.getCfgMgr().getProperty(KEY_OSA_EXCLUDED_FILES)).split(regex);
-        } else if (listType.equals(ListType.INCLUSION)) {
-            strArray = (ConfigMgr.getCfgMgr().getProperty(KEY_OSA_INCLUDED_FILES)).split(regex);
-        } else if (listType.equals(ListType.EXTRACTABLE_INCLUDE)) {
-            strArray = (ConfigMgr.getCfgMgr().getProperty(KEY_OSA_EXTRACTABLE_INCLUDE_FILES)).split(regex);
-        }
-        return new ArrayList<>(Arrays.asList(strArray));
-    }
-
 
     /**
      * recursive function used by the wrapper scanFiles()
@@ -116,12 +103,11 @@ public class OSAUtil {
 
         for (File file : files) {
             String virtualFullPath = virtualPath + getRelativePath(baseDir, file);
-            boolean candidate = isCandidate(virtualFullPath);
-            if (candidate) {
+            if (isCandidateForSha1(virtualFullPath)) {
                 addSha1(file, ret);
             }
 
-            if (candidate && isExtractable(file.getName())) {
+            if (isCandidateForExtract(virtualFullPath)) {
                 //this directory should be created by the extractToTempDir() if there is any files to extract
                 File nestedTempDir = new File(tempDir.getAbsolutePath() + "/" + file.getName() + "_extracted");
 
@@ -138,17 +124,21 @@ public class OSAUtil {
         return ret;
     }
 
+    private static boolean isCandidateForSha1(String relativePath) {
+        return isCandidate(relativePath, WHITE_SOURCE_SUPPORTED_EXTENSIONS, osaIncludedFiles, osaExcludedFiles);
+    }
+
+    private static boolean isCandidateForExtract(String relativePath) {
+        return isCandidate(relativePath, EXTRACTABLE_EXTENSIONS, osaExtractableIncludeFiles, null);
+    }
+
     //list file compatible to OSA, and the files that are extractable
     private static List<File> getFiles(File baseDir) {
-        String[] compatibleAndExtractableFiles = ArrayUtils.addAll(inclusions.toArray(new String[1]), extractableIncluded.toArray(new String[1]));
-        for (int i = 0; i < compatibleAndExtractableFiles.length; i++) {
-            compatibleAndExtractableFiles[i] = compatibleAndExtractableFiles[i].replace("*.", "");
-        }
-        return new ArrayList<>(FileUtils.listFiles(baseDir, compatibleAndExtractableFiles, true));
+        String[] supportedAndExtractableFiles = ArrayUtils.addAll(WHITE_SOURCE_SUPPORTED_EXTENSIONS, EXTRACTABLE_EXTENSIONS);
+        return new ArrayList<>(FileUtils.listFiles(baseDir, supportedAndExtractableFiles, true));
     }
 
     //extract the OSA compatible files and archives to temporary directory. also filters by includes/excludes
-
     private static boolean extractToTempDir(File nestedTempDir, File zip, String virtualPath) {
         try {
             ZipFile zipFile = new ZipFile(zip);
@@ -159,7 +149,7 @@ public class OSAUtil {
             for (Object fileHeader1 : fileHeaders) {
                 FileHeader fileHeader = (FileHeader) fileHeader1;
                 String fileName = fileHeader.getFileName();
-                if (!fileHeader.isDirectory() && (isExtractable(fileName) || isCandidate(virtualPath + "/" + fileName, inclusions.toArray(new String[1])))) {
+                if (!fileHeader.isDirectory() && (isCandidateForSha1(virtualPath + "/" + fileName) || isCandidateForExtract(virtualPath + "/" + fileName))) {
                     filtered.add(fileHeader);
                 }
             }
@@ -178,11 +168,8 @@ public class OSAUtil {
 
             //extract
             for (FileHeader fileHeader : filtered) {
-                try {
-                    zipFile.extractFile(fileHeader, nestedTempDir.getAbsolutePath());
-                } catch (ZipException e) {
-                    log.trace("Failed to extract archive: [" + zip.getAbsolutePath() + "]: " + e.getMessage(), e);
-                }
+                zipFile.extractFile(fileHeader, nestedTempDir.getAbsolutePath());
+                log.trace("Extracting file: " + fileHeader.getFileName() + " to path: " + nestedTempDir.getAbsolutePath());
             }
 
         } catch (ZipException e) {
@@ -193,12 +180,10 @@ public class OSAUtil {
         return nestedTempDir.exists();
     }
 
-    private static boolean isExtractable(String fileName) {
-        return FilenameUtils.isExtension(fileName, extractableIncluded);
-    }
-
     /**
      * flow:
+     * <p>
+     * 0. no match for extension -> return false
      * 1. no include, no exclude -> don't filter. return true
      * 2. no include, yes exclude -> return isExcludeMatch(file) ? false : true
      * 3. yes include, no exclude -> return isIncludeMatch(file) ?  true : false
@@ -213,19 +198,27 @@ public class OSAUtil {
      * @param relativePath
      * @return
      */
-    private static boolean isCandidate(String relativePath) {
+    private static boolean isCandidate(String relativePath, String[] extensions, String[] inclusions, String[] exclusions) {
         relativePath = relativePath.replaceAll("\\\\", "/");
         boolean isMatch = true;
 
-        for (String exclusion : exclusions) {
-            if (SelectorUtils.matchPath(exclusion, relativePath, false)) {
-                return false;
+        if (!FilenameUtils.isExtension(relativePath, extensions)) {
+            log.trace("The files: " + relativePath + " has incompatible extension");
+            return false;
+        }
+
+        if (exclusions != null) {
+            for (String exclusion : exclusions) {
+                if (SelectorUtils.matchPath("*." + exclusion, relativePath, false)) {
+                    log.trace("The files: " + relativePath + " has extension excluded to OSA analysis");
+                    return false;
+                }
             }
         }
 
-        if (!inclusions.isEmpty()) {
+        if (inclusions.length > 0) {
             for (String inclusion : inclusions) {
-                if (SelectorUtils.matchPath(inclusion, relativePath, false)) {
+                if (SelectorUtils.matchPath("*." + inclusion, relativePath, false)) {
                     return true;
                 }
             }
@@ -235,19 +228,14 @@ public class OSAUtil {
         return isMatch;
     }
 
-    //matched by supported extensions and include/exclude filters
-    private static boolean isCandidate(String relativePath, String[] supportedExtensions) {
-        return FilenameUtils.isExtension(relativePath, supportedExtensions) && isCandidate(relativePath);
-    }
-
     //calculate sha1 of file, and add the filename + sha1 to the output parameter ret
     private static void addSha1(File file, List<FileNameAndShaOneForOsaScan> ret) {
         try (BOMInputStream is = new BOMInputStream(new FileInputStream(file))) {
             String sha1 = DigestUtils.sha1Hex(is);
             ret.add(new FileNameAndShaOneForOsaScan(sha1, file.getName()));
-            log.trace("The file: " + file.getName() + " with Sha1: " + sha1 + " was added to Analysis");
+            log.trace("The file: " + file.getName() + " with Sha1: " + sha1 + " was added to analysis");
         } catch (IOException e) {
-            log.warn("Failed to calculate sha1 for file: [" + file.getAbsolutePath() + "]. exception message: " + e.getMessage());
+            log.trace("Failed to calculate sha1 for file: [" + file.getAbsolutePath() + "]. exception message: " + e.getMessage());
         }
     }
 
@@ -258,7 +246,6 @@ public class OSAUtil {
     }
 
     private static File createExtractTempDir(File tempDir) throws OSAUtilException {
-
         File extractTempDir = new File(tempDir.getAbsolutePath() + "/CxOSA_extract");
 
         extractTempDir.mkdirs();

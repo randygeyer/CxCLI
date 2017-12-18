@@ -24,7 +24,8 @@ public class CommandParametersValidator {
 
     private static final String MSG_ERR_EXCLUDED_DIR = "Excluded folders list is invalid.";
     private static final String MSG_ERR_EXCLUDED_FILES = "Excluded files list is invalid.";
-
+    private static final String MSG_ERR_INCLUDED_FILES = "Included files list is invalid.";
+    private static final String MSG_ERR_EXTRACTABLE_FILES = "Extractable files list is invalid.";
 
     public static void validateGenerateTokenParams(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliSharedParameters().isSsoLoginUsed() && !isWindows()) {
@@ -93,6 +94,24 @@ public class CommandParametersValidator {
             String[] osaExcludedFiles = parameters.getCliOsaParameters().getOsaExcludedFiles();
             if (osaExcludedFiles == null || osaExcludedFiles.length == 0) {
                 throw new CLICommandParameterValidatorException(MSG_ERR_EXCLUDED_FILES);
+            }
+        }
+    }
+
+    public static void validateOSAIncludedFiles(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
+        if (parameters.getCliOsaParameters().isHasOsaIncludedFilesParam()) {
+            String[] osaIncludedFiles = parameters.getCliOsaParameters().getOsaIncludedFiles();
+            if (osaIncludedFiles == null || osaIncludedFiles.length == 0) {
+                throw new CLICommandParameterValidatorException(MSG_ERR_INCLUDED_FILES);
+            }
+        }
+    }
+
+    public static void validateOSAExtractableFiles(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
+        if (parameters.getCliOsaParameters().isHasOsaExtractableIncludeFilesParam()) {
+            String[] osaExtractableFiles = parameters.getCliOsaParameters().getOsaExtractableIncludeFiles();
+            if (osaExtractableFiles == null || osaExtractableFiles.length == 0) {
+                throw new CLICommandParameterValidatorException(MSG_ERR_EXTRACTABLE_FILES);
             }
         }
     }

@@ -8,7 +8,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 
-import static com.checkmarx.cxconsole.utils.ConfigMgr.KEY_OSA_UNZIP_DEPTH;
+import static com.checkmarx.cxconsole.utils.ConfigMgr.*;
 
 /**
  * Created by nirli on 29/10/2017.
@@ -26,6 +26,8 @@ public class CLIOSAParameters extends AbstractCLIScanParameters {
     private int osaLowThresholdValue = Integer.MAX_VALUE;
     private int osaMediumThresholdValue = Integer.MAX_VALUE;
     private int osaHighThresholdValue = Integer.MAX_VALUE;
+    private static final String SPLIT_REGEX = "\\s*,\\s*";
+
 
     private String[] osaLocationPath = new String[]{};
     private String[] osaExcludedFolders = new String[]{};
@@ -91,6 +93,19 @@ public class CLIOSAParameters extends AbstractCLIScanParameters {
             osaScanDepth = ConfigMgr.getCfgMgr().getProperty(KEY_OSA_UNZIP_DEPTH);
         }
 
+        if (osaExcludedFiles == null) {
+            osaExcludedFiles = (ConfigMgr.getCfgMgr().getProperty(KEY_OSA_EXCLUDED_FILES)).split(SPLIT_REGEX);
+            cleanExtensionList(osaExcludedFiles);
+        }
+        if (osaIncludedFiles == null) {
+            osaIncludedFiles = (ConfigMgr.getCfgMgr().getProperty(KEY_OSA_INCLUDED_FILES)).split(SPLIT_REGEX);
+            cleanExtensionList(osaIncludedFiles);
+        }
+        if (osaExtractableIncludeFiles == null) {
+            osaExtractableIncludeFiles = (ConfigMgr.getCfgMgr().getProperty(KEY_OSA_EXTRACTABLE_INCLUDE_FILES)).split(SPLIT_REGEX);
+            cleanExtensionList(osaExtractableIncludeFiles);
+        }
+
         if (osaLowThresholdStr != null || osaMediumThresholdStr != null || osaHighThresholdStr != null) {
             isOsaThresholdEnabled = true;
             if (osaLowThresholdStr != null) {
@@ -104,6 +119,12 @@ public class CLIOSAParameters extends AbstractCLIScanParameters {
             if (osaHighThresholdStr != null) {
                 osaHighThresholdValue = Integer.parseInt(osaHighThresholdStr);
             }
+        }
+    }
+
+    private void cleanExtensionList(String[] osaScanDepth) {
+        for (int i = 0; i < osaScanDepth.length; i++) {
+            osaScanDepth[i] = osaScanDepth[i].replace("*.", "");
         }
     }
 

@@ -71,7 +71,6 @@ public class CLIOSAScanJob extends CLIScanJob {
             String[] osaLocationPath = cliosaParameters.getOsaLocationPath() != null ? cliosaParameters.getOsaLocationPath() : new String[]{params.getCliSharedParameters().getLocationPath()};
             log.info("OSA source location: " + StringUtils.join(osaLocationPath, ", "));
 
-            //TODO: Add component to extract files to scan + deletion of extraction of temp files
             log.info("Setting up OSA analysis request");
             List<FileNameAndShaOneForOsaScan> osaFilesToScan;
             try {
