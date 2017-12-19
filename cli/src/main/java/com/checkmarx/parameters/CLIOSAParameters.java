@@ -90,7 +90,7 @@ public class CLIOSAParameters extends AbstractCLIScanParameters {
         String osaHighThresholdStr = parsedCommandLineArguments.getOptionValue(PARAM_OSA_HIGH_THRESHOLD.getOpt());
 
         if (osaScanDepth == null) {
-            osaScanDepth = ConfigMgr.getCfgMgr().getProperty(KEY_OSA_UNZIP_DEPTH);
+            osaScanDepth = ConfigMgr.getCfgMgr().getProperty(KEY_OSA_SCAN_DEPTH);
         }
 
         if (osaExcludedFiles == null) {

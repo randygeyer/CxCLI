@@ -30,10 +30,10 @@ public class ConfigMgr {
     public static final String REPORT_TIMEOUT = "scan.job.report.timeout";
     public static final String KEY_EXCLUDED_FOLDERS = "scan.zip.ignored.folders";
     public static final String KEY_EXCLUDED_FILES = "scan.zip.ignored.files";
-    public static final String KEY_OSA_INCLUDED_FILES = "scan.zip.osa.include.files";
-    public static final String KEY_OSA_EXCLUDED_FILES = "scan.zip.osa.exclude.files";
-    public static final String KEY_OSA_EXTRACTABLE_INCLUDE_FILES = "scan.zip.osa.extractable.include.files";
-    public static final String KEY_OSA_UNZIP_DEPTH = "scan.zip.osa.extractable.depth";
+    public static final String KEY_OSA_INCLUDED_FILES = "scan.osa.include.files";
+    public static final String KEY_OSA_EXCLUDED_FILES = "scan.osa.exclude.files";
+    public static final String KEY_OSA_EXTRACTABLE_INCLUDE_FILES = "scan.osa.extractable.include.files";
+    public static final String KEY_OSA_SCAN_DEPTH = "scan.osa.extractable.depth";
     public static final String KEY_MAX_ZIP_SIZE = "scan.zip.max_size";
     public static final String KEY_OSA_MAX_ZIP_SIZE = "scan.osa.zip.max_size";
     public static final String KEY_DEF_LOG_NAME = "scan.log.default.filename";
