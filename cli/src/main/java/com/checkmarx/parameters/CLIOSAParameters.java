@@ -56,14 +56,14 @@ public class CLIOSAParameters extends AbstractCLIScanParameters {
             .valueSeparator(',').build();
     private static final Option PARAM_OSA_EXCLUDE_FOLDERS = Option.builder("osapathexclude").hasArgs().argName("folders list").desc("Comma separated list of folder path patterns to exclude from OSA scan. Example: '-OsaPathExclude test' excludes all folders which start with 'test' prefix. Optional.")
             .valueSeparator(',').build();
-    private static final Option PARAM_OSA_EXTRACTABLE_INCLUDE_FILES = Option.builder("osaarchiveincludes").hasArgs().argName("folders list").desc("Comma separated list of files extension to be extracted for OSA scan. Example: '-OSAArchiveIncludes *.zip' extracts only files with .zip extension. Optional.")
+    private static final Option PARAM_OSA_EXTRACTABLE_INCLUDE_FILES = Option.builder("osaarchiveinclude").hasArgs().argName("folders list").desc("Comma separated list of files extension to be extracted for OSA scan. Example: '-OSAArchiveIncludes *.zip' extracts only files with .zip extension. Optional.")
             .valueSeparator(',').build();
-    private static final Option PARAM_OSA_UNZIP_DEPTH = Option.builder("osascandepth").hasArg(true).argName("OSA analysis unzip depth").desc("Extraction depth for files to send for OSA analysis. Optional. ").build();
+    private static final Option PARAM_OSA_SCAN_DEPTH = Option.builder("osascandepth").hasArg(true).argName("OSA analysis unzip depth").desc("Extraction depth for files to send for OSA analysis. Optional.").build();
 
 
-    private static final Option PARAM_OSA_LOW_THRESHOLD = Option.builder("osalow").hasArg(true).argName("number of low OSA vulnerabilities").desc("OSA low severity vulnerability threshold. If the number of low vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").build();
-    private static final Option PARAM_OSA_MEDIUM_THRESHOLD = Option.builder("osamedium").hasArg(true).argName("number of medium OSA vulnerabilities").desc("OSA medium severity vulnerability threshold. If the number of medium vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").build();
-    private static final Option PARAM_OSA_HIGH_THRESHOLD = Option.builder("osahigh").hasArg(true).argName("number of high OSA vulnerabilities").desc("OSA high severity vulnerability threshold. If the number of high vulnerabilities exceeds the threshold, scan will end with an error. Optional. ").build();
+    private static final Option PARAM_OSA_LOW_THRESHOLD = Option.builder("osalow").hasArg(true).argName("number of low OSA vulnerabilities").desc("OSA low severity vulnerability threshold. If the number of low vulnerabilities exceeds the threshold, scan will end with an error. Optional.").build();
+    private static final Option PARAM_OSA_MEDIUM_THRESHOLD = Option.builder("osamedium").hasArg(true).argName("number of medium OSA vulnerabilities").desc("OSA medium severity vulnerability threshold. If the number of medium vulnerabilities exceeds the threshold, scan will end with an error. Optional.").build();
+    private static final Option PARAM_OSA_HIGH_THRESHOLD = Option.builder("osahigh").hasArg(true).argName("number of high OSA vulnerabilities").desc("OSA high severity vulnerability threshold. If the number of high vulnerabilities exceeds the threshold, scan will end with an error. Optional.").build();
 
 
     CLIOSAParameters() throws CLIParameterParsingException {
@@ -84,7 +84,7 @@ public class CLIOSAParameters extends AbstractCLIScanParameters {
         osaReportHTML = ParametersUtils.getOptionalValue(parsedCommandLineArguments, PARAM_OSA_HTML_FILE.getOpt());
         osaReportPDF = ParametersUtils.getOptionalValue(parsedCommandLineArguments, PARAM_OSA_PDF_FILE.getOpt());
         osaJson = ParametersUtils.getOptionalValue(parsedCommandLineArguments, PARAM_OSA_JSON.getOpt());
-        osaScanDepth = ParametersUtils.getOptionalValue(parsedCommandLineArguments, PARAM_OSA_UNZIP_DEPTH.getOpt());
+        osaScanDepth = ParametersUtils.getOptionalValue(parsedCommandLineArguments, PARAM_OSA_SCAN_DEPTH.getOpt());
         String osaLowThresholdStr = parsedCommandLineArguments.getOptionValue(PARAM_OSA_LOW_THRESHOLD.getOpt());
         String osaMediumThresholdStr = parsedCommandLineArguments.getOptionValue(PARAM_OSA_MEDIUM_THRESHOLD.getOpt());
         String osaHighThresholdStr = parsedCommandLineArguments.getOptionValue(PARAM_OSA_HIGH_THRESHOLD.getOpt());
@@ -215,6 +215,8 @@ public class CLIOSAParameters extends AbstractCLIScanParameters {
         commandLineOptions.addOption(PARAM_OSA_LOW_THRESHOLD);
         commandLineOptions.addOption(PARAM_OSA_MEDIUM_THRESHOLD);
         commandLineOptions.addOption(PARAM_OSA_HIGH_THRESHOLD);
+        commandLineOptions.addOption(PARAM_OSA_SCAN_DEPTH);
+
     }
 
     @Override
