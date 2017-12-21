@@ -202,14 +202,14 @@ public class OSAUtil {
         boolean isMatch = true;
 
         if (!FilenameUtils.isExtension(relativePath, extensions)) {
-            log.trace("The files: " + relativePath + " has incompatible extension");
+            log.trace("The file: " + relativePath + " has incompatible extension");
             return false;
         }
 
         if (exclusions != null) {
             for (String exclusion : exclusions) {
                 if (SelectorUtils.matchPath("*." + exclusion, relativePath, false)) {
-                    log.trace("The files: " + relativePath + " has extension excluded to OSA analysis");
+                    log.trace("The file: " + relativePath + " has extension excluded to OSA analysis");
                     return false;
                 }
             }
