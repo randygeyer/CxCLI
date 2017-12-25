@@ -56,7 +56,7 @@ public class CLIOSAParameters extends AbstractCLIScanParameters {
             .valueSeparator(',').build();
     private static final Option PARAM_OSA_EXCLUDE_FOLDERS = Option.builder("osapathexclude").hasArgs().argName("folders list").desc("Comma separated list of folder path patterns to exclude from OSA scan. Example: '-OsaPathExclude test' excludes all folders which start with 'test' prefix. Optional.")
             .valueSeparator(',').build();
-    private static final Option PARAM_OSA_EXTRACTABLE_INCLUDE_FILES = Option.builder("osaarchiveinclude").hasArgs().argName("folders list").desc("Comma separated list of files extension to be extracted for OSA scan. Example: '-OSAArchiveIncludes *.zip' extracts only files with .zip extension. Optional.")
+    private static final Option PARAM_OSA_EXTRACTABLE_INCLUDE_FILES = Option.builder("osaarchivetoextract").hasArgs().argName("folders list").desc("Comma separated list of files extension to be extracted for OSA scan. Example: '-OSAArchiveIncludes *.zip' extracts only files with .zip extension. Optional.")
             .valueSeparator(',').build();
     private static final Option PARAM_OSA_SCAN_DEPTH = Option.builder("osascandepth").hasArg(true).argName("OSA analysis unzip depth").desc("Extraction depth for files to send for OSA analysis. Optional.").build();
 
