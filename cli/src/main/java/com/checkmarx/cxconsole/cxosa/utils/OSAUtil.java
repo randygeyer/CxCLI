@@ -95,6 +95,7 @@ public class OSAUtil {
                 }
             }
         }
+        log.trace("List of files sent to WhiteSource: " + listToScan.toString());
         return listToScan;
     }
 

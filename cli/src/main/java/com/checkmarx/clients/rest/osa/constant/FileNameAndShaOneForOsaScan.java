@@ -31,4 +31,12 @@ public class FileNameAndShaOneForOsaScan implements Serializable {
     public void setSha1(String sha1) {
         this.sha1 = sha1;
     }
+
+    @Override
+    public String toString() {
+        return "FileNameAndShaOneForOsaScan{" +
+                "sha1='" + sha1 + '\'' +
+                ", fileName='" + fileName + '\'' +
+                '}';
+    }
 }
