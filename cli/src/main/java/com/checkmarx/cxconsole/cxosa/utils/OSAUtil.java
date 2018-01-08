@@ -41,19 +41,17 @@ public class OSAUtil {
     private static String[] osaIncludedFiles;
     private static String[] osaExcludedFiles;
     private static String[] osaExtractableIncludeFiles;
-    private static final String[] EXTRACTABLE_EXTENSIONS = {"jar", "war", "ear", "sca", "gem", "whl", "egg", "tar",
-            "tar.gz", "tgz", "zip", "rar"};
-    private static final String[] WHITE_SOURCE_SUPPORTED_EXTENSIONS = {"jar", "war", "ear", "aar", "dll", "exe", "msi",
-            "nupkg", "egg", "whl", "tar.gz", "gem", "deb", "udeb", "dmg", "drpm", "rpm", "pkg.tar.xz", "swf", "swc",
-            "air", "apk", "zip", "gzip", "tar.bz2", "tgz", "c", "cc", "cp", "cpp", "css", "c++", "h", "hh", "hpp", "hxx",
-            "h++", "m", "mm", "pch", "c#", "cs", "csharp", "go", "goc", "js", "plx", "pm", "ph", "cgi", "fcgi", "psgi",
-            "al", "perl", "t", "p6m", "p6l", "nqp", "6pl", "6pm", "p6", "php", "py", "rb", "swift", "clj", "cljx",
-            "cljs", "cljc"};
+    private static final String[] EXTRACTABLE_EXTENSIONS = {"jar", "war", "ear", "sca", "gem", "whl", "egg", "tar", "tar.gz", "tgz", "zip", "rar"};
+    private static final String[] WHITE_SOURCE_SUPPORTED_EXTENSIONS = {"jar", "war", "ear", "aar", "dll", "exe", "msi", "nupkg", "egg", "whl", "tar.gz", "gem", "deb", "udeb",
+            "dmg", "drpm", "rpm", "pkg.tar.xz", "swf", "swc", "air", "apk", "zip", "gzip", "tar.bz2", "tgz", "c", "cc", "cp", "cpp", "css", "c++", "h", "hh", "hpp",
+            "hxx", "h++", "m", "mm", "pch", "c#", "cs", "csharp", "go", "goc", "js", "plx", "pm", "ph", "cgi", "fcgi", "psgi", "al", "perl", "t", "p6m", "p6l", "nqp,6pl", "6pm",
+            "p6", "php", "py", "rb", "swift", "clj", "cljx", "cljs", "cljc"};
     private static final String[] ZIP_EXTENSIONS = {"zip", "jar", "war", "ear", "egg", "whl", "sca"};
     private static final String[] TAR_EXTENSIONS = {"tar", "gem"};
     private static final String[] GZ_EXTENSIONS = {"tgz", "tar.gz"};
-    private static final String[] TAR_AND_GZ_EXTENSIONS = ArrayUtils.addAll(TAR_EXTENSIONS, GZ_EXTENSIONS);
     private static final String[] RAR_EXTENSIONS = {"rar"};
+    private static final String[] TAR_AND_GZ_EXTENSIONS = ArrayUtils.addAll(TAR_EXTENSIONS, GZ_EXTENSIONS);
+    private static final String[] ALL_EXTENSIONS = ArrayUtils.addAll(WHITE_SOURCE_SUPPORTED_EXTENSIONS, EXTRACTABLE_EXTENSIONS);
 
     public static String composeProjectOSASummaryLink(String url, long projectId) {
         return String.format("%s/CxWebClient/portal#/projectState/%s/OSA", url, projectId);
@@ -136,37 +134,28 @@ public class OSAUtil {
         return ret;
     }
 
-    private static boolean isCandidateForSha1(String relativePath) {
-        return isCandidate(relativePath, WHITE_SOURCE_SUPPORTED_EXTENSIONS, osaIncludedFiles, osaExcludedFiles);
-    }
-
-    private static boolean isCandidateForExtract(String relativePath) {
-        return isCandidate(relativePath, EXTRACTABLE_EXTENSIONS, osaExtractableIncludeFiles, null);
-    }
-
     //list file compatible to OSA, and the files that are extractable
     private static List<File> getFiles(File baseDir) {
-        String[] supportedAndExtractableFiles = ArrayUtils.addAll(WHITE_SOURCE_SUPPORTED_EXTENSIONS, EXTRACTABLE_EXTENSIONS);
-        return new ArrayList<>(FileUtils.listFiles(baseDir, supportedAndExtractableFiles, true));
+        return new ArrayList<>(FileUtils.listFiles(baseDir, ALL_EXTENSIONS, true));
     }
 
     //extract the OSA compatible files and archives to temporary directory. also filters by includes/excludes
     private static boolean extractToTempDir(File nestedTempDir, File archive, String virtualPath) {
         //uses zip4j
         if (isExtension(archive.getName(), ZIP_EXTENSIONS)) {
-            log.trace("Zip file (or related extension) was found");
+            log.trace(archive.getName() + " will be extracted (Zip or related)");
             return extractZipToTempDir(nestedTempDir, archive, virtualPath);
         }
 
         //uses common-compression
         if (isExtension(archive.getName(), TAR_AND_GZ_EXTENSIONS)) {
-            log.trace("Tar/Gz file (or related extension) was found");
+            log.trace(archive.getName() + " will be extracted (Tar or related)");
             return extractTarOrGZToTempDir(nestedTempDir, archive, virtualPath);
         }
 
         //uses junrar
         if (isExtension(archive.getName(), RAR_EXTENSIONS)) {
-            log.trace("Rar file (or related extension) was found");
+            log.trace(archive.getName() + " will be extracted (Rar or related)");
             return extractRarToTempDir(nestedTempDir, archive, virtualPath);
         }
 
@@ -198,7 +187,7 @@ public class OSAUtil {
             }
 
             //now, extract the relevant files (if any):
-            if (filtered.size() < 1) {
+            if (filtered.isEmpty()) {
                 return false;
             }
 
@@ -233,13 +222,13 @@ public class OSAUtil {
         try {
             tarInputStream = getArchiveInputStream(tar);
             ArchiveEntry entry;
+            log.trace("Extracting file: " + tar.getName());
             while ((entry = tarInputStream.getNextEntry()) != null) {
                 String fileName = entry.getName();
                 if (!entry.isDirectory() && (isCandidateForSha1(virtualPath + "/" + fileName) || isCandidateForExtract(virtualPath + "/" + fileName))) {
                     byte[] buffer = new byte[(int) entry.getSize()];
                     tarInputStream.read(buffer, 0, buffer.length);
                     FileUtils.writeByteArrayToFile(new File(nestedTempDir + "/" + fileName), buffer);
-                    log.trace("Extracting file: " + tar.getName());
                 }
             }
         } catch (IOException e) {
@@ -249,6 +238,14 @@ public class OSAUtil {
         }
 
         return nestedTempDir.exists();
+    }
+
+    private static boolean isCandidateForSha1(String relativePath) {
+        return isCandidate(relativePath, WHITE_SOURCE_SUPPORTED_EXTENSIONS, osaIncludedFiles, osaExcludedFiles);
+    }
+
+    private static boolean isCandidateForExtract(String relativePath) {
+        return isCandidate(relativePath, EXTRACTABLE_EXTENSIONS, osaExtractableIncludeFiles, null);
     }
 
     private static ArchiveInputStream getArchiveInputStream(File archive) throws IOException {
@@ -336,15 +333,14 @@ public class OSAUtil {
         relativePath = relativePath.replaceAll("\\\\", "/");
         boolean isMatch = true;
 
-        if (!FilenameUtils.isExtension(relativePath, extensions)) {
-            log.trace("The file: " + relativePath + " has incompatible extension");
+        if(!isExtension(relativePath, extensions)) {
             return false;
         }
 
         if (exclusions != null) {
             for (String exclusion : exclusions) {
                 if (SelectorUtils.matchPath("*." + exclusion, relativePath, false)) {
-                    log.trace("The file: " + relativePath + " has extension excluded to OSA analysis");
+                    log.trace("The file: " + relativePath + " has excluded extension or is excluded from OSA analysis");
                     return false;
                 }
             }

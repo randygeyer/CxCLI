@@ -99,15 +99,14 @@ public abstract class CLICommand {
             if (!Objects.equals(option, "cxpassword") && !Objects.equals(option, "locationpassword")) {
                 if (opt.getValue() == null) {
                     log.debug("Option: " + StringUtils.capitalize(opt.getOpt()) + "   Value: True");
-                } else if (Objects.equals(option, "osalocationpath")) {
+                } else if (Objects.equals(option, "osalocationpath")
+                        || Objects.equals(option, "osafilesexclude")) {
                     log.debug("Option: " + StringUtils.capitalize(opt.getOpt()) + "   Value: " + StringUtils.join(opt.getValues(), ", "));
                 } else {
                     log.debug("Option: " + StringUtils.capitalize(opt.getOpt()) + "   Value: " + opt.getValue());
                 }
-            } else if (Objects.equals(option, "cxpassword")) {
+            } else if (Objects.equals(option, "cxpassword") || Objects.equals(option, "locationpassword")) {
                 log.debug("Option: CxPassword   Value: **********");
-            } else if (Objects.equals(option, "locationpassword")) {
-                log.debug("Option: LocationPassword   Value: **********");
             }
         }
         log.debug("-----------------------------------------------------------------------------");
