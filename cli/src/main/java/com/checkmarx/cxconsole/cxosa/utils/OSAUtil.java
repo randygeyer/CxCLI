@@ -15,7 +15,6 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.ArrayUtils;
@@ -79,9 +78,9 @@ public class OSAUtil {
         ArrayList<FileNameAndShaOneForOsaScan> listToScan = new ArrayList<>();
         for (String baseDirectory : baseDirectories) {
             try {
-                if (isPathExcluded(baseDirectory)) {
-                    continue;
-                }
+//                if (isPathExcluded(baseDirectory)) {
+//                    continue;
+//                }
                 File baseDir = new File(baseDirectory);
                 extractTempDir = createExtractTempDir(baseTempDir);
                 listToScan.addAll(scanFilesRecursive(baseDir, extractTempDir, "", unzipDepth));
@@ -102,14 +101,29 @@ public class OSAUtil {
         return listToScan;
     }
 
-    private static boolean isPathExcluded(String baseDirectory) {
-        for (String excludeFolderName : osaExcludedFolders) {
-            if (excludeFolderName.equals(baseDirectory)) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    private static boolean isPathExcluded(String baseDirectory) {
+//        for (String excludeFolderName : osaExcludedFolders) {
+//            if (excludeFolderName.matches(baseDirectory)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+
+//    private static List<String> processExcludeFolders(String[] folderExclusions) {
+//        if (folderExclusions == null) {
+//            return null;
+//        }
+//
+//        List<String> result = new ArrayList<>();
+//        for (String p : folderExclusions) {
+//            p = p.trim();
+//            if (p.length() > 0 && !p.equals("null")) {
+//                result.add("**/" + p + "/**/*, ");
+//            }
+//        }
+//        return result;
+//    }
 
     /**
      * recursive function used by the wrapper scanFiles()
