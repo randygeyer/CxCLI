@@ -74,7 +74,6 @@ public class CLIOSAParameters extends AbstractCLIScanParameters {
         osaLocationPath = parsedCommandLineArguments.getOptionValues(PARAM_OSA_LOCATION_PATH.getOpt());
 
         hasOsaExcludedFoldersParam = parsedCommandLineArguments.hasOption(PARAM_OSA_EXCLUDE_FOLDERS.getOpt());
-        osaExcludedFolders = parsedCommandLineArguments.getOptionValues(PARAM_OSA_EXCLUDE_FOLDERS.getOpt());
         hasOsaExcludedFilesParam = parsedCommandLineArguments.hasOption(PARAM_OSA_EXCLUDE_FILES.getOpt());
         osaExcludedFiles = parsedCommandLineArguments.getOptionValues(PARAM_OSA_EXCLUDE_FILES.getOpt());
         hasOsaIncludedFilesParam = parsedCommandLineArguments.hasOption(PARAM_OSA_INCLUDE_FILES.getOpt());
@@ -104,6 +103,9 @@ public class CLIOSAParameters extends AbstractCLIScanParameters {
         if (osaExtractableIncludeFiles == null) {
             osaExtractableIncludeFiles = (ConfigMgr.getCfgMgr().getProperty(KEY_OSA_EXTRACTABLE_INCLUDE_FILES)).split(SPLIT_REGEX);
             cleanExtensionList(osaExtractableIncludeFiles);
+        }
+        if (hasOsaExcludedFoldersParam) {
+            osaExcludedFolders = parsedCommandLineArguments.getOptionValues(PARAM_OSA_EXCLUDE_FOLDERS.getOpt());
         }
 
         if (osaLowThresholdStr != null || osaMediumThresholdStr != null || osaHighThresholdStr != null) {

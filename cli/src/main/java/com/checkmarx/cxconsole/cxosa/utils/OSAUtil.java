@@ -40,6 +40,7 @@ public class OSAUtil {
     private static Logger log = Logger.getLogger(LOG_NAME);
     private static String[] osaIncludedFiles;
     private static String[] osaExcludedFiles;
+    private static String[] osaExcludedFolders;
     private static String[] osaExtractableIncludeFiles;
     private static final String[] EXTRACTABLE_EXTENSIONS = {"jar", "war", "ear", "sca", "gem", "whl", "egg", "tar", "tar.gz", "tgz", "zip", "rar"};
     private static final String[] WHITE_SOURCE_SUPPORTED_EXTENSIONS = {"jar", "war", "ear", "aar", "dll", "exe", "msi", "nupkg", "egg", "whl", "tar.gz", "gem", "deb", "udeb",
@@ -66,17 +67,21 @@ public class OSAUtil {
      *                          error handling for fail: extract archive / calculate sha1 / delete temp dir -  warning is logged
      */
     public static List<FileNameAndShaOneForOsaScan> scanFiles(String[] baseDirectories, String[] osaIncludedFiles,
-                                                              String[] osaExcludedFiles, String[] osaExtractableIncludeFiles,
+                                                              String[] osaExcludedFiles, String[] osaExcludedFolder, String[] osaExtractableIncludeFiles,
                                                               int unzipDepth) throws OSAUtilException {
         File baseTempDir = new File(TEMP_FOLDER_FOR_FILES_EXTRACTION);
         OSAUtil.osaIncludedFiles = osaIncludedFiles;
         OSAUtil.osaExcludedFiles = osaExcludedFiles;
+        OSAUtil.osaExcludedFolders = osaExcludedFolder;
         OSAUtil.osaExtractableIncludeFiles = osaExtractableIncludeFiles;
 
         File extractTempDir = null;
         ArrayList<FileNameAndShaOneForOsaScan> listToScan = new ArrayList<>();
         for (String baseDirectory : baseDirectories) {
             try {
+                if (isPathExcluded(baseDirectory)) {
+                    continue;
+                }
                 File baseDir = new File(baseDirectory);
                 extractTempDir = createExtractTempDir(baseTempDir);
                 listToScan.addAll(scanFilesRecursive(baseDir, extractTempDir, "", unzipDepth));
@@ -95,6 +100,15 @@ public class OSAUtil {
         }
         log.trace("List of files sent to WhiteSource: " + listToScan.toString());
         return listToScan;
+    }
+
+    private static boolean isPathExcluded(String baseDirectory) {
+        for (String excludeFolderName : osaExcludedFolders) {
+            if (excludeFolderName.equals(baseDirectory)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

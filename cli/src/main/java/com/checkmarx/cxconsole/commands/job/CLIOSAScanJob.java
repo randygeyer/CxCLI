@@ -75,7 +75,7 @@ public class CLIOSAScanJob extends CLIScanJob {
             List<FileNameAndShaOneForOsaScan> osaFilesToScan;
             try {
                 osaFilesToScan = OSAUtil.scanFiles(osaLocationPath, cliosaParameters.getOsaIncludedFiles(), cliosaParameters.getOsaExcludedFiles(),
-                        cliosaParameters.getOsaExtractableIncludeFiles(), Integer.parseInt(cliosaParameters.getOsaScanDepth()));
+                        cliosaParameters.getOsaExcludedFolders(), cliosaParameters.getOsaExtractableIncludeFiles(), Integer.parseInt(cliosaParameters.getOsaScanDepth()));
             } catch (OSAUtilException e) {
                 log.trace(e.getMessage());
                 throw new CLIJobException("Error create OSA scan: " + e.getMessage());
