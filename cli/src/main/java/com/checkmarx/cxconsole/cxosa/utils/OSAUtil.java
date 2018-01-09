@@ -78,9 +78,10 @@ public class OSAUtil {
         ArrayList<FileNameAndShaOneForOsaScan> listToScan = new ArrayList<>();
         for (String baseDirectory : baseDirectories) {
             try {
-//                if (isPathExcluded(baseDirectory)) {
-//                    continue;
-//                }
+                if (osaExcludedFolder.length > 0 && isPathExcluded(baseDirectory)) {
+                    log.trace("The directory: " + baseDirectory + " is excluded from OSA analysis");
+                    continue;
+                }
                 File baseDir = new File(baseDirectory);
                 extractTempDir = createExtractTempDir(baseTempDir);
                 listToScan.addAll(scanFilesRecursive(baseDir, extractTempDir, "", unzipDepth));
@@ -101,29 +102,14 @@ public class OSAUtil {
         return listToScan;
     }
 
-//    private static boolean isPathExcluded(String baseDirectory) {
-//        for (String excludeFolderName : osaExcludedFolders) {
-//            if (excludeFolderName.matches(baseDirectory)) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
-//    private static List<String> processExcludeFolders(String[] folderExclusions) {
-//        if (folderExclusions == null) {
-//            return null;
-//        }
-//
-//        List<String> result = new ArrayList<>();
-//        for (String p : folderExclusions) {
-//            p = p.trim();
-//            if (p.length() > 0 && !p.equals("null")) {
-//                result.add("**/" + p + "/**/*, ");
-//            }
-//        }
-//        return result;
-//    }
+    private static boolean isPathExcluded(String baseDirectory) {
+        for (String excludeFolderName : osaExcludedFolders) {
+            if ((new File(baseDirectory)).isDirectory() && baseDirectory.contains(excludeFolderName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * recursive function used by the wrapper scanFiles()
