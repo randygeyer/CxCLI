@@ -78,10 +78,6 @@ public class OSAUtil {
         ArrayList<FileNameAndShaOneForOsaScan> listToScan = new ArrayList<>();
         for (String baseDirectory : baseDirectories) {
             try {
-                if (osaExcludedFolder.length > 0 && isPathExcluded(baseDirectory)) {
-                    log.trace("The directory: " + baseDirectory + " is excluded from OSA analysis");
-                    continue;
-                }
                 File baseDir = new File(baseDirectory);
                 extractTempDir = createExtractTempDir(baseTempDir);
                 listToScan.addAll(scanFilesRecursive(baseDir, extractTempDir, "", unzipDepth));
@@ -102,15 +98,6 @@ public class OSAUtil {
         return listToScan;
     }
 
-    private static boolean isPathExcluded(String baseDirectory) {
-        for (String excludeFolderName : osaExcludedFolders) {
-            if ((new File(baseDirectory)).isDirectory() && baseDirectory.contains(excludeFolderName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
      * recursive function used by the wrapper scanFiles()
      *
@@ -126,6 +113,11 @@ public class OSAUtil {
 
         List<File> files = getFiles(baseDir);
         for (File file : files) {
+            if (osaExcludedFolders.length > 0 && isPathExcluded(file)) {
+                log.trace("The directory: " + file.getParent() + " is excluded from OSA analysis");
+                continue;
+            }
+
             String virtualFullPath = virtualPath + getRelativePath(baseDir, file);
             if (isCandidateForSha1(virtualFullPath)) {
                 addSha1(file, ret);
@@ -146,6 +138,15 @@ public class OSAUtil {
         }
 
         return ret;
+    }
+
+    private static boolean isPathExcluded(File file) {
+        for (String excludeFolderName : osaExcludedFolders) {
+            if (file.getParent().contains(excludeFolderName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     //list file compatible to OSA, and the files that are extractable
@@ -347,7 +348,7 @@ public class OSAUtil {
         relativePath = relativePath.replaceAll("\\\\", "/");
         boolean isMatch = true;
 
-        if(!isExtension(relativePath, extensions)) {
+        if (!isExtension(relativePath, extensions)) {
             return false;
         }
 
