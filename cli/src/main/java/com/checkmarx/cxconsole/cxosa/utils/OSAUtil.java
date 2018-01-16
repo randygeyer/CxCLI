@@ -357,7 +357,7 @@ public class OSAUtil {
                 if (!exclusion.startsWith("*.")) {
                     exclusion = "*." + exclusion;
                 }
-                if (SelectorUtils.matchPath("*." + exclusion, relativePath, false)) {
+                if (SelectorUtils.matchPath(exclusion, relativePath, false)) {
                     log.trace("The file: " + relativePath + " has excluded extension or is excluded from OSA analysis");
                     return false;
                 }
