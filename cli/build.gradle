@@ -18,7 +18,10 @@ repositories {
 }
 
 group = 'com.checkmarx'
-version = '8.6.0' + "-" + getDate()
+//For development purpose
+//version = '8.6.0' + "-" + getDate()
+//For release purpose
+version = '8.60.0'
 compileJava.options.encoding = 'UTF-8'
 compileJava.sourceCompatibility = 7
 compileJava.targetCompatibility = 7
