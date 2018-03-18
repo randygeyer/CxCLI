@@ -21,7 +21,7 @@ group = 'com.checkmarx'
 //For development purpose
 //version = '8.6.0' + "-" + getDate()
 //For release purpose
-version = '8.60.0'
+version = '8.60.1'
 compileJava.options.encoding = 'UTF-8'
 compileJava.sourceCompatibility = 7
 compileJava.targetCompatibility = 7
