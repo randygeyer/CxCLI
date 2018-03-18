@@ -43,6 +43,7 @@ public class RetryableSOAPLogin extends RetryableOperation {
             if (JobUtils.isWindows() && params.getCliSharedParameters().isSsoLoginUsed()) {
                 //SSO login
                 responseLoginData = cxSoapLoginClient.ssoLogin("", "");
+                sessionId = responseLoginData.getSessionId();
             } else if (params.getCliMandatoryParameters().isHasUserParam() && params.getCliMandatoryParameters().isHasPasswordParam()) {
                 //Login with user name and password
                 responseLoginData = cxSoapLoginClient.login(params.getCliMandatoryParameters().getUsername(), params.getCliMandatoryParameters().getPassword());

@@ -24,7 +24,7 @@
             <sec:Authorization>CXFClient</sec:Authorization>
 
         </http-conf:authorization>
-        <http-conf:authSupplier class="com.checkmarx.login.soap.utils.DynamicAuthSupplier"/>
+        <http-conf:authSupplier class="com.checkmarx.clients.soap.login.utils.DynamicAuthSupplier"/>
     </http-conf:conduit>
 
 

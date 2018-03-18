@@ -24,7 +24,6 @@ public class CXFConfigurationUtils {
         org.apache.cxf.endpoint.Client client = org.apache.cxf.frontend.ClientProxy.getClient(sevice);
         org.apache.cxf.transport.http.HTTPConduit conduit = (org.apache.cxf.transport.http.HTTPConduit) client.getConduit();
         org.apache.cxf.transports.http.configuration.HTTPClientPolicy httpClientPolicy = new org.apache.cxf.transports.http.configuration.HTTPClientPolicy();
-//        httpClientPolicy.setConnectionTimeout(36000);
         httpClientPolicy.setAllowChunking(false);
         httpClientPolicy.setConnection(ConnectionType.KEEP_ALIVE);
         conduit.setClient(httpClientPolicy);
