@@ -16,7 +16,7 @@ public class CommandParametersValidator {
     }
 
     private static final String MSG_ERR_SSO_WINDOWS_SUPPORT = "SSO login method is available only on Windows";
-    private static final String MSG_ERR_MISSING_AUTHENTICATION_PARAMETERS = "Missing authentication parameters, please provide user name and password or token";
+    private static final String MSG_ERR_MISSING_AUTHENTICATION_PARAMETERS = "Missing authentication parameters, please provide user name and password, token or use SSO login";
     private static final String MSG_ERR_2_AUTHENTICATION_METHODS = "Please provide only one authentication type: user name and password or token";
     private static final String MSG_ERR_MISSING_LOCATION_TYPE = "Missing locationType parameter";
 
@@ -52,7 +52,7 @@ public class CommandParametersValidator {
     public static void validateScanMandatoryParams(CLIScanParametersSingleton parameters) throws CLICommandParameterValidatorException {
         if (parameters.getCliSharedParameters().isSsoLoginUsed() && !isWindows()) {
             throw new CLICommandParameterValidatorException(MSG_ERR_SSO_WINDOWS_SUPPORT);
-        } else if ((!parameters.getCliMandatoryParameters().isHasUserParam() || !parameters.getCliMandatoryParameters().isHasPasswordParam()) && !parameters.getCliMandatoryParameters().isHasTokenParam()) {
+        } else if ((!parameters.getCliMandatoryParameters().isHasUserParam() || !parameters.getCliMandatoryParameters().isHasPasswordParam()) && !parameters.getCliMandatoryParameters().isHasTokenParam() && !parameters.getCliSharedParameters().isSsoLoginUsed()) {
             throw new CLICommandParameterValidatorException(MSG_ERR_MISSING_AUTHENTICATION_PARAMETERS);
         } else if ((parameters.getCliMandatoryParameters().isHasUserParam() || parameters.getCliMandatoryParameters().isHasPasswordParam()) && parameters.getCliMandatoryParameters().isHasTokenParam()) {
             throw new CLICommandParameterValidatorException(MSG_ERR_2_AUTHENTICATION_METHODS);
