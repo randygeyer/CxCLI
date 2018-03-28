@@ -11,7 +11,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.entity.ContentType;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HTTP;
 
 import java.io.IOException;
@@ -19,12 +18,12 @@ import java.net.URL;
 
 import static com.checkmarx.clients.rest.utils.RestClientUtils.validateResponse;
 
-public class CxRestTokenClient {
+public class CxRestTokenClient extends CxRestClient {
 
     private static final String PARSING_ERROR = "Failed due to parsing error: ";
     static final String FAIL_TO_AUTHENTICATE_ERROR = " User authentication failed";
 
-    private HttpClient client = HttpClientBuilder.create().build();
+    private HttpClient client = super.createClient(null, null, null);
 
     public String generateToken(URL serverUrl, String userName, String password) throws CxRestClientException {
         HttpPost postRequest = new HttpPost(String.valueOf(RestResourcesURIBuilder.buildLoginURL(serverUrl)));

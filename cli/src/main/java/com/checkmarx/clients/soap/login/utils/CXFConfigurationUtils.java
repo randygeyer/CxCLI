@@ -1,6 +1,11 @@
 package com.checkmarx.clients.soap.login.utils;
 
+import org.apache.cxf.configuration.jsse.TLSClientParameters;
+import org.apache.cxf.endpoint.Client;
+import org.apache.cxf.frontend.ClientProxy;
+import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.ConnectionType;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 
 public class CXFConfigurationUtils {
 
@@ -19,14 +24,34 @@ public class CXFConfigurationUtils {
      * Connection is Keep-Alive and Turn off chunking
      * @param sevice the SOAP web service to configure
      */
-    public static void setNTLMAuthentication(Object sevice){
+    public static void setNTLMAuthentication(Object service){
 
-        org.apache.cxf.endpoint.Client client = org.apache.cxf.frontend.ClientProxy.getClient(sevice);
-        org.apache.cxf.transport.http.HTTPConduit conduit = (org.apache.cxf.transport.http.HTTPConduit) client.getConduit();
-        org.apache.cxf.transports.http.configuration.HTTPClientPolicy httpClientPolicy = new org.apache.cxf.transports.http.configuration.HTTPClientPolicy();
+        final HTTPConduit conduit = getHttpConduit(service);
+        HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
+        httpClientPolicy.setConnectionTimeout(36000);
         httpClientPolicy.setAllowChunking(false);
         httpClientPolicy.setConnection(ConnectionType.KEEP_ALIVE);
         conduit.setClient(httpClientPolicy);
-
     }
+    
+    public static void trustAllCertificates(Object service) {
+        final HTTPConduit conduit = getHttpConduit(service);
+
+        // RJG: not sure why cxf.xml is not being applied, so applied in code
+        TLSClientParameters params = conduit.getTlsClientParameters();
+        if (params == null) {
+            params = new TLSClientParameters();
+            conduit.setTlsClientParameters(params);
+        }
+
+        params.setUseHttpsURLConnectionDefaultHostnameVerifier(true);
+        params.setUseHttpsURLConnectionDefaultSslSocketFactory(true);
+        params.setDisableCNCheck(true);
+    }
+
+    private static HTTPConduit getHttpConduit(Object service) {
+        final Client client = ClientProxy.getClient(service);
+        return (HTTPConduit) client.getConduit();
+    }
+    
 }

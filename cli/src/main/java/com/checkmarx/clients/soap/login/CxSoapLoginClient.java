@@ -34,6 +34,7 @@ public class CxSoapLoginClient {
             CxCLIWebServiceV1 ws = new CxCLIWebServiceV1(wsdlLocationWithWSDL);
             cxSoapClient = ws.getCxCLIWebServiceV1Soap();
 
+            CXFConfigurationUtils.trustAllCertificates(cxSoapClient);
             CXFConfigurationUtils.disableSchemaValidation(cxSoapClient);
 
             if ("false".equalsIgnoreCase(ConfigMgr.getCfgMgr().getProperty(ConfigMgr.KEY_USE_KERBEROS_AUTH))) {

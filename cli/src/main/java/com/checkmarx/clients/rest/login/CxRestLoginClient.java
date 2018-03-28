@@ -19,8 +19,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.entity.ContentType;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
@@ -38,7 +36,7 @@ import static com.checkmarx.cxconsole.CxConsoleLauncher.LOG_NAME;
 /**
  * Created by nirli on 24/10/2017.
  */
-public class CxRestLoginClient {
+public class CxRestLoginClient extends CxRestClient {
 
     private Logger log = Logger.getLogger(LOG_NAME);
 
@@ -70,7 +68,7 @@ public class CxRestLoginClient {
 
         //create httpclient
         List<Header> headers = new ArrayList<>();
-        apacheClient = HttpClientBuilder.create().build();
+        apacheClient = super.createClient(null, null, null);
         try {
             String accessToken = getAccessToken(token);
             authorizationHeader = new BasicHeader("Authorization", "Bearer " + accessToken);
@@ -83,7 +81,7 @@ public class CxRestLoginClient {
             }
         }
         headers.add(authorizationHeader);
-        apacheClient = HttpClientBuilder.create().setDefaultHeaders(headers).build();
+        apacheClient = super.createClient(null, null, headers);
     }
 
     public CxRestLoginClient(String hostname, String username, String password) {
@@ -93,11 +91,10 @@ public class CxRestLoginClient {
         this.token = null;
 
         //create httpclient
-        cookieStore = new BasicCookieStore();
         List<Header> headers = new ArrayList<>();
         headers.add(cxcsrfTokenHeader);
         headers.add(CLI_ORIGIN_HEADER);
-        apacheClient = HttpClientBuilder.create().addInterceptorLast(responseFilter).setDefaultHeaders(headers).setDefaultCookieStore(cookieStore).build();
+        apacheClient = super.createClient(null, responseFilter, headers);
     }
 
     private final HttpResponseInterceptor responseFilter = new HttpResponseInterceptor() {

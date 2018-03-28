@@ -2,6 +2,7 @@ package com.checkmarx.clients.rest.osa;
 
 import com.checkmarx.clients.rest.exceptions.CxRestClientException;
 import com.checkmarx.clients.rest.exceptions.CxRestClientValidatorException;
+import com.checkmarx.clients.rest.login.CxRestClient;
 import com.checkmarx.clients.rest.login.dto.RestLoginResponseDTO;
 import com.checkmarx.clients.rest.osa.constant.FileNameAndShaOneForOsaScan;
 import com.checkmarx.clients.rest.osa.constant.OsaShaOneDTO;
@@ -23,7 +24,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.HttpClientUtils;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 
 import javax.ws.rs.core.MediaType;
@@ -42,7 +42,7 @@ import static com.checkmarx.cxconsole.CxConsoleLauncher.LOG_NAME;
  * Created by: Dorg.
  * Date: 16/06/2016.
  */
-public class CxRestOSAClient {
+public class CxRestOSAClient extends CxRestClient {
 
     private static Logger log = Logger.getLogger(LOG_NAME);
 
@@ -75,10 +75,11 @@ public class CxRestOSAClient {
             List<Header> defaultHeaders = new ArrayList<>();
             if (loginType == USERNAME_AND_PASSWORD) {
                 defaultHeaders.add(restLoginResponseDTO.getCxcsrfTokenHeader());
-                apacheClient = HttpClientBuilder.create().setDefaultHeaders(defaultHeaders).setDefaultCookieStore(restLoginResponseDTO.getCookieStore()).build();
+                super.cookieStore = restLoginResponseDTO.getCookieStore();
+                apacheClient = super.createClient(null, null, defaultHeaders);
             } else {
                 defaultHeaders.add(restLoginResponseDTO.getTokenAuthorizationHeader());
-                apacheClient = HttpClientBuilder.create().setDefaultHeaders(defaultHeaders).build();
+                apacheClient = super.createClient(null, null, defaultHeaders);
             }
             post.setEntity(RestHttpEntityBuilder.createOsaShaOneEntity(osaShaOneDTO));
 
