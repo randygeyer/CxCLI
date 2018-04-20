@@ -10,7 +10,7 @@ import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.conn.ssl.TrustAllStrategy;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.cookie.CookieOrigin;
 import org.apache.http.cookie.CookieSpec;
@@ -50,7 +50,7 @@ public class CxRestClient {
         RequestConfig requestConfig = RequestConfig.custom().setCookieSpec("easy").build();
 
         try {
-            final TrustStrategy trustStrategy = TrustSelfSignedStrategy.INSTANCE;
+            final TrustStrategy trustStrategy = TrustAllStrategy.INSTANCE;
             final SSLContextBuilder sslContextBuilder = 
                     SSLContextBuilder.create().loadTrustMaterial(trustStrategy);
             final HttpClientBuilder clientBuilder = HttpClients.custom()
